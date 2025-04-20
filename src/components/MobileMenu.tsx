@@ -1,0 +1,143 @@
+
+import React from "react";
+import { 
+  Home, 
+  TrendingUp, 
+  Grid, 
+  User, 
+  Heart, 
+  Clock, 
+  Upload, 
+  LogIn,
+  X
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface MobileMenuProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+interface MenuItem {
+  label: string;
+  icon: React.ReactNode;
+  href: string;
+  hasSubmenu?: boolean;
+  submenu?: {
+    label: string;
+    href: string;
+  }[];
+}
+
+const menuItems: MenuItem[] = [
+  { label: "Accueil", icon: <Home size={18} />, href: "/" },
+  { label: "Tendances", icon: <TrendingUp size={18} />, href: "/trending" },
+  { 
+    label: "Catégories", 
+    icon: <Grid size={18} />, 
+    href: "/categories",
+    hasSubmenu: true,
+    submenu: [
+      { label: "Amateur", href: "/categories/amateur" },
+      { label: "MILF", href: "/categories/milf" },
+      { label: "Teen", href: "/categories/teen" },
+      { label: "Lesbian", href: "/categories/lesbian" },
+      { label: "Voir tout", href: "/categories" },
+    ] 
+  },
+  { 
+    label: "Performeurs", 
+    icon: <User size={18} />, 
+    href: "/performers",
+    hasSubmenu: true,
+    submenu: [
+      { label: "Les plus populaires", href: "/performers/popular" },
+      { label: "Récents", href: "/performers/recent" },
+      { label: "Voir tout", href: "/performers" },
+    ] 
+  },
+  { label: "Mes Favoris", icon: <Heart size={18} />, href: "/favorites" },
+  { label: "Historique", icon: <Clock size={18} />, href: "/history" },
+  { label: "Téléverser", icon: <Upload size={18} />, href: "/upload" },
+  { label: "Se connecter", icon: <LogIn size={18} />, href: "/login" },
+];
+
+const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
+  const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
+
+  const toggleSubmenu = (label: string) => {
+    if (expandedItems.includes(label)) {
+      setExpandedItems(expandedItems.filter(item => item !== label));
+    } else {
+      setExpandedItems([...expandedItems, label]);
+    }
+  };
+
+  return (
+    <div 
+      className={cn(
+        "fixed inset-0 bg-black bg-opacity-80 z-50 transition-all duration-300",
+        isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+      )}
+    >
+      <div 
+        className={cn(
+          "fixed right-0 top-0 bottom-0 w-3/4 max-w-xs bg-background shadow-xl transition-transform duration-300 ease-in-out",
+          isOpen ? "translate-x-0" : "translate-x-full"
+        )}
+      >
+        <div className="flex justify-between items-center p-4 border-b border-muted">
+          <h2 className="text-lg font-bold">Menu</h2>
+          <button 
+            onClick={onClose}
+            className="text-foreground hover:text-brand-orange"
+          >
+            <X size={24} />
+          </button>
+        </div>
+
+        <nav className="p-4">
+          <ul className="space-y-1">
+            {menuItems.map((item) => (
+              <li key={item.label}>
+                {item.hasSubmenu ? (
+                  <div>
+                    <button 
+                      onClick={() => toggleSubmenu(item.label)}
+                      className="menu-item w-full justify-between"
+                    >
+                      <div className="flex items-center">
+                        {item.icon}
+                        <span>{item.label}</span>
+                      </div>
+                      <span>{expandedItems.includes(item.label) ? "-" : "+"}</span>
+                    </button>
+                    
+                    {expandedItems.includes(item.label) && item.submenu && (
+                      <ul className="pl-6 mt-1 space-y-1 border-l border-muted">
+                        {item.submenu.map((subItem) => (
+                          <li key={subItem.label}>
+                            <a href={subItem.href} className="menu-item">
+                              {subItem.label}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ) : (
+                  <a href={item.href} className="menu-item block">
+                    {item.icon}
+                    <span>{item.label}</span>
+                  </a>
+                )}
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </div>
+  );
+};
+
+export default MobileMenu;
