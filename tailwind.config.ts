@@ -59,7 +59,7 @@ export default {
         brand: {
           light: "#1a1a1a",
           dark: "#ffffff",
-          accent: "#0066cc",
+          accent: "#8E9196",
           gray: "#86868b",
           silver: "#333333",
           red: "#e91e63"

@@ -1,78 +1,52 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, Lock, Shield } from "lucide-react";
+import { Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ghostMode } from "@/services/ghostMode";
 
 const AgeVerification = () => {
-  const [step, setStep] = useState<1 | 2>(1);
-  const [birthDate, setBirthDate] = useState("");
-  const [idSubmitted, setIdSubmitted] = useState(false);
   const [verified, setVerified] = useState(false);
   const { toast } = useToast();
 
-  // Check if user is already verified in local storage
+  // Vérifier si l'utilisateur est déjà vérifié
   useEffect(() => {
-    const isVerified = localStorage.getItem("age-verified");
-    if (isVerified === "true") {
-      setVerified(true);
-    }
+    const isVerified = ghostMode.isEnabled() 
+      ? ghostMode.get("age-verified") === "true"
+      : localStorage.getItem("age-verified") === "true";
+    
+    setVerified(isVerified);
   }, []);
 
-  const handleDateSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Basic client-side age verification (18+ check)
-    const inputDate = new Date(birthDate);
-    const today = new Date();
-    let age = today.getFullYear() - inputDate.getFullYear();
-    const monthDiff = today.getMonth() - inputDate.getMonth();
-    
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < inputDate.getDate())) {
-      age--;
-    }
-    
-    if (age >= 18) {
-      setStep(2);
+  const handleAgeConfirmation = (isAdult: boolean) => {
+    if (isAdult) {
+      setVerified(true);
+      
+      // Stocker la vérification selon le mode de navigation
+      if (ghostMode.isEnabled()) {
+        ghostMode.set("age-verified", "true");
+      } else {
+        localStorage.setItem("age-verified", "true");
+      }
+      
       toast({
-        title: "Étape 1 complétée",
-        description: "Veuillez compléter la deuxième étape de vérification",
+        title: "Accès confirmé",
+        description: "Bienvenue sur Xvush",
       });
     } else {
       toast({
-        title: "Âge insuffisant",
-        description: "Vous devez avoir 18 ans ou plus pour accéder à ce contenu",
+        title: "Accès refusé",
+        description: "Vous devez avoir 18 ans ou plus",
         variant: "destructive",
       });
+      
+      // Rediriger vers une page de sortie ou fermer l'application
+      window.location.href = "https://www.google.com";
     }
   };
 
-  const handleIDSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Simulate ID verification process
-    setIdSubmitted(true);
-    
-    // In a real implementation, we would send the ID document to Supabase storage
-    // and then verify it using a secure backend process
-    setTimeout(() => {
-      setVerified(true);
-      localStorage.setItem("age-verified", "true");
-      
-      toast({
-        title: "Vérification complétée",
-        description: "Votre âge a été vérifié avec succès",
-      });
-
-      // In a real implementation, we would store a token in Supabase
-      // that proves the user has been verified
-    }, 2000);
-  };
-
   if (verified) {
-    return null; // Don't show anything if already verified
+    return null; // Ne pas afficher si déjà vérifié
   }
 
   return (
@@ -83,69 +57,35 @@ const AgeVerification = () => {
           <h2 className="text-2xl font-medium">Vérification d'âge</h2>
         </div>
         
-        {step === 1 ? (
-          <form onSubmit={handleDateSubmit} className="space-y-4">
-            <p className="text-muted-foreground text-sm">
-              Pour accéder à ce contenu, vous devez vérifier que vous avez l'âge légal (18 ans ou plus).
-            </p>
+        <div className="space-y-4">
+          <p className="text-muted-foreground text-sm text-center">
+            Ce site contient du contenu pour adultes avec des restrictions d'âge, y compris 
+            de la nudité et des représentations explicites. En continuant, vous affirmez 
+            avoir au moins 18 ans ou l'âge légal dans votre juridiction.
+          </p>
+          
+          <div className="flex flex-col space-y-4">
+            <Button 
+              variant="default" 
+              className="w-full bg-brand-accent hover:bg-brand-accent/90"
+              onClick={() => handleAgeConfirmation(true)}
+            >
+              J'ai 18 ans ou plus - Entrer
+            </Button>
             
-            <div className="space-y-2">
-              <Label htmlFor="birthdate">Date de naissance</Label>
-              <Input 
-                id="birthdate" 
-                type="date" 
-                value={birthDate}
-                onChange={(e) => setBirthDate(e.target.value)}
-                required 
-                className="bg-background/50"
-              />
-            </div>
-            
-            <div className="flex justify-between items-center mt-6">
-              <p className="text-xs text-muted-foreground">
-                <Lock className="inline h-3 w-3 mr-1" /> 
-                Vos informations sont chiffrées et sécurisées
-              </p>
-              <Button type="submit">Continuer</Button>
-            </div>
-          </form>
-        ) : (
-          <form onSubmit={handleIDSubmit} className="space-y-4">
-            <p className="text-muted-foreground text-sm">
-              Dernière étape : Veuillez télécharger une pièce d'identité pour vérification.
-            </p>
-            
-            <div className="space-y-2">
-              <Label htmlFor="id-document">Document d'identité</Label>
-              <Input 
-                id="id-document" 
-                type="file" 
-                accept="image/*" 
-                disabled={idSubmitted}
-                required 
-                className="bg-background/50"
-              />
-              <p className="text-xs text-muted-foreground">
-                Document accepté : passeport, permis de conduire, carte d'identité
-              </p>
-            </div>
-            
-            <div className="flex justify-between items-center mt-6">
-              <p className="text-xs text-muted-foreground">
-                <Lock className="inline h-3 w-3 mr-1" /> 
-                Tokenisation sécurisée, aucune copie n'est conservée
-              </p>
-              
-              {idSubmitted ? (
-                <Button disabled>
-                  Vérification en cours...
-                </Button>
-              ) : (
-                <Button type="submit">Vérifier</Button>
-              )}
-            </div>
-          </form>
-        )}
+            <Button 
+              variant="destructive" 
+              className="w-full"
+              onClick={() => handleAgeConfirmation(false)}
+            >
+              J'ai moins de 18 ans - Sortir
+            </Button>
+          </div>
+          
+          <p className="text-xs text-muted-foreground text-center mt-4">
+            Notre page sur le contrôle parental explique comment vous pouvez facilement bloquer l'accès à ce site.
+          </p>
+        </div>
       </div>
     </div>
   );
