@@ -9,9 +9,11 @@ import {
   Clock, 
   Upload, 
   LogIn,
-  X
+  X,
+  Eye
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import GhostModeToggle from "./GhostModeToggle";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -83,7 +85,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
     >
       <div 
         className={cn(
-          "fixed right-0 top-0 bottom-0 w-3/4 max-w-xs bg-white/90 dark:bg-black/90 backdrop-blur-lg shadow-xl transition-transform duration-300 ease-in-out",
+          "fixed right-0 top-0 bottom-0 w-3/4 max-w-xs bg-black/90 backdrop-blur-lg shadow-xl transition-transform duration-300 ease-in-out",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
         onClick={(e) => e.stopPropagation()}
@@ -92,13 +94,17 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
           <h2 className="text-lg font-medium">Menu</h2>
           <button 
             onClick={onClose}
-            className="text-foreground hover:text-brand-accent rounded-full p-2 transition-colors"
+            className="text-foreground hover:text-red-600 rounded-full p-2 transition-colors"
           >
             <X size={24} />
           </button>
         </div>
 
         <nav className="p-4">
+          <div className="border-b border-muted pb-4 mb-4">
+            <GhostModeToggle />
+          </div>
+
           <ul className="space-y-1">
             {menuItems.map((item) => (
               <li key={item.label}>

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Search, Menu, User } from "lucide-react";
 import MobileMenu from "./MobileMenu";
 import Logo from "./Logo";
+import GhostModeToggle from "./GhostModeToggle";
 
 const Header = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -41,7 +42,7 @@ const Header = () => {
             <a href="/favorites" className="nav-link">Favoris</a>
           </nav>
 
-          {/* Search and User Actions */}
+          {/* Search, Ghost Mode and User Actions */}
           <div className="flex items-center space-x-4">
             <div className={`${showSearch ? 'w-64' : 'w-10'} transition-all duration-300 overflow-hidden flex items-center bg-secondary rounded-full`}>
               <button 
@@ -55,6 +56,10 @@ const Header = () => {
                 placeholder="Rechercher..." 
                 className={`${showSearch ? 'w-full opacity-100' : 'w-0 opacity-0'} transition-all duration-300 bg-transparent border-none focus:outline-none px-2 py-1 text-foreground`}
               />
+            </div>
+            
+            <div className="hidden md:block">
+              <GhostModeToggle />
             </div>
             
             <Button variant="ghost" className="hover:bg-muted rounded-full p-2">
