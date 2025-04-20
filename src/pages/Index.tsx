@@ -4,6 +4,8 @@ import Header from "@/components/Header";
 import ContentSection from "@/components/ContentSection";
 import VideoCard from "@/components/VideoCard";
 import CategoryCard from "@/components/CategoryCard";
+import HeroSection from "@/components/HeroSection";
+import SubscriptionTiers from "@/components/SubscriptionTiers";
 import { Search } from "lucide-react";
 
 // Sample data - normally this would come from an API
@@ -14,7 +16,8 @@ const trendingVideos = [
     thumbnail: "https://picsum.photos/seed/video1/640/360",
     duration: "12:34",
     views: "1.2M",
-    performer: "JulieSky"
+    performer: "JulieSky",
+    isPremium: true
   },
   {
     id: 2,
@@ -30,7 +33,8 @@ const trendingVideos = [
     thumbnail: "https://picsum.photos/seed/video3/640/360",
     duration: "22:15",
     views: "1.5M",
-    performer: "OfficeLover"
+    performer: "OfficeLover",
+    isPremium: true
   },
   {
     id: 4,
@@ -58,7 +62,8 @@ const recentVideos = [
     thumbnail: "https://picsum.photos/seed/video5/640/360",
     duration: "16:47",
     views: "421K",
-    performer: "PartyGirl"
+    performer: "PartyGirl",
+    isPremium: true
   },
   {
     id: 6,
@@ -74,7 +79,8 @@ const recentVideos = [
     thumbnail: "https://picsum.photos/seed/video7/640/360",
     duration: "19:32",
     views: "623K",
-    performer: "LuxuryCouple"
+    performer: "LuxuryCouple",
+    isPremium: true
   },
   {
     id: 8,
@@ -98,24 +104,8 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground">
       <Header />
       
-      {/* Hero Section with Search */}
-      <section className="py-12 md:py-20 bg-gradient-to-r from-black to-black/90">
-        <div className="container px-4 mx-auto text-center">
-          <h1 className="text-3xl md:text-5xl font-bold mb-6">Découvrez le contenu premium qui vous plaît</h1>
-          <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-            Une collection de vidéos de haute qualité dans une interface élégante et intuitive.
-          </p>
-          
-          <div className="max-w-xl mx-auto relative">
-            <input
-              type="text"
-              placeholder="Rechercher des vidéos, catégories, ou performeurs..."
-              className="search-input pl-12"
-            />
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
-          </div>
-        </div>
-      </section>
+      {/* Hero Section */}
+      <HeroSection />
       
       {/* Trending Videos */}
       <ContentSection title="Tendances" viewAllLink="/trending">
@@ -128,6 +118,7 @@ const Index = () => {
               duration={video.duration}
               views={video.views}
               performer={video.performer}
+              isPremium={video.isPremium}
             />
           ))}
         </div>
@@ -147,6 +138,9 @@ const Index = () => {
         </div>
       </ContentSection>
       
+      {/* Subscription Tiers */}
+      <SubscriptionTiers />
+      
       {/* Recent Videos */}
       <ContentSection title="Récemment Ajoutées" viewAllLink="/recent">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -158,26 +152,27 @@ const Index = () => {
               duration={video.duration}
               views={video.views}
               performer={video.performer}
+              isPremium={video.isPremium}
             />
           ))}
         </div>
       </ContentSection>
       
       {/* Popular Performers */}
-      <ContentSection title="Performeurs Populaires" viewAllLink="/performers" className="bg-secondary/30">
+      <ContentSection title="Créateurs Populaires" viewAllLink="/performers" className="bg-secondary/30">
         <div className="flex flex-wrap justify-center gap-8">
           {popularPerformers.map((performer) => (
-            <div key={performer.id} className="text-center">
-              <div className="w-32 h-32 mx-auto mb-3 overflow-hidden rounded-full border-2 border-brand-orange">
+            <div key={performer.id} className="text-center group">
+              <div className="w-32 h-32 mx-auto mb-3 overflow-hidden rounded-full border-2 border-transparent group-hover:border-brand-accent transition-colors">
                 <img 
                   src={performer.image} 
                   alt={performer.name} 
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
-              <h3 className="font-medium">{performer.name}</h3>
+              <h3 className="font-medium group-hover:text-brand-accent transition-colors">{performer.name}</h3>
               <p className="text-sm text-muted-foreground">{performer.videos} vidéos</p>
-              <p className="text-xs text-brand-orange">{performer.subscribers} abonnés</p>
+              <p className="text-xs text-brand-accent">{performer.subscribers} abonnés</p>
             </div>
           ))}
         </div>
@@ -189,14 +184,14 @@ const Index = () => {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-4 md:mb-0">
               <p className="text-muted-foreground text-sm">
-                © 2025 Premium. Tous droits réservés.
+                © 2025 Visua. Tous droits réservés.
               </p>
             </div>
             <div className="flex gap-6">
-              <a href="/about" className="text-sm text-muted-foreground hover:text-brand-orange">À propos</a>
-              <a href="/terms" className="text-sm text-muted-foreground hover:text-brand-orange">Conditions</a>
-              <a href="/privacy" className="text-sm text-muted-foreground hover:text-brand-orange">Confidentialité</a>
-              <a href="/contact" className="text-sm text-muted-foreground hover:text-brand-orange">Contact</a>
+              <a href="/about" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">À propos</a>
+              <a href="/terms" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">Conditions</a>
+              <a href="/privacy" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">Confidentialité</a>
+              <a href="/contact" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">Contact</a>
             </div>
           </div>
         </div>

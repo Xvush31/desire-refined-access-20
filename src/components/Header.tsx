@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Search, Menu, User } from "lucide-react";
 import MobileMenu from "./MobileMenu";
@@ -8,21 +8,37 @@ import Logo from "./Logo";
 const Header = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      const offset = window.scrollY;
+      if (offset > 10) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <header className="bg-background border-b border-muted">
-      <div className="container mx-auto px-4 py-3">
+    <header className={`sticky top-0 z-40 transition-all duration-300 ${scrolled ? 'glass-effect' : 'bg-transparent'}`}>
+      <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Logo />
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden md:flex items-center space-x-8">
             <a href="/" className="nav-link">Accueil</a>
             <a href="/trending" className="nav-link">Tendances</a>
             <a href="/categories" className="nav-link">Catégories</a>
-            <a href="/performers" className="nav-link">Performeurs</a>
-            <a href="/favorites" className="nav-link">Mes Favoris</a>
+            <a href="/performers" className="nav-link">Créateurs</a>
+            <a href="/favorites" className="nav-link">Favoris</a>
           </nav>
 
           {/* Search and User Actions */}
