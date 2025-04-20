@@ -1,5 +1,5 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=San+Francisco:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,23 +7,23 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 7%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
 
-    --card: 0 0% 98%;
-    --card-foreground: 0 0% 7%;
+    --card: 0 0% 3%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 7%;
+    --popover: 0 0% 0%;
+    --popover-foreground: 0 0% 100%;
 
     --primary: 210 100% 40%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 7%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 70%;
 
     --accent: 210 100% 40%;
     --accent-foreground: 0 0% 100%;
@@ -31,8 +31,8 @@
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 89%;
-    --input: 0 0% 89%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
     --ring: 210 100% 40%;
 
     --radius: 0.5rem;
@@ -70,7 +70,7 @@
   }
   
   .glass-effect {
-    @apply backdrop-blur-md bg-white/70 dark:bg-black/70 border border-white/10;
+    @apply backdrop-blur-md bg-black/70 border border-white/10;
   }
   
   .parallax-item {
@@ -108,10 +108,10 @@
   }
   
   .tier-premium {
-    @apply bg-brand-accent/5 border-brand-accent/30;
+    @apply bg-brand-accent/10 border-brand-accent/30;
   }
   
   .tier-enterprise {
-    @apply bg-gradient-to-b from-brand-silver to-white border-brand-silver;
+    @apply bg-gradient-to-b from-brand-silver to-black/50 border-brand-silver;
   }
 }
