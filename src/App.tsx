@@ -11,6 +11,8 @@ import NotFound from "./pages/NotFound";
 import AgeVerification from "./components/AgeVerification";
 import { regulatoryFirewall } from "./services/regulatoryFirewall";
 import { ghostMode } from "./services/ghostMode";
+import Community from "./pages/Community";
+import Invite from "./pages/Invite";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +56,8 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/community" element={<Community />} />
+              <Route path="/invite/:code" element={<Invite />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

@@ -39,6 +39,7 @@ const Header = () => {
             <a href="/trending" className="nav-link">Tendances</a>
             <a href="/categories" className="nav-link">Catégories</a>
             <a href="/performers" className="nav-link">Créateurs</a>
+            <a href="/community" className="nav-link">Communauté</a>
             <a href="/favorites" className="nav-link">Favoris</a>
           </nav>
 

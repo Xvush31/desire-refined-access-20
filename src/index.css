@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=San+Francisco:wght@400;500;600;700&display=swap');
 
@@ -16,8 +17,8 @@
     --popover: 0 0% 0%;
     --popover-foreground: 0 0% 100%;
 
-    --primary: 210 100% 40%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 33 18% 77%;
+    --primary-foreground: 0 0% 0%;
 
     --secondary: 0 0% 10%;
     --secondary-foreground: 0 0% 100%;
@@ -25,15 +26,15 @@
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 70%;
 
-    --accent: 210 100% 40%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 33 18% 77%;
+    --accent-foreground: 0 0% 0%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 0 0% 20%;
     --input: 0 0% 20%;
-    --ring: 210 100% 40%;
+    --ring: 33 18% 77%;
 
     --radius: 0.5rem;
   }
@@ -54,7 +55,7 @@
   }
   
   .nav-link {
-    @apply relative px-3 py-2 text-sm font-medium text-foreground hover:text-brand-accent transition-colors;
+    @apply relative px-3 py-2 text-sm font-medium text-foreground hover:text-[#D2C7BA] transition-colors;
   }
 
   .video-card {
@@ -66,7 +67,7 @@
   }
 
   .search-input {
-    @apply w-full px-4 py-2 bg-secondary rounded-full text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-brand-accent;
+    @apply w-full px-4 py-2 bg-secondary rounded-full text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-[#D2C7BA];
   }
   
   .glass-effect {
@@ -95,7 +96,7 @@
   }
   
   .progress-fill {
-    @apply h-full bg-brand-accent transition-all duration-100;
+    @apply h-full bg-[#D2C7BA] transition-all duration-100;
   }
   
   /* Premium Tier Styling */
@@ -108,10 +109,10 @@
   }
   
   .tier-premium {
-    @apply bg-brand-accent/10 border-brand-accent/30;
+    @apply bg-[#D2C7BA]/10 border-[#D2C7BA]/30;
   }
   
   .tier-enterprise {
-    @apply bg-gradient-to-b from-brand-silver to-black/50 border-brand-silver;
+    @apply bg-gradient-to-b from-[#D2C7BA] to-black/50 border-[#D2C7BA];
   }
 }
