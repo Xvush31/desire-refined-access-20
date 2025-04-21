@@ -106,15 +106,16 @@ const XTeaseSection: React.FC = () => {
 
   return (
     <section className="py-10 bg-background">
-      <h2 className="text-2xl font-bold mb-6 px-4 md:px-0 text-foreground">
-        <span className="text-brand-red">X</span>
-        <span>tease · Vidéos verticales captivantes</span>
+      <h2 className="text-2xl font-bold mb-6 px-4 md:px-0 text-foreground font-sans">
+        <span className="">X</span>
+        <span className="text-brand-red">T</span>
+        <span>ease · Vidéos verticales captivantes</span>
       </h2>
-      <div className="flex flex-col md:flex-row md:justify-center gap-8">
+      <div className="flex flex-row justify-center gap-8">
         {xteaseData.map((video) => (
-          <div key={video.id} className="relative flex flex-col items-center w-full md:max-w-xs">
+          <div key={video.id} className="relative flex flex-col items-center w-full max-w-xs">
             {/* Ratio 9:16 */}
-            <div className="relative w-full aspect-[9/16] bg-black rounded-xl overflow-hidden shadow-lg md:max-w-[340px]">
+            <div className="relative w-full aspect-[9/16] bg-black rounded-xl overflow-hidden shadow-lg">
               <Link to="/xtease" className="block w-full h-full">
                 <img 
                   src={video.thumbnail}
