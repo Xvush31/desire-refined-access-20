@@ -53,9 +53,8 @@ const ShareMenu: React.FC<ShareMenuProps> = ({ open, onClose, videoUrl, anchorRe
     onClose();
   };
 
-  // Positionne le menu en absolu là où se trouve l'icône partagée
   return (
-    <div className="absolute z-30 right-4 top-12 w-44 bg-white border border-neutral-200 rounded shadow-lg text-sm animate-in fade-in-80 text-black">
+    <div className="absolute z-30 right-4 top-12 w-44 bg-white border border-neutral-300 rounded shadow-lg text-sm animate-in fade-in-80 text-black">
       <button
         className="w-full px-4 py-2 hover:bg-neutral-100 text-left"
         onClick={() => {
@@ -105,40 +104,43 @@ const XTeaseSection: React.FC = () => {
   }
 
   return (
-    <section className="py-10 bg-background">
-      <h2 className="text-2xl font-bold mb-6 px-4 md:px-0 text-foreground">XTease · Vidéos verticales captivantes</h2>
+    <section className="py-10 bg-white">
+      <h2 className="text-2xl font-bold mb-6 px-4 md:px-0 text-black">
+        <span className="text-brand-red">T</span>
+        <span>XTease · Vidéos verticales captivantes</span>
+      </h2>
       <div className="flex flex-col md:flex-row md:justify-center gap-8">
         {xteaseData.map((video) => (
           <div key={video.id} className="relative flex flex-col items-center w-full md:max-w-xs">
             {/* Ratio 9:16 */}
-            <div className="relative w-full aspect-[9/16] bg-black rounded-xl overflow-hidden shadow-lg md:max-w-[340px]">
+            <div className="relative w-full aspect-[9/16] rounded-xl overflow-hidden shadow-lg md:max-w-[340px]">
               <img 
                 src={video.thumbnail}
                 alt={video.title}
                 className="w-full h-full object-cover"
               />
               {/* Overlay gradient */}
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80" />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white/80" />
               {/* Play icon */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <button className="bg-black/40 hover:bg-black/60 rounded-full p-4">
-                  <svg width={48} height={48} fill="white" viewBox="0 0 24 24">
+                <button className="bg-white/70 hover:bg-white/90 rounded-full p-4 transition-colors">
+                  <svg width={48} height={48} fill="black" viewBox="0 0 24 24">
                     <polygon points="8,5.5 19,12 8,18.5" />
                   </svg>
                 </button>
               </div>
               {/* Bottom info */}
               <div className="absolute bottom-0 left-0 w-full px-4 pb-4 flex flex-col z-10">
-                <h3 className="font-bold text-lg text-white mb-1">{video.title}</h3>
+                <h3 className="font-bold text-lg text-black mb-1">{video.title}</h3>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-200">{video.performer}</span>
-                  <span className="text-sm text-gray-200">{video.views} vues</span>
+                  <span className="text-sm text-gray-700">{video.performer}</span>
+                  <span className="text-sm text-gray-700">{video.views} vues</span>
                 </div>
               </div>
               {/* Like & Share vertical group (right) */}
               <div className="absolute top-4 right-4 flex flex-col gap-3 items-center">
                 <button 
-                  className={`p-2 rounded-full transition-colors ${liked[video.id] ? "bg-red-600 text-white" : "bg-black/40 text-white hover:bg-red-600"}`}
+                  className={`p-2 rounded-full transition-colors ${liked[video.id] ? "bg-red-600 text-white" : "bg-white/70 text-black hover:bg-red-600 hover:text-white"}`}
                   onClick={() => handleLike(video.id)}
                   aria-label="J'aime"
                 >
@@ -147,7 +149,7 @@ const XTeaseSection: React.FC = () => {
                 <div className="relative">
                   <button
                     ref={shareBtnRefs[video.id]}
-                    className="p-2 rounded-full bg-black/40 text-white hover:bg-brand-orange"
+                    className="p-2 rounded-full bg-white/70 text-black hover:bg-brand-red hover:text-white transition-colors"
                     onClick={() => handleShareClick(video.id)}
                     aria-label="Partager"
                   >
@@ -170,3 +172,4 @@ const XTeaseSection: React.FC = () => {
 };
 
 export default XTeaseSection;
+
