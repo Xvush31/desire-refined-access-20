@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Search, Menu, User } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import MobileMenu from "./MobileMenu";
 import Logo from "./Logo";
 import GhostModeToggle from "./GhostModeToggle";
@@ -41,6 +42,10 @@ const Header = () => {
             <a href="/performers" className="nav-link">Créateurs</a>
             <a href="/community" className="nav-link">Communauté</a>
             <a href="/favorites" className="nav-link">Favoris</a>
+            <a href="/xtease" className="nav-link flex items-center">
+              XTease
+              <Badge className="ml-2 bg-brand-red text-white">Nouveau</Badge>
+            </a>
           </nav>
 
           {/* Search, Ghost Mode and User Actions */}

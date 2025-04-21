@@ -10,9 +10,11 @@ import {
   Upload, 
   LogIn,
   X,
-  Eye
+  Eye,
+  Video
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import GhostModeToggle from "./GhostModeToggle";
 
 interface MobileMenuProps {
@@ -29,6 +31,7 @@ interface MenuItem {
     label: string;
     href: string;
   }[];
+  badge?: string;
 }
 
 const menuItems: MenuItem[] = [
@@ -59,6 +62,7 @@ const menuItems: MenuItem[] = [
     ] 
   },
   { label: "Favoris", icon: <Heart size={18} />, href: "/favorites" },
+  { label: "XTease", icon: <Video size={18} />, href: "/xtease", badge: "Nouveau" },
   { label: "Historique", icon: <Clock size={18} />, href: "/history" },
   { label: "Téléverser", icon: <Upload size={18} />, href: "/upload" },
   { label: "Se connecter", icon: <LogIn size={18} />, href: "/login" },
@@ -117,6 +121,9 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                       <div className="flex items-center">
                         {item.icon}
                         <span>{item.label}</span>
+                        {item.badge && (
+                          <Badge className="ml-2 bg-brand-red text-white text-xs">{item.badge}</Badge>
+                        )}
                       </div>
                       <span>{expandedItems.includes(item.label) ? "-" : "+"}</span>
                     </button>
@@ -137,6 +144,9 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                   <a href={item.href} className="menu-item block">
                     {item.icon}
                     <span>{item.label}</span>
+                    {item.badge && (
+                      <Badge className="ml-2 bg-brand-red text-white text-xs">{item.badge}</Badge>
+                    )}
                   </a>
                 )}
               </li>

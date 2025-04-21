@@ -13,6 +13,7 @@ import { regulatoryFirewall } from "./services/regulatoryFirewall";
 import { ghostMode } from "./services/ghostMode";
 import Community from "./pages/Community";
 import Invite from "./pages/Invite";
+import XTease from "./pages/XTease";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,7 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/community" element={<Community />} />
               <Route path="/invite/:code" element={<Invite />} />
+              <Route path="/xtease" element={<XTease />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
