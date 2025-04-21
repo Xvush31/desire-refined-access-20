@@ -1,4 +1,3 @@
-
 import React from "react";
 import Header from "@/components/Header";
 import ContentSection from "@/components/ContentSection";
@@ -8,6 +7,7 @@ import HeroSection from "@/components/HeroSection";
 import SubscriptionTiers from "@/components/SubscriptionTiers";
 import { Search, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import XTeaseSection from "@/components/XTeaseSection";
 
 // Sample data - normally this would come from an API
 const trendingVideos = [
@@ -125,28 +125,9 @@ const Index = () => {
         </div>
       </ContentSection>
       
-      {/* XTease Promotional Banner */}
+      {/* XTease Section : Nouveau format vertical short-vidéos */}
       <div className="container mx-auto px-4 py-8">
-        <div className="relative rounded-xl overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-brand-red/50 z-10"></div>
-          <img 
-            src="https://picsum.photos/seed/xteasepromo/1920/400" 
-            alt="XTease Promo" 
-            className="w-full h-48 object-cover"
-          />
-          <div className="absolute inset-0 z-20 flex flex-col md:flex-row items-center justify-between p-6">
-            <div className="text-center md:text-left mb-4 md:mb-0">
-              <h3 className="text-2xl font-bold text-white mb-2">Découvrez XTease : des vidéos courtes et captivantes !</h3>
-              <p className="text-gray-200">Une nouvelle façon de profiter de contenus premium en format court.</p>
-            </div>
-            <a href="/xtease">
-              <Button className="bg-[#FF6200] hover:bg-[#FF6200]/80 text-white">
-                <Video size={18} className="mr-2" />
-                Voir maintenant
-              </Button>
-            </a>
-          </div>
-        </div>
+        <XTeaseSection />
       </div>
       
       {/* Categories */}
