@@ -11,7 +11,7 @@ import {
   X,
   Eye,
   Video,
-  Layout-grid 
+  LayoutGrid 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -63,7 +63,7 @@ const menuItems: MenuItem[] = [
   },
   { label: "Favoris", icon: <Heart size={18} />, href: "/favorites" },
   { label: "XTease", icon: <Video size={18} />, href: "/xtease", badge: "Nouveau" },
-  { label: "Tableau de Bord Créateurs", icon: <Layout-grid size={18} />, href: "/creator-dashboard" },
+  { label: "Tableau de Bord Créateurs", icon: <LayoutGrid size={18} />, href: "/creator-dashboard" },
   { label: "Historique", icon: <Clock size={18} />, href: "/history" },
   { label: "Téléverser", icon: <Upload size={18} />, href: "/upload" },
   { label: "Se connecter", icon: <LogIn size={18} />, href: "/login" },
