@@ -5,13 +5,15 @@ import DashboardCharts from './dashboard/DashboardCharts';
 import SubscriberSegments from './dashboard/SubscriberSegments';
 import PrivateMessages from './dashboard/PrivateMessages';
 import ContentProtection from './dashboard/ContentProtection';
+import ContentSuggestions from './dashboard/ContentSuggestions';
+import RevenueForecast from './dashboard/RevenueForecast';
 import CommunityBadges from '../features/community/CommunityBadges';
 import { useEngagementSequences } from '../hooks/useEngagementSequences';
 import MobileEditorActions from './dashboard/MobileEditorActions';
 import { useIsMobile } from '../hooks/use-mobile';
 
 const CreatorDashboard: React.FC = () => {
-  useEngagementSequences(); // Initialise les séquences d'engagement
+  useEngagementSequences();
   const isMobile = useIsMobile();
 
   return (
@@ -29,6 +31,12 @@ const CreatorDashboard: React.FC = () => {
       
       <KeyMetrics />
       <DashboardCharts />
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <ContentSuggestions />
+        <RevenueForecast />
+      </div>
+      
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <PrivateMessages />
         <SubscriberSegments />
