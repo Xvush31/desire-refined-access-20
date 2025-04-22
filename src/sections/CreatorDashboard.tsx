@@ -5,8 +5,12 @@ import DashboardCharts from './dashboard/DashboardCharts';
 import SubscriberSegments from './dashboard/SubscriberSegments';
 import PrivateMessages from './dashboard/PrivateMessages';
 import ContentProtection from './dashboard/ContentProtection';
+import CommunityBadges from '../features/community/CommunityBadges';
+import { useEngagementSequences } from '../hooks/useEngagementSequences';
 
 const CreatorDashboard: React.FC = () => {
+  useEngagementSequences(); // Initialise les séquences d'engagement
+
   return (
     <div className="bg-black min-h-screen text-white p-6">
       <header className="mb-8 animate-fade-in">
@@ -25,7 +29,7 @@ const CreatorDashboard: React.FC = () => {
         <SubscriberSegments />
       </div>
       
-      {/* Composant de protection du contenu */}
+      <CommunityBadges />
       <ContentProtection />
     </div>
   );
