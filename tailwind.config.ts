@@ -62,7 +62,7 @@ export default {
           accent: "#8E9196",
           gray: "#86868b",
           silver: "#333333",
-          red: "#e91e63"
+          red: "#ff8ba7"
         }
       },
       borderRadius: {

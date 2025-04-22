@@ -4,8 +4,8 @@ import React from "react";
 const Logo = () => {
   return (
     <div className="flex items-center">
-      <span className="text-2xl font-semibold">
-        X<span className="text-red-600">v</span>ush
+      <span className="text-2xl font-semibold text-white">
+        X<span className="animated-gradient font-bold">v</span>ush
       </span>
     </div>
   );
