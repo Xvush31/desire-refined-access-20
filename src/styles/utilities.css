@@ -1,0 +1,113 @@
+
+@tailwind utilities;
+
+/* Utilitaires et animations, grilles, espace, etc. */
+@layer utilities {
+  .card-hover {
+    @apply transition-transform duration-300;
+  }
+  .hover-card {
+    @apply hover:translate-y-[-4px] hover:shadow-md;
+  }
+  .micro-pop {
+    @apply transition-all duration-300;
+  }
+  .micro-animation-pop {
+    @apply transition-all duration-300 active:scale-95;
+  }
+  .micro-animation-success {
+    @apply bg-green-500/10 transition-colors duration-300;
+  }
+  .micro-animation-fade-in {
+    @apply animate-[fadeIn_300ms_ease-in-out_forwards];
+  }
+  .micro-animation-scale {
+    @apply animate-[pulse_2s_infinite] transition-transform duration-300 hover:scale-110;
+  }
+  .data-table th {
+    @apply py-3 px-4;
+  }
+  .data-table td {
+    @apply py-3 px-4;
+  }
+  .animated-gradient {
+    background: linear-gradient(
+      270deg,
+      #ff8ba7 0%,
+      #ffc6c7 50%,
+      #fae3d9 100%
+    );
+    background-size: 600% 600%;
+    animation: gradient 3s ease infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .animated-gradient-bg {
+    background: linear-gradient(
+      270deg,
+      #ff8ba7 0%,
+      #ffc6c7 50%,
+      #fae3d9 100%
+    );
+    background-size: 600% 600%;
+    animation: gradient 3s ease infinite;
+  }
+
+  /* Classes pour le ratio d'or */
+  .golden-grid {
+    display: grid;
+    grid-template-columns: 61.8% 38.2%;
+    gap: var(--golden-small);
+  }
+  .golden-grid-reverse {
+    display: grid;
+    grid-template-columns: 38.2% 61.8%;
+    gap: var(--golden-small);
+  }
+  .golden-padding {
+    padding: var(--golden-medium);
+  }
+  .golden-padding-small {
+    padding: var(--golden-small);
+  }
+  .golden-margin {
+    margin: var(--golden-medium);
+  }
+  .golden-margin-y {
+    margin-top: var(--golden-medium);
+    margin-bottom: var(--golden-medium);
+  }
+  .golden-margin-x {
+    margin-left: var(--golden-medium);
+    margin-right: var(--golden-medium);
+  }
+  .golden-aspect-ratio {
+    aspect-ratio: 1.618;
+  }
+  .golden-aspect-ratio-reversed {
+    aspect-ratio: 0.618;
+  }
+
+  /* Rotation animation for watermarks */
+  .-rotate-30 {
+    transform: rotate(-30deg);
+  }
+}
+
+/* Animations keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
