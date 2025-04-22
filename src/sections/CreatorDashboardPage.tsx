@@ -3,6 +3,7 @@ import React from 'react';
 import CreatorDashboard from './CreatorDashboard';
 import ContentManagementSection from './ContentManagementSection';
 import MonetizationSection from './MonetizationSection';
+import { Toaster } from "sonner";
 
 const CreatorDashboardPage: React.FC = () => {
   return (
@@ -13,10 +14,10 @@ const CreatorDashboardPage: React.FC = () => {
         <ContentManagementSection />
         <div className="my-4 md:my-8 border-t border-border opacity-30" />
         <MonetizationSection />
+        <Toaster position="top-center" />
       </div>
     </div>
   );
 };
 
 export default CreatorDashboardPage;
-

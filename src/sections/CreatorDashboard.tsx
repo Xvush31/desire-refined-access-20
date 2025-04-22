@@ -1,10 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { ArrowUp, ArrowDown, DollarSign, Users, Heart, Star, Eye } from "lucide-react";
+import { toast } from "sonner";
 
 // Données factices pour les graphiques
 const revenueData = [
@@ -36,9 +37,21 @@ const subscriberSegments = [
 ];
 
 const CreatorDashboard: React.FC = () => {
+  const [analyzeSegment, setAnalyzeSegment] = useState<string | null>(null);
+  
+  const handleAnalyzeSegment = (segment: string) => {
+    setAnalyzeSegment(segment);
+    toast.success(`Analyse du segment ${segment} lancée`, {
+      description: "Les résultats seront disponibles dans quelques secondes"
+    });
+    
+    // Reset after animation
+    setTimeout(() => setAnalyzeSegment(null), 2000);
+  };
+  
   return (
     <div className="bg-black min-h-screen text-white p-6">
-      <header className="mb-8">
+      <header className="mb-8 animate-fade-in">
         <h1 className="text-3xl font-bold tracking-tight">
           Tableau de Bord <span className="text-brand-red">C</span>réateur
         </h1>
@@ -51,7 +64,7 @@ const CreatorDashboard: React.FC = () => {
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Métriques Clés</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="bg-card border-border">
+          <Card className="bg-card border-border card-hover">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Revenus du Mois
@@ -71,7 +84,7 @@ const CreatorDashboard: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-card border-border">
+          <Card className="bg-card border-border card-hover">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Nouveaux Abonnés
@@ -91,7 +104,7 @@ const CreatorDashboard: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-card border-border">
+          <Card className="bg-card border-border card-hover">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Engagement
@@ -111,7 +124,7 @@ const CreatorDashboard: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-card border-border">
+          <Card className="bg-card border-border card-hover">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Vues Totales
@@ -135,7 +148,7 @@ const CreatorDashboard: React.FC = () => {
 
       {/* Zone 1: Graphiques de revenus et engagement */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <Card className="bg-card border-border">
+        <Card className="bg-card border-border card-hover">
           <CardHeader>
             <CardTitle>Revenus sur 7 mois</CardTitle>
             <CardDescription className="text-muted-foreground">
@@ -192,7 +205,7 @@ const CreatorDashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border">
+        <Card className="bg-card border-border card-hover">
           <CardHeader>
             <CardTitle>Engagement Hebdomadaire</CardTitle>
             <CardDescription className="text-muted-foreground">
@@ -253,48 +266,53 @@ const CreatorDashboard: React.FC = () => {
       {/* Zone 2: Segmentation des abonnés */}
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Segmentation des Abonnés</h2>
-        <Card className="bg-card border-border">
+        <Card className="bg-card border-border card-hover">
           <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Segment</TableHead>
-                  <TableHead>Nombre</TableHead>
-                  <TableHead>Croissance</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {subscriberSegments.map((segment) => (
-                  <TableRow key={segment.segment}>
-                    <TableCell className="font-medium">{segment.segment}</TableCell>
-                    <TableCell>{segment.count}</TableCell>
-                    <TableCell>
-                      <div className={`flex items-center ${segment.growth >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                        {segment.growth >= 0 ? (
-                          <ArrowUp className="h-4 w-4 mr-1" />
-                        ) : (
-                          <ArrowDown className="h-4 w-4 mr-1" />
-                        )}
-                        {Math.abs(segment.growth)}%
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <button className="text-brand-red hover:underline text-sm">
-                        Analyser
-                      </button>
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table className="data-table">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Segment</TableHead>
+                    <TableHead>Nombre</TableHead>
+                    <TableHead>Croissance</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {subscriberSegments.map((segment) => (
+                    <TableRow key={segment.segment} className={analyzeSegment === segment.segment ? 'micro-animation-success' : ''}>
+                      <TableCell className="font-medium">{segment.segment}</TableCell>
+                      <TableCell>{segment.count}</TableCell>
+                      <TableCell>
+                        <div className={`flex items-center ${segment.growth >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                          {segment.growth >= 0 ? (
+                            <ArrowUp className="h-4 w-4 mr-1" />
+                          ) : (
+                            <ArrowDown className="h-4 w-4 mr-1" />
+                          )}
+                          {Math.abs(segment.growth)}%
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <button 
+                          className="text-brand-red hover:underline text-sm micro-animation-pop"
+                          onClick={() => handleAnalyzeSegment(segment.segment)}
+                        >
+                          Analyser
+                        </button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       </section>
 
       {/* Zone 3: Options avancées */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-card border-border">
+        <Card className="bg-card border-border card-hover">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Star className="h-5 w-5 mr-2" />
@@ -304,22 +322,22 @@ const CreatorDashboard: React.FC = () => {
           <CardContent>
             <ul className="space-y-2">
               <li className="text-sm">
-                <a href="#" className="hover:text-brand-red transition-colors">
+                <a href="#" className="hover:text-brand-red transition-colors micro-animation-pop">
                   Configurer les niveaux d'abonnement
                 </a>
               </li>
               <li className="text-sm">
-                <a href="#" className="hover:text-brand-red transition-colors">
+                <a href="#" className="hover:text-brand-red transition-colors micro-animation-pop">
                   Tarification dynamique
                 </a>
               </li>
               <li className="text-sm">
-                <a href="#" className="hover:text-brand-red transition-colors">
+                <a href="#" className="hover:text-brand-red transition-colors micro-animation-pop">
                   Paramètres de pourboires
                 </a>
               </li>
               <li className="text-sm">
-                <a href="#" className="hover:text-brand-red transition-colors">
+                <a href="#" className="hover:text-brand-red transition-colors micro-animation-pop">
                   Contenu premium à l'unité
                 </a>
               </li>
@@ -327,7 +345,7 @@ const CreatorDashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border">
+        <Card className="bg-card border-border card-hover">
           <CardHeader>
             <CardTitle className="flex items-center">
               <DollarSign className="h-5 w-5 mr-2" />
@@ -348,7 +366,7 @@ const CreatorDashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border">
+        <Card className="bg-card border-border card-hover">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Heart className="h-5 w-5 mr-2" />
@@ -370,7 +388,7 @@ const CreatorDashboard: React.FC = () => {
                 <span className="text-brand-red">720€</span>
               </div>
               <div className="flex items-center justify-between mt-2">
-                <a href="#" className="text-xs text-muted-foreground hover:text-brand-red transition-colors">
+                <a href="#" className="text-xs text-muted-foreground hover:text-brand-red transition-colors micro-animation-pop">
                   Voir tous les super-fans →
                 </a>
               </div>

@@ -1,10 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { DollarSign, Star, Users, ArrowUp, ArrowRight } from "lucide-react";
+import { DollarSign, Star, Users, ArrowUp, ArrowRight, Check } from "lucide-react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Cell } from "recharts";
+import { toast } from "sonner";
 
 // Données factices pour les niveaux d'abonnement
 const subscriptionTiers = [
@@ -52,6 +53,18 @@ const revenueBySource = [
 ];
 
 const MonetizationSection: React.FC = () => {
+  const [appliedSuggestion, setAppliedSuggestion] = useState<boolean>(false);
+  
+  const handleApplySuggestion = () => {
+    setAppliedSuggestion(true);
+    toast.success("Suggestion appliquée avec succès", {
+      description: "Le contenu exclusif a été ajouté au niveau Elite"
+    });
+    
+    // Reset after animation completes
+    setTimeout(() => setAppliedSuggestion(false), 2000);
+  };
+  
   return (
     <section className="bg-black text-white p-6">
       <header className="mb-6">
@@ -65,7 +78,7 @@ const MonetizationSection: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         <div className="lg:col-span-2">
-          <Card className="bg-card border-border h-full">
+          <Card className="bg-card border-border h-full card-hover">
             <CardHeader>
               <CardTitle>Niveaux d'Abonnement</CardTitle>
               <CardDescription className="text-muted-foreground">
@@ -73,54 +86,56 @@ const MonetizationSection: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Niveau</TableHead>
-                    <TableHead>Prix</TableHead>
-                    <TableHead>Abonnés</TableHead>
-                    <TableHead>Croissance</TableHead>
-                    <TableHead>Revenus</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {subscriptionTiers.map((tier) => (
-                    <TableRow key={tier.name}>
-                      <TableCell>
-                        <div className="flex items-center">
-                          <div 
-                            className="h-3 w-3 rounded-full mr-2"
-                            style={{ backgroundColor: tier.color }}
-                          />
-                          {tier.name}
-                        </div>
-                      </TableCell>
-                      <TableCell>{tier.price.toFixed(2)}€/mois</TableCell>
-                      <TableCell>{tier.subscribers}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center text-green-500">
-                          <ArrowUp className="h-4 w-4 mr-1" />
-                          {tier.growth}%
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center">
-                          <DollarSign className="h-4 w-4 mr-1" />
-                          {tier.revenue.toFixed(2)}€
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <button className="text-brand-red hover:underline text-sm">
-                          Modifier
-                        </button>
-                      </TableCell>
+              <div className="overflow-x-auto">
+                <Table className="data-table">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Niveau</TableHead>
+                      <TableHead>Prix</TableHead>
+                      <TableHead>Abonnés</TableHead>
+                      <TableHead>Croissance</TableHead>
+                      <TableHead>Revenus</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {subscriptionTiers.map((tier) => (
+                      <TableRow key={tier.name}>
+                        <TableCell>
+                          <div className="flex items-center">
+                            <div 
+                              className="h-3 w-3 rounded-full mr-2"
+                              style={{ backgroundColor: tier.color }}
+                            />
+                            {tier.name}
+                          </div>
+                        </TableCell>
+                        <TableCell>{tier.price.toFixed(2)}€/mois</TableCell>
+                        <TableCell>{tier.subscribers}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center text-green-500">
+                            <ArrowUp className="h-4 w-4 mr-1" />
+                            {tier.growth}%
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center">
+                            <DollarSign className="h-4 w-4 mr-1" />
+                            {tier.revenue.toFixed(2)}€
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <button className="text-brand-red hover:underline text-sm micro-animation-pop">
+                            Modifier
+                          </button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
 
-              <div className="mt-4 p-4 bg-muted rounded-lg">
+              <div className={`mt-4 p-4 bg-muted rounded-lg transition-all ${appliedSuggestion ? 'micro-animation-success' : ''}`}>
                 <h4 className="text-sm font-medium mb-2 flex items-center">
                   <Star className="h-4 w-4 mr-1 text-brand-red" />
                   Suggestion d'Optimisation
@@ -128,15 +143,27 @@ const MonetizationSection: React.FC = () => {
                 <p className="text-sm text-muted-foreground mb-2">
                   Nos analyses suggèrent d'ajouter un contenu exclusif par semaine au niveau Elite pour augmenter les conversions de 24%.
                 </p>
-                <button className="text-xs flex items-center text-brand-red hover:underline">
-                  Appliquer cette suggestion <ArrowRight className="h-3 w-3 ml-1" />
+                <button 
+                  className="text-xs flex items-center text-brand-red hover:underline micro-animation-pop"
+                  onClick={handleApplySuggestion}
+                >
+                  {appliedSuggestion ? (
+                    <>
+                      <Check className="h-3 w-3 mr-1" />
+                      Suggestion appliquée
+                    </>
+                  ) : (
+                    <>
+                      Appliquer cette suggestion <ArrowRight className="h-3 w-3 ml-1" />
+                    </>
+                  )}
                 </button>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        <Card className="bg-card border-border">
+        <Card className="bg-card border-border card-hover">
           <CardHeader>
             <CardTitle>Distribution des Revenus</CardTitle>
             <CardDescription className="text-muted-foreground">
@@ -231,7 +258,7 @@ const MonetizationSection: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-card border-border">
+        <Card className="bg-card border-border card-hover">
           <CardHeader className="pb-3">
             <CardTitle className="text-base">Tarification Dynamique</CardTitle>
           </CardHeader>
@@ -239,13 +266,13 @@ const MonetizationSection: React.FC = () => {
             <p className="text-sm text-muted-foreground mb-3">
               Le système suggère d'augmenter le prix du niveau VIP de 9% basé sur l'engagement actuel.
             </p>
-            <button className="w-full py-1.5 bg-muted text-white text-sm rounded hover:bg-muted/80 transition-colors">
+            <button className="w-full py-1.5 bg-muted text-white text-sm rounded hover:bg-muted/80 transition-colors micro-animation-pop">
               Activer l'ajustement auto
             </button>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border">
+        <Card className="bg-card border-border card-hover">
           <CardHeader className="pb-3">
             <CardTitle className="text-base">Pourboires</CardTitle>
           </CardHeader>
@@ -257,13 +284,13 @@ const MonetizationSection: React.FC = () => {
             <p className="text-xs text-muted-foreground mb-3">
               +18.5% vs mois précédent
             </p>
-            <button className="w-full py-1.5 bg-muted text-white text-sm rounded hover:bg-muted/80 transition-colors">
+            <button className="w-full py-1.5 bg-muted text-white text-sm rounded hover:bg-muted/80 transition-colors micro-animation-pop">
               Personnaliser les badges
             </button>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border">
+        <Card className="bg-card border-border card-hover">
           <CardHeader className="pb-3">
             <CardTitle className="text-base">Contenu à la Carte</CardTitle>
           </CardHeader>
@@ -278,13 +305,13 @@ const MonetizationSection: React.FC = () => {
                 <span className="ml-auto">14.25€</span>
               </div>
             </div>
-            <button className="w-full py-1.5 bg-muted text-white text-sm rounded hover:bg-muted/80 transition-colors">
+            <button className="w-full py-1.5 bg-muted text-white text-sm rounded hover:bg-muted/80 transition-colors micro-animation-pop">
               Gérer le catalogue
             </button>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border">
+        <Card className="bg-card border-border card-hover">
           <CardHeader className="pb-3">
             <CardTitle className="text-base">Revenus Passifs</CardTitle>
           </CardHeader>
@@ -292,7 +319,7 @@ const MonetizationSection: React.FC = () => {
             <p className="text-sm text-muted-foreground mb-3">
               52% de vos revenus proviennent de contenu publié il y a plus de 30 jours.
             </p>
-            <button className="w-full py-1.5 bg-muted text-white text-sm rounded hover:bg-muted/80 transition-colors">
+            <button className="w-full py-1.5 bg-muted text-white text-sm rounded hover:bg-muted/80 transition-colors micro-animation-pop">
               Optimiser l'archive
             </button>
           </CardContent>
