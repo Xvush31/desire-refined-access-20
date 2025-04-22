@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell } from "recharts";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import TimeScaleSelector from './TimeScaleSelector';
-import { useIsMobile } from '@/hooks/use-mobile';
-
-type TimeScale = 'day' | 'week' | 'month';
+import RevenueChart from './charts/RevenueChart';
+import EngagementChart from './charts/EngagementChart';
+import HeatMap from './charts/HeatMap';
+import { TimeScale } from './types';
 
 // Data for different time scales
 const revenueDataByScale = {
@@ -103,14 +101,12 @@ const heatMapData = [
   { hour: '18', day: 'Dim', value: 70 },
 ];
 
-// Fonction pour calculer la couleur en fonction de la valeur
+// Function to calculate color based on value
 const getHeatMapColor = (value: number) => {
-  // De rouge foncé (valeur faible) à rouge vif (valeur élevée)
   const minValue = 0;
   const maxValue = 100;
   const ratio = (value - minValue) / (maxValue - minValue);
   
-  // RGB values from darker red to bright red
   const r = Math.floor(192 + (ratio * 63)); // 192 to 255
   const g = Math.floor(30 + (ratio * 20));  // 30 to 50
   const b = Math.floor(60 + (ratio * 40));  // 60 to 100
@@ -121,7 +117,6 @@ const getHeatMapColor = (value: number) => {
 const DashboardCharts = () => {
   const [timeScale, setTimeScale] = useState<TimeScale>('month');
   const [showHeatMap, setShowHeatMap] = useState(false);
-  const isMobile = useIsMobile();
   
   const revenueData = revenueDataByScale[timeScale];
   const engagementData = engagementDataByScale[timeScale];
@@ -131,8 +126,6 @@ const DashboardCharts = () => {
     return getHeatMapColor(ratio * 100);
   };
 
-  const maxRevenue = Math.max(...revenueData.map(item => item.revenue));
-  
   return (
     <div className="space-y-4 md:space-y-6 mb-6 md:mb-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-2">
@@ -150,178 +143,21 @@ const DashboardCharts = () => {
       
       {!showHeatMap ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-          <Card className="bg-card border-border card-hover hover-card micro-pop">
-            <CardHeader className="p-4 md:p-6">
-              <CardTitle className="text-lg md:text-xl">Revenus sur {timeScale === 'day' ? '24h' : timeScale === 'week' ? '7 jours' : '7 mois'}</CardTitle>
-              <CardDescription className="text-sm text-muted-foreground">
-                Évolution {timeScale === 'day' ? 'horaire' : timeScale === 'week' ? 'journalière' : 'mensuelle'} de vos revenus
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-4">
-              <div className="h-[250px] md:h-[300px]">
-                <ChartContainer
-                  config={{
-                    revenue: {
-                      label: "Revenus",
-                      theme: {
-                        light: "#e91e63",
-                        dark: "#e91e63",
-                      },
-                    },
-                  }}
-                >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={revenueData}>
-                      <XAxis
-                        dataKey="name"
-                        stroke="#888888"
-                        fontSize={12}
-                        tickLine={false}
-                        axisLine={false}
-                      />
-                      <YAxis
-                        stroke="#888888"
-                        fontSize={12}
-                        tickLine={false}
-                        axisLine={false}
-                        tickFormatter={(value) => `${value}€`}
-                      />
-                      <Tooltip content={<ChartTooltipContent nameKey="name" labelKey="Revenue" />} />
-                      <Bar
-                        dataKey="revenue"
-                        name="revenue"
-                        radius={[4, 4, 0, 0]}
-                      >
-                        {revenueData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={getBarFill(entry.revenue, maxRevenue)} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
-              </div>
-              {isMobile && (
-                <div className="mt-4 text-sm text-muted-foreground text-center">
-                  Faites pivoter votre appareil pour une meilleure vue
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card className="bg-card border-border card-hover hover-card micro-pop">
-            <CardHeader className="p-4 md:p-6">
-              <CardTitle className="text-lg md:text-xl">Engagement {timeScale === 'day' ? 'sur 24h' : timeScale === 'week' ? 'Hebdomadaire' : 'Mensuel'}</CardTitle>
-              <CardDescription className="text-sm text-muted-foreground">
-                Taux d'engagement {timeScale === 'day' ? 'par heure' : timeScale === 'week' ? 'par jour' : 'par mois'}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-4">
-              <div className="h-[250px] md:h-[300px]">
-                <ChartContainer
-                  config={{
-                    engagement: {
-                      label: "Engagement",
-                      theme: {
-                        light: "#D2C7BA",
-                        dark: "#D2C7BA",
-                      },
-                    },
-                  }}
-                >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={engagementData}>
-                      <XAxis
-                        dataKey="name"
-                        stroke="#888888"
-                        fontSize={12}
-                        tickLine={false}
-                        axisLine={false}
-                      />
-                      <YAxis
-                        stroke="#888888"
-                        fontSize={12}
-                        tickLine={false}
-                        axisLine={false}
-                        tickFormatter={(value) => `${value}%`}
-                      />
-                      <Tooltip content={<ChartTooltipContent nameKey="name" labelKey="Engagement" />} />
-                      <Bar
-                        dataKey="engagement"
-                        name="engagement"
-                        fill="var(--color-engagement)"
-                        radius={[4, 4, 0, 0]}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
-              </div>
-              {isMobile && (
-                <div className="mt-4 text-sm text-muted-foreground text-center">
-                  Faites pivoter votre appareil pour une meilleure vue
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <RevenueChart 
+            timeScale={timeScale}
+            data={revenueData}
+            getBarFill={getBarFill}
+          />
+          <EngagementChart 
+            timeScale={timeScale}
+            data={engagementData}
+          />
         </div>
       ) : (
-        <Card className="bg-card border-border card-hover hover-card micro-pop">
-          <CardHeader className="p-4 md:p-6">
-            <CardTitle className="text-lg md:text-xl">Carte de Chaleur - Activité des Abonnés</CardTitle>
-            <CardDescription className="text-sm text-muted-foreground">
-              Visualisation de l'activité par jour et heure
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-4">
-            <div className="h-[400px] w-full overflow-x-auto">
-              <div className="flex mb-2">
-                <div className="w-[60px]"></div>
-                {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(day => (
-                  <div key={day} className="flex-1 text-center text-xs text-muted-foreground">
-                    {day}
-                  </div>
-                ))}
-              </div>
-              {['00', '06', '12', '18'].map(hour => (
-                <div key={hour} className="flex mb-2">
-                  <div className="w-[60px] flex items-center justify-end pr-2 text-xs text-muted-foreground">
-                    {hour}h
-                  </div>
-                  {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(day => {
-                    const data = heatMapData.find(d => d.hour === hour && d.day === day);
-                    return (
-                      <div 
-                        key={`${hour}-${day}`} 
-                        className="flex-1 aspect-square m-1 rounded-sm transition-all duration-300 hover:scale-110 micro-animation-pop cursor-pointer"
-                        style={{ 
-                          backgroundColor: data ? getHeatMapColor(data.value) : '#333',
-                        }}
-                        title={`${day} ${hour}h: ${data?.value || 0} activités`}
-                      />
-                    );
-                  })}
-                </div>
-              ))}
-              <div className="mt-6 flex items-center justify-center">
-                <div className="flex items-center">
-                  <div className="w-4 h-4 rounded-sm mr-2" style={{ backgroundColor: getHeatMapColor(0) }}></div>
-                  <span className="text-xs mr-4">Moins actif</span>
-                </div>
-                <div className="w-20 h-2 mx-2 rounded-sm" style={{ 
-                  background: 'linear-gradient(to right, rgb(192, 30, 60), rgb(255, 50, 100))'
-                }}></div>
-                <div className="flex items-center">
-                  <div className="w-4 h-4 rounded-sm mr-2" style={{ backgroundColor: getHeatMapColor(100) }}></div>
-                  <span className="text-xs">Plus actif</span>
-                </div>
-              </div>
-              {isMobile && (
-                <div className="mt-4 text-sm text-muted-foreground text-center">
-                  Faites glisser horizontalement pour voir toutes les données
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <HeatMap 
+          data={heatMapData}
+          getHeatMapColor={getHeatMapColor}
+        />
       )}
     </div>
   );
