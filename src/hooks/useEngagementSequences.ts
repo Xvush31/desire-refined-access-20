@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from "sonner";
+import { useIsMobile } from './use-mobile';
 
 export type SequenceAction = {
   id: string;
@@ -13,6 +14,7 @@ export type SequenceAction = {
 
 export const useEngagementSequences = () => {
   const [activeSequences, setActiveSequences] = useState<SequenceAction[]>([]);
+  const isMobile = useIsMobile();
 
   const sequences: SequenceAction[] = [
     {
@@ -28,14 +30,14 @@ export const useEngagementSequences = () => {
       content: "📈 Passez au niveau Elite pour débloquer encore plus d'avantages exclusifs !",
       targetSegment: 'vip',
       triggerCondition: 'high-engagement',
-      delay: 2000
+      delay: isMobile ? 4000 : 2000 // Délai plus long sur mobile pour ne pas submerger l'utilisateur
     },
     {
       id: 'elite-thanks',
       type: 'notification',
       content: "👑 Merci de votre fidélité ! Un nouveau contenu exclusif vous attend...",
       targetSegment: 'elite',
-      delay: 1000
+      delay: isMobile ? 2000 : 1000
     }
   ];
 
@@ -44,6 +46,8 @@ export const useEngagementSequences = () => {
       setTimeout(() => {
         toast.success(`Nouvelle interaction : ${sequence.type}`, {
           description: sequence.content,
+          // Sur mobile, les toasts restent plus longtemps
+          duration: isMobile ? 5000 : 3000,
         });
       }, sequence.delay);
     }
@@ -51,12 +55,19 @@ export const useEngagementSequences = () => {
   };
 
   useEffect(() => {
-    sequences.forEach(sequence => {
-      if (!sequence.triggerCondition) {
-        triggerSequence(sequence);
-      }
-    });
-  }, []);
+    // Attendre un peu plus sur mobile avant de déclencher les séquences
+    const initialDelay = isMobile ? 1000 : 0;
+    
+    const timer = setTimeout(() => {
+      sequences.forEach(sequence => {
+        if (!sequence.triggerCondition) {
+          triggerSequence(sequence);
+        }
+      });
+    }, initialDelay);
+    
+    return () => clearTimeout(timer);
+  }, [isMobile]);
 
   return {
     activeSequences,

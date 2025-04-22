@@ -7,9 +7,12 @@ import PrivateMessages from './dashboard/PrivateMessages';
 import ContentProtection from './dashboard/ContentProtection';
 import CommunityBadges from '../features/community/CommunityBadges';
 import { useEngagementSequences } from '../hooks/useEngagementSequences';
+import MobileEditorActions from './dashboard/MobileEditorActions';
+import { useIsMobile } from '../hooks/use-mobile';
 
 const CreatorDashboard: React.FC = () => {
   useEngagementSequences(); // Initialise les séquences d'engagement
+  const isMobile = useIsMobile();
 
   return (
     <div className="bg-black min-h-screen text-white p-6">
@@ -21,6 +24,8 @@ const CreatorDashboard: React.FC = () => {
           Bienvenue sur votre espace de gestion premium
         </p>
       </header>
+      
+      {isMobile && <MobileEditorActions />}
       
       <KeyMetrics />
       <DashboardCharts />
