@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Search, Menu, User } from "lucide-react";
@@ -6,13 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import MobileMenu from "./MobileMenu";
 import Logo from "./Logo";
 import GhostModeToggle from "./GhostModeToggle";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   
-  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
       const offset = window.scrollY;
@@ -31,10 +30,8 @@ const Header = () => {
     <header className={`sticky top-0 z-40 transition-all duration-300 ${scrolled ? 'glass-effect' : 'bg-transparent'}`}>
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          {/* Logo */}
           <Logo />
 
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             <a href="/" className="nav-link">Accueil</a>
             <a href="/trending" className="nav-link">Tendances</a>
@@ -46,9 +43,9 @@ const Header = () => {
               XTease
               <Badge className="ml-2 bg-brand-red text-white">Nouveau</Badge>
             </a>
+            <Link to="/creator-dashboard" className="nav-link">Tableau de Bord Créateurs</Link>
           </nav>
 
-          {/* Search, Ghost Mode and User Actions */}
           <div className="flex items-center space-x-4">
             <div className={`${showSearch ? 'w-64' : 'w-10'} transition-all duration-300 overflow-hidden flex items-center bg-secondary rounded-full`}>
               <button 
@@ -83,7 +80,6 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       <MobileMenu isOpen={showMobileMenu} onClose={() => setShowMobileMenu(false)} />
     </header>
   );

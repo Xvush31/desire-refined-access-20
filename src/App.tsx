@@ -14,6 +14,7 @@ import { ghostMode } from "./services/ghostMode";
 import Community from "./pages/Community";
 import Invite from "./pages/Invite";
 import XTease from "./pages/XTease";
+import CreatorDashboardPage from "./sections/CreatorDashboardPage"; // Ajout de l'import
 
 const queryClient = new QueryClient();
 
@@ -60,6 +61,7 @@ const App = () => {
               <Route path="/community" element={<Community />} />
               <Route path="/invite/:code" element={<Invite />} />
               <Route path="/xtease" element={<XTease />} />
+              <Route path="/creator-dashboard" element={<CreatorDashboardPage />} /> {/* Nouvelle route */}
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
@@ -71,3 +73,4 @@ const App = () => {
 };
 
 export default App;
+
