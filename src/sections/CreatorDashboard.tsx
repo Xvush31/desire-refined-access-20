@@ -9,6 +9,7 @@ import ContentSuggestions from './dashboard/ContentSuggestions';
 import RevenueForecast from './dashboard/RevenueForecast';
 import SecurityDashboard from './dashboard/SecurityDashboard';
 import CommunityBadges from '../features/community/CommunityBadges';
+import CreatorSupport from './dashboard/CreatorSupport';
 import { useEngagementSequences } from '../hooks/useEngagementSequences';
 import MobileEditorActions from './dashboard/MobileEditorActions';
 import { useIsMobile } from '../hooks/use-mobile';
@@ -46,6 +47,7 @@ const CreatorDashboard: React.FC = () => {
       <CommunityBadges />
       <SecurityDashboard />
       <ContentProtection />
+      <CreatorSupport />
     </div>
   );
 };
