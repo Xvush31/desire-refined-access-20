@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -22,6 +23,38 @@ export default {
       }
     },
     extend: {
+      spacing: {
+        'golden-sm': 'calc(1rem / 1.618)',
+        'golden-md': 'calc(1rem * 1.618)',
+        'golden-lg': 'calc(1rem * 1.618 * 1.618)',
+        'golden-xl': 'calc(1rem * 1.618 * 1.618 * 1.618)',
+      },
+      height: {
+        'golden-screen': '61.8vh',
+        'golden-screen-inverse': '38.2vh',
+      },
+      width: {
+        'golden-screen': '61.8vw',
+        'golden-screen-inverse': '38.2vw',
+      },
+      aspectRatio: {
+        'golden': '1.618',
+        'golden-inverse': '0.618',
+      },
+      fontSize: {
+        'golden-xs': 'calc(0.75rem / 1.618)',
+        'golden-sm': 'calc(0.875rem / 1.618)',
+        'golden-base': '1rem',
+        'golden-lg': 'calc(1.125rem * 1.618)',
+        'golden-xl': 'calc(1.25rem * 1.618)',
+        'golden-2xl': 'calc(1.5rem * 1.618)',
+        'golden-3xl': 'calc(1.875rem * 1.618)',
+      },
+      lineHeight: {
+        'golden': '1.618',
+        'golden-tight': 'calc(1.25 * 1.618)',
+        'golden-loose': 'calc(2 * 1.618)',
+      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',

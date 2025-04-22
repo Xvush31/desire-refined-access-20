@@ -34,6 +34,12 @@
     --ring: 0 0% 45%;
  
     --radius: 0.5rem;
+
+    /* Ratio d'or - Variables */
+    --golden-ratio: 1.618;
+    --golden-large: calc(1rem * var(--golden-ratio) * var(--golden-ratio));
+    --golden-medium: calc(1rem * var(--golden-ratio));
+    --golden-small: calc(1rem / var(--golden-ratio));
   }
 }
 
@@ -51,6 +57,24 @@ html, body, #root {
 #root {
   max-width: 100%;
   padding: 0;
+}
+
+/* Appliquer des proportions du nombre d'or aux éléments typographiques */
+h1 {
+  font-size: var(--golden-large);
+  line-height: calc(var(--golden-large) * var(--golden-ratio));
+  margin-bottom: var(--golden-medium);
+}
+
+h2 {
+  font-size: var(--golden-medium);
+  line-height: calc(var(--golden-medium) * var(--golden-ratio));
+  margin-bottom: var(--golden-small);
+}
+
+p {
+  line-height: calc(1rem * var(--golden-ratio));
+  margin-bottom: var(--golden-small);
 }
 
 @layer utilities {
@@ -120,6 +144,49 @@ html, body, #root {
     background-size: 600% 600%;
     animation: gradient 3s ease infinite;
   }
+
+  /* Classes pour le ratio d'or */
+  .golden-grid {
+    display: grid;
+    grid-template-columns: 61.8% 38.2%;
+    gap: var(--golden-small);
+  }
+
+  .golden-grid-reverse {
+    display: grid;
+    grid-template-columns: 38.2% 61.8%;
+    gap: var(--golden-small);
+  }
+
+  .golden-padding {
+    padding: var(--golden-medium);
+  }
+
+  .golden-padding-small {
+    padding: var(--golden-small);
+  }
+
+  .golden-margin {
+    margin: var(--golden-medium);
+  }
+
+  .golden-margin-y {
+    margin-top: var(--golden-medium);
+    margin-bottom: var(--golden-medium);
+  }
+
+  .golden-margin-x {
+    margin-left: var(--golden-medium);
+    margin-right: var(--golden-medium);
+  }
+
+  .golden-aspect-ratio {
+    aspect-ratio: 1.618;
+  }
+
+  .golden-aspect-ratio-reversed {
+    aspect-ratio: 0.618;
+  }
 }
 
 @keyframes fadeIn {
@@ -150,3 +217,4 @@ html, body, #root {
     background-position: 0% 50%;
   }
 }
+

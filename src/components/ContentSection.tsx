@@ -18,10 +18,10 @@ const ContentSection: React.FC<ContentSectionProps> = ({
   children,
 }) => {
   return (
-    <section className={cn("py-8", className)}>
-      <div className="container px-4 mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl md:text-2xl font-bold">{title}</h2>
+    <section className={cn("py-golden-md", className)}>
+      <div className="container px-golden-sm mx-auto">
+        <div className="flex items-center justify-between mb-golden-sm">
+          <h2 className="text-xl md:text-golden-xl font-bold">{title}</h2>
           {viewAllLink && (
             <Button variant="link" className="text-brand-orange" asChild>
               <a href={viewAllLink} className="flex items-center gap-1">

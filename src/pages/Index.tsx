@@ -1,3 +1,4 @@
+
 import React from "react";
 import Header from "@/components/Header";
 import ContentSection from "@/components/ContentSection";
@@ -8,6 +9,7 @@ import SubscriptionTiers from "@/components/SubscriptionTiers";
 import { Search, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import XTeaseSection from "@/components/XTeaseSection";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 // Sample data - normally this would come from an API
 const trendingVideos = [
@@ -108,10 +110,33 @@ const Index = () => {
       {/* Hero Section */}
       <HeroSection />
       
-      {/* Trending Videos */}
+      {/* Trending Videos - Utilisation du ratio d'or pour la structure */}
       <ContentSection title="Tendances" viewAllLink="/trending">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {trendingVideos.map((video) => (
+        <div className="golden-grid-reverse">
+          <div className="space-y-golden-sm">
+            <h3 className="text-golden-lg font-medium">Vidéos populaires</h3>
+            <p className="text-muted-foreground">Découvrez les vidéos tendances les plus regardées cette semaine</p>
+            <Button className="animated-gradient-bg text-white mt-golden-md">
+              Explorer toutes les tendances
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-golden-md">
+            {trendingVideos.slice(0, 2).map((video) => (
+              <VideoCard
+                key={video.id}
+                title={video.title}
+                thumbnail={video.thumbnail}
+                duration={video.duration}
+                views={video.views}
+                performer={video.performer}
+                isPremium={video.isPremium}
+              />
+            ))}
+          </div>
+        </div>
+        
+        <div className="mt-golden-lg grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-golden-md">
+          {trendingVideos.slice(2).map((video) => (
             <VideoCard
               key={video.id}
               title={video.title}
@@ -126,14 +151,39 @@ const Index = () => {
       </ContentSection>
       
       {/* XTease Section : Nouveau format vertical short-vidéos */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-golden-sm py-golden-md">
         <XTeaseSection />
       </div>
       
-      {/* Categories */}
+      {/* Categories - Grille basée sur le ratio d'or */}
       <ContentSection title="Catégories Populaires" viewAllLink="/categories" className="bg-secondary/30">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {popularCategories.map((category) => (
+        <div className="golden-grid mb-golden-md">
+          <div>
+            <AspectRatio ratio={1.618} className="rounded-2xl overflow-hidden">
+              <img 
+                src={popularCategories[0].image} 
+                alt={popularCategories[0].name} 
+                className="object-cover w-full h-full"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col items-center justify-end p-6">
+                <h3 className="text-white text-xl font-medium">{popularCategories[0].name}</h3>
+                <p className="text-white/80 text-sm">{popularCategories[0].videoCount} vidéos</p>
+              </div>
+            </AspectRatio>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-golden-sm">
+            {popularCategories.slice(1, 5).map((category) => (
+              <CategoryCard
+                key={category.id}
+                name={category.name}
+                image={category.image}
+                videoCount={category.videoCount}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-golden-sm">
+          {popularCategories.slice(5).map((category) => (
             <CategoryCard
               key={category.id}
               name={category.name}
@@ -149,7 +199,7 @@ const Index = () => {
       
       {/* Recent Videos */}
       <ContentSection title="Récemment Ajoutées" viewAllLink="/recent">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-golden-md">
           {recentVideos.map((video) => (
             <VideoCard
               key={video.id}
@@ -164,36 +214,45 @@ const Index = () => {
         </div>
       </ContentSection>
       
-      {/* Popular Performers */}
+      {/* Popular Performers - Section avec proportion d'or */}
       <ContentSection title="Créateurs Populaires" viewAllLink="/performers" className="bg-secondary/30">
-        <div className="flex flex-wrap justify-center gap-8">
-          {popularPerformers.map((performer) => (
-            <div key={performer.id} className="text-center group">
-              <div className="w-32 h-32 mx-auto mb-3 overflow-hidden rounded-full border-2 border-transparent group-hover:border-brand-accent transition-colors">
-                <img 
-                  src={performer.image} 
-                  alt={performer.name} 
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
+        <div className="golden-grid">
+          <div className="flex flex-wrap justify-center gap-golden-md">
+            {popularPerformers.map((performer) => (
+              <div key={performer.id} className="text-center group">
+                <div className="w-32 h-32 mx-auto mb-golden-sm overflow-hidden rounded-full border-2 border-transparent group-hover:border-brand-accent transition-colors">
+                  <img 
+                    src={performer.image} 
+                    alt={performer.name} 
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
+                <h3 className="font-medium group-hover:text-brand-accent transition-colors">{performer.name}</h3>
+                <p className="text-sm text-muted-foreground">{performer.videos} vidéos</p>
+                <p className="text-xs text-brand-accent">{performer.subscribers} abonnés</p>
               </div>
-              <h3 className="font-medium group-hover:text-brand-accent transition-colors">{performer.name}</h3>
-              <p className="text-sm text-muted-foreground">{performer.videos} vidéos</p>
-              <p className="text-xs text-brand-accent">{performer.subscribers} abonnés</p>
-            </div>
-          ))}
+            ))}
+          </div>
+          <div className="flex flex-col justify-center items-start space-y-golden-md px-golden-md">
+            <h3 className="text-golden-xl font-medium">Nos meilleurs créateurs</h3>
+            <p className="text-muted-foreground">Découvrez les créateurs les plus populaires sur notre plateforme et abonnez-vous pour ne rien manquer de leur contenu exclusif.</p>
+            <Button className="animated-gradient-bg text-white">
+              Voir tous les créateurs
+            </Button>
+          </div>
         </div>
       </ContentSection>
       
       {/* Footer */}
-      <footer className="py-8 border-t border-muted">
-        <div className="container px-4 mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-4 md:mb-0">
+      <footer className="py-golden-lg border-t border-muted">
+        <div className="container px-golden-sm mx-auto">
+          <div className="golden-grid items-center">
+            <div>
               <p className="text-muted-foreground text-sm">
                 © 2025 Visua. Tous droits réservés.
               </p>
             </div>
-            <div className="flex gap-6">
+            <div className="flex justify-end gap-golden-md">
               <a href="/about" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">À propos</a>
               <a href="/terms" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">Conditions</a>
               <a href="/privacy" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">Confidentialité</a>

@@ -26,7 +26,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <div className="relative overflow-hidden aspect-video">
+      <div className="relative overflow-hidden aspect-golden-inverse">
         <img
           src={thumbnail}
           alt={title}
@@ -37,16 +37,16 @@ const VideoCard: React.FC<VideoCardProps> = ({
           {duration}
         </div>
         {isPremium && (
-          <div className="absolute top-2 left-2 bg-red-600 px-2 py-0.5 rounded-full text-xs font-medium text-white">
+          <div className="absolute top-2 left-2 animated-gradient-bg px-2 py-0.5 rounded-full text-xs font-medium text-white">
             Premium
           </div>
         )}
       </div>
-      <div className="p-4">
+      <div className="p-golden-sm">
         <h3 className="text-sm font-medium line-clamp-2 group-hover:text-red-500 transition-colors">
           {title}
         </h3>
-        <div className="flex items-center justify-between mt-2">
+        <div className="flex items-center justify-between mt-golden-sm">
           <span className="text-xs text-muted-foreground">{performer}</span>
           <span className="text-xs text-muted-foreground">{views} vues</span>
         </div>
