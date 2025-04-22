@@ -86,11 +86,22 @@
       #ffc6c7 50%,
       #fae3d9 100%
     );
-    background-size: 200% 200%;
-    animation: gradient 8s ease infinite;
+    background-size: 400% 400%;
+    animation: gradient 4s ease infinite;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  .animated-gradient-bg {
+    background: linear-gradient(
+      270deg,
+      #ff8ba7 0%,
+      #ffc6c7 50%,
+      #fae3d9 100%
+    );
+    background-size: 400% 400%;
+    animation: gradient 4s ease infinite;
   }
 }
 

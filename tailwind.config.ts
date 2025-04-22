@@ -62,7 +62,12 @@ export default {
           accent: "#8E9196",
           gray: "#86868b",
           silver: "#333333",
-          red: "#ff8ba7"
+          red: "#ff8ba7",
+          gradient: {
+            start: "#ff8ba7",
+            middle: "#ffc6c7",
+            end: "#fae3d9"
+          }
         }
       },
       borderRadius: {

@@ -5,7 +5,7 @@ const Logo = () => {
   return (
     <div className="flex items-center">
       <span className="text-2xl font-semibold text-white">
-        X<span className="animated-gradient font-bold">v</span>ush
+        X<span className="animated-gradient font-bold text-3xl">v</span>ush
       </span>
     </div>
   );
