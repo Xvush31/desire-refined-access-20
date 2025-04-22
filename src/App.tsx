@@ -53,21 +53,23 @@ const App = () => {
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          {!ageVerified && <AgeVerification />}
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/community" element={<Community />} />
-              <Route path="/invite/:code" element={<Invite />} />
-              <Route path="/xtease" element={<XTease />} />
-              <Route path="/creator-dashboard" element={<CreatorDashboardPage />} />
-              <Route path="/creator-dashboard/xtease-security" element={<XTeaseSecurity />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+          <div className="min-h-screen bg-background overflow-x-hidden">
+            <Toaster />
+            <Sonner />
+            {!ageVerified && <AgeVerification />}
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/community" element={<Community />} />
+                <Route path="/invite/:code" element={<Invite />} />
+                <Route path="/xtease" element={<XTease />} />
+                <Route path="/creator-dashboard" element={<CreatorDashboardPage />} />
+                <Route path="/creator-dashboard/xtease-security" element={<XTeaseSecurity />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </div>
         </TooltipProvider>
       </QueryClientProvider>
     </React.StrictMode>

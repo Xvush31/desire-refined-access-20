@@ -1,3 +1,4 @@
+
 import React from "react";
 import { 
   Home, 
@@ -9,7 +10,6 @@ import {
   Upload, 
   LogIn,
   X,
-  Eye,
   Video,
   LayoutGrid 
 } from "lucide-react";
@@ -83,19 +83,19 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
   return (
     <div 
       className={cn(
-        "fixed inset-0 bg-black/40 backdrop-blur-md z-50 transition-all duration-300",
+        "fixed inset-0 bg-black/70 backdrop-blur-md z-50 transition-all duration-300",
         isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
       )}
       onClick={onClose}
     >
       <div 
         className={cn(
-          "fixed right-0 top-0 bottom-0 w-3/4 max-w-xs bg-black/90 backdrop-blur-lg shadow-xl transition-transform duration-300 ease-in-out",
+          "fixed right-0 top-0 bottom-0 w-3/4 max-w-xs bg-black shadow-xl transition-transform duration-300 ease-in-out overflow-y-auto",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center p-6 border-b border-muted">
+        <div className="flex justify-between items-center p-6 border-b border-muted sticky top-0 bg-black z-10">
           <h2 className="text-lg font-medium">Menu</h2>
           <button 
             onClick={onClose}
@@ -110,30 +110,33 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
             <GhostModeToggle />
           </div>
 
-          <ul className="space-y-1">
+          <ul className="space-y-1 pb-24">
             {menuItems.map((item) => (
-              <li key={item.label}>
+              <li key={item.label} className="w-full">
                 {item.hasSubmenu ? (
                   <div>
                     <button 
                       onClick={() => toggleSubmenu(item.label)}
-                      className="menu-item w-full justify-between"
+                      className="flex items-center justify-between w-full px-3 py-2 rounded-md hover:bg-secondary text-sm"
                     >
-                      <div className="flex items-center">
+                      <div className="flex items-center gap-2">
                         {item.icon}
                         <span>{item.label}</span>
                         {item.badge && (
-                          <Badge className="ml-2 bg-brand-red text-white text-xs">{item.badge}</Badge>
+                          <Badge className="ml-2 animated-gradient-bg text-white text-xs">{item.badge}</Badge>
                         )}
                       </div>
                       <span>{expandedItems.includes(item.label) ? "-" : "+"}</span>
                     </button>
                     
                     {expandedItems.includes(item.label) && item.submenu && (
-                      <ul className="pl-6 mt-1 space-y-1 border-l border-muted animate-slide-up">
+                      <ul className="pl-6 mt-1 space-y-1 border-l border-muted">
                         {item.submenu.map((subItem) => (
                           <li key={subItem.label}>
-                            <a href={subItem.href} className="menu-item">
+                            <a 
+                              href={subItem.href} 
+                              className="flex items-center px-3 py-2 rounded-md hover:bg-secondary text-sm"
+                            >
                               {subItem.label}
                             </a>
                           </li>
@@ -142,11 +145,14 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                     )}
                   </div>
                 ) : (
-                  <a href={item.href} className="menu-item block">
+                  <a 
+                    href={item.href} 
+                    className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-secondary text-sm w-full"
+                  >
                     {item.icon}
                     <span>{item.label}</span>
                     {item.badge && (
-                      <Badge className="ml-2 bg-brand-red text-white text-xs">{item.badge}</Badge>
+                      <Badge className="ml-2 animated-gradient-bg text-white text-xs">{item.badge}</Badge>
                     )}
                   </a>
                 )}

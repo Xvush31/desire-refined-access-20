@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -34,6 +35,22 @@
  
     --radius: 0.5rem;
   }
+}
+
+/* Réinitialisation des styles globaux pour éliminer les marges et bordures */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  background-color: hsl(var(--background));
+}
+
+/* Supprimer les paddings par défaut du root */
+#root {
+  max-width: 100%;
+  padding: 0;
 }
 
 @layer utilities {
@@ -86,8 +103,8 @@
       #ffc6c7 50%,
       #fae3d9 100%
     );
-    background-size: 400% 400%;
-    animation: gradient 4s ease infinite;
+    background-size: 600% 600%;
+    animation: gradient 3s ease infinite;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -100,8 +117,8 @@
       #ffc6c7 50%,
       #fae3d9 100%
     );
-    background-size: 400% 400%;
-    animation: gradient 4s ease infinite;
+    background-size: 600% 600%;
+    animation: gradient 3s ease infinite;
   }
 }
 
