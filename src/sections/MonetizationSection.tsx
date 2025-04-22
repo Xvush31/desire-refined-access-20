@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -7,7 +6,6 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Cell } from "recharts";
 import { toast } from "sonner";
 
-// Données factices pour les niveaux d'abonnement
 const subscriptionTiers = [
   { 
     name: "Basic", 
@@ -43,7 +41,6 @@ const subscriptionTiers = [
   },
 ];
 
-// Données pour les revenus par source
 const revenueBySource = [
   { name: "Abonnements", value: 9634.65 },
   { name: "Contenus Premium", value: 2450.00 },
@@ -61,14 +58,13 @@ const MonetizationSection: React.FC = () => {
       description: "Le contenu exclusif a été ajouté au niveau Elite"
     });
     
-    // Reset after animation completes
     setTimeout(() => setAppliedSuggestion(false), 2000);
   };
   
   return (
     <section className="bg-black text-white p-6">
       <header className="mb-6">
-        <h2 className="text-2xl font-bold">
+        <h2 className="text-2xl font-bold tracking-tight">
           Monétisation <span className="text-brand-red">A</span>vancée
         </h2>
         <p className="text-muted-foreground mt-1">
@@ -78,12 +74,10 @@ const MonetizationSection: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         <div className="lg:col-span-2">
-          <Card className="bg-card border-border h-full card-hover">
+          <Card className="bg-card border-border h-full hover-card">
             <CardHeader>
-              <CardTitle>Niveaux d'Abonnement</CardTitle>
-              <CardDescription className="text-muted-foreground">
-                Performance par niveau et suggestions d'optimisation
-              </CardDescription>
+              <CardTitle className="tracking-tight">Niveaux d'Abonnement</CardTitle>
+              <CardDescription>Performance par niveau et suggestions d'optimisation</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
@@ -135,7 +129,7 @@ const MonetizationSection: React.FC = () => {
                 </Table>
               </div>
 
-              <div className={`mt-4 p-4 bg-muted rounded-lg transition-all ${appliedSuggestion ? 'micro-animation-success' : ''}`}>
+              <div className={`mt-6 p-4 bg-muted rounded-lg transition-all ${appliedSuggestion ? 'micro-success' : ''}`}>
                 <h4 className="text-sm font-medium mb-2 flex items-center">
                   <Star className="h-4 w-4 mr-1 text-brand-red" />
                   Suggestion d'Optimisation

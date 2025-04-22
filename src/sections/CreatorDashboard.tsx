@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -7,7 +6,6 @@ import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { ArrowUp, ArrowDown, DollarSign, Users, Heart, Star, Eye } from "lucide-react";
 import { toast } from "sonner";
 
-// Données factices pour les graphiques
 const revenueData = [
   { name: "Jan", revenue: 4000 },
   { name: "Fév", revenue: 4500 },
@@ -45,7 +43,6 @@ const CreatorDashboard: React.FC = () => {
       description: "Les résultats seront disponibles dans quelques secondes"
     });
     
-    // Reset after animation
     setTimeout(() => setAnalyzeSegment(null), 2000);
   };
   
@@ -60,11 +57,10 @@ const CreatorDashboard: React.FC = () => {
         </p>
       </header>
       
-      {/* Zone 1: Métriques critiques (80% des actions quotidiennes) */}
       <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Métriques Clés</h2>
+        <h2 className="text-xl font-semibold mb-4 tracking-tight">Métriques Clés</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="bg-card border-border card-hover">
+          <Card className="bg-card border-border card-hover hover-card micro-pop">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Revenus du Mois
@@ -84,7 +80,7 @@ const CreatorDashboard: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-card border-border card-hover">
+          <Card className="bg-card border-border card-hover hover-card micro-pop">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Nouveaux Abonnés
@@ -104,7 +100,7 @@ const CreatorDashboard: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-card border-border card-hover">
+          <Card className="bg-card border-border card-hover hover-card micro-pop">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Engagement
@@ -124,7 +120,7 @@ const CreatorDashboard: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-card border-border card-hover">
+          <Card className="bg-card border-border card-hover hover-card micro-pop">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Vues Totales
@@ -146,9 +142,8 @@ const CreatorDashboard: React.FC = () => {
         </div>
       </section>
 
-      {/* Zone 1: Graphiques de revenus et engagement */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <Card className="bg-card border-border card-hover">
+        <Card className="bg-card border-border card-hover hover-card micro-pop">
           <CardHeader>
             <CardTitle>Revenus sur 7 mois</CardTitle>
             <CardDescription className="text-muted-foreground">
@@ -205,7 +200,7 @@ const CreatorDashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border card-hover">
+        <Card className="bg-card border-border card-hover hover-card micro-pop">
           <CardHeader>
             <CardTitle>Engagement Hebdomadaire</CardTitle>
             <CardDescription className="text-muted-foreground">
@@ -263,10 +258,9 @@ const CreatorDashboard: React.FC = () => {
         </Card>
       </div>
 
-      {/* Zone 2: Segmentation des abonnés */}
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Segmentation des Abonnés</h2>
-        <Card className="bg-card border-border card-hover">
+        <Card className="bg-card border-border card-hover hover-card micro-pop">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <Table className="data-table">
@@ -310,9 +304,8 @@ const CreatorDashboard: React.FC = () => {
         </Card>
       </section>
 
-      {/* Zone 3: Options avancées */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-card border-border card-hover">
+        <Card className="bg-card border-border card-hover hover-card micro-pop">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Star className="h-5 w-5 mr-2" />
@@ -345,7 +338,7 @@ const CreatorDashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border card-hover">
+        <Card className="bg-card border-border card-hover hover-card micro-pop">
           <CardHeader>
             <CardTitle className="flex items-center">
               <DollarSign className="h-5 w-5 mr-2" />
@@ -366,7 +359,7 @@ const CreatorDashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border card-hover">
+        <Card className="bg-card border-border card-hover hover-card micro-pop">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Heart className="h-5 w-5 mr-2" />
