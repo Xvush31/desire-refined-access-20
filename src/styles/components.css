@@ -1,4 +1,33 @@
 
 /* Styles spécifiques aux composants réutilisables */
-/* Pour l’instant, stocker ici les styles qui ne rentraient pas dans ‘base’ ou ‘utilities’ */
 
+/* Styles pour les badges */
+.badge {
+  @apply inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+}
+
+.badge-premium {
+  @apply bg-gradient-to-r from-[#ff8ba7] to-[#ffc6c7] text-white border-0;
+}
+
+/* Styling pour les cartes de vidéo */
+.video-card {
+  @apply relative overflow-hidden rounded-lg;
+}
+
+.video-card-content {
+  @apply p-3 flex flex-col;
+}
+
+/* Styles pour les conteneurs XTease */
+.xtease-container {
+  @apply flex flex-col w-full;
+}
+
+.xtease-video-card {
+  @apply w-full mb-4 relative;
+}
+
+.xtease-info {
+  @apply mt-2 px-2;
+}

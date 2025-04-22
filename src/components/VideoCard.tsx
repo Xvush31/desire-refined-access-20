@@ -37,12 +37,12 @@ const VideoCard: React.FC<VideoCardProps> = ({
           {duration}
         </div>
         {isPremium && (
-          <div className="absolute top-2 left-2 animated-gradient-bg px-2 py-0.5 rounded-full text-xs sm:text-sm font-medium text-white">
+          <div className="absolute top-2 left-2 badge badge-premium rounded-full text-xs sm:text-sm font-medium">
             Premium
           </div>
         )}
       </div>
-      <div className="p-golden-sm sm:p-4">
+      <div className="video-card-content">
         <h3 className="text-xs sm:text-sm font-medium line-clamp-2 group-hover:text-red-500 transition-colors">
           {title}
         </h3>

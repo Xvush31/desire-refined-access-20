@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Shield, ShieldCheck, Lock, Shield as ShieldIcon } from "lucide-react";
@@ -140,7 +139,7 @@ const XTeaseSecurity: React.FC = () => {
                       <TableCell>{incident.ip}</TableCell>
                       <TableCell>{incident.country}</TableCell>
                       <TableCell>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                        <span className={`badge inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                           incident.severity === 'high' 
                             ? 'bg-red-500/20 text-red-500' 
                             : 'bg-yellow-500/20 text-yellow-500'

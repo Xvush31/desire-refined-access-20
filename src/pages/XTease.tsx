@@ -120,64 +120,66 @@ const XTease: React.FC = () => {
                 <SubscriptionPromoBanner tier="premium" />
               )}
               
-              <div className="relative flex-grow w-full flex items-center justify-center bg-black rounded-xl overflow-hidden">
-                {isPlayerActive && currentVideoIndex === index ? (
-                  <HLSVideoPlayer 
-                    src={video.streamUrl}
-                    poster={video.thumbnail} 
-                    title={video.title}
-                    onVideoComplete={handleVideoComplete}
-                    isPreview={video.isPreview}
-                  />
-                ) : (
-                  <div className="relative w-full h-full">
-                    <img 
-                      src={video.thumbnail} 
-                      alt={video.title}
-                      className="h-full w-full object-cover"
+              <div className="relative flex-grow w-full flex flex-col items-center justify-center overflow-hidden">
+                <div className="w-full bg-black rounded-xl overflow-hidden">
+                  {isPlayerActive && currentVideoIndex === index ? (
+                    <HLSVideoPlayer 
+                      src={video.streamUrl}
+                      poster={video.thumbnail} 
+                      title={video.title}
+                      onVideoComplete={handleVideoComplete}
+                      isPreview={video.isPreview}
                     />
-                    
-                    {/* Overlay gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70" />
-                    
-                    {/* Play button */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <Button 
-                        onClick={() => {
-                          setIsPlayerActive(true);
-                          // Simulate security incident detection on 30% of play actions
-                          if (Math.random() < 0.3 && !showSecurityIncident) {
-                            setTimeout(() => {
-                              setShowSecurityIncident(true);
+                  ) : (
+                    <div className="relative w-full h-full aspect-[9/16]">
+                      <img 
+                        src={video.thumbnail} 
+                        alt={video.title}
+                        className="h-full w-full object-cover"
+                      />
+                      
+                      {/* Overlay gradient */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70" />
+                      
+                      {/* Play button */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Button 
+                          onClick={() => {
+                            setIsPlayerActive(true);
+                            // Simulate security incident detection on 30% of play actions
+                            if (Math.random() < 0.3 && !showSecurityIncident) {
                               setTimeout(() => {
-                                setShowSecurityIncident(false);
-                              }, 5000);
-                            }, 3000);
-                          }
-                        }}
-                        className="bg-black/30 hover:bg-black/50 text-white p-4 rounded-full transition-colors w-16 h-16 flex items-center justify-center"
-                      >
-                        <Play size={32} className="text-white" />
-                      </Button>
-                    </div>
-                    
-                    {/* Si c'est une vidéo premium */}
-                    {video.isPremium && (
-                      <div className="absolute top-3 right-3 bg-brand-gradient rounded-full px-3 py-1 text-sm font-medium text-white animated-gradient-bg">
-                        Premium
+                                setShowSecurityIncident(true);
+                                setTimeout(() => {
+                                  setShowSecurityIncident(false);
+                                }, 5000);
+                              }, 3000);
+                            }
+                          }}
+                          className="bg-black/30 hover:bg-black/50 text-white p-4 rounded-full transition-colors w-16 h-16 flex items-center justify-center"
+                        >
+                          <Play size={32} className="text-white" />
+                        </Button>
                       </div>
-                    )}
-                    
-                    {/* Video info */}
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <h3 className="text-lg font-bold text-white">{video.title}</h3>
-                      <div className="flex justify-between items-center mt-2">
-                        <p className="text-sm text-gray-200">{video.performer}</p>
-                        <p className="text-sm text-gray-200">{video.views}</p>
-                      </div>
+                      
+                      {/* Si c'est une vidéo premium */}
+                      {video.isPremium && (
+                        <div className="absolute top-3 right-3 badge badge-premium px-3 py-1 text-sm font-medium">
+                          Premium
+                        </div>
+                      )}
                     </div>
+                  )}
+                </div>
+                
+                {/* Video info - Déplacé sous la vidéo */}
+                <div className="w-full mt-4 px-2">
+                  <h3 className="text-lg font-bold text-white">{video.title}</h3>
+                  <div className="flex justify-between items-center mt-2">
+                    <p className="text-sm text-gray-200">{video.performer}</p>
+                    <p className="text-sm text-gray-200">{video.views}</p>
                   </div>
-                )}
+                </div>
               </div>
               
               {/* Suggestions de l'IA */}
@@ -205,7 +207,7 @@ const XTease: React.FC = () => {
               {/* Si la vidéo est terminée mais que l'utilisateur n'est pas abonné */}
               {video.isPreview && (
                 <div className="mt-4">
-                  <Link to="/subscription" className="w-full animated-gradient-bg text-white font-medium py-3 rounded-lg flex items-center justify-center">
+                  <Link to="/subscription" className="w-full badge badge-premium text-white font-medium py-3 rounded-lg flex items-center justify-center">
                     Voir les vidéos complètes
                   </Link>
                 </div>

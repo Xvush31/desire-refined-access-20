@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Heart, Share2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
@@ -105,16 +104,16 @@ const XTeaseSection: React.FC = () => {
   }
 
   return (
-    <section className="py-10 bg-background">
+    <section className="py-10 bg-background overflow-x-hidden">
       <h2 className="text-2xl font-bold mb-6 px-4 md:px-0 text-foreground font-sans">
         <span className="">X</span>
         <span className="text-brand-red">T</span>
         <span>ease · Vidéos verticales captivantes</span>
       </h2>
-      <div className="flex flex-row justify-center gap-8">
+      
+      <div className="flex flex-row justify-center gap-4 md:gap-8 px-4 overflow-x-auto pb-4">
         {xteaseData.map((video) => (
-          <div key={video.id} className="relative flex flex-col items-center w-full max-w-xs">
-            {/* Ratio 9:16 */}
+          <div key={video.id} className="xtease-container min-w-[200px] max-w-[280px] md:min-w-0 md:max-w-none">
             <div className="relative w-full aspect-[9/16] bg-black rounded-xl overflow-hidden shadow-lg">
               <Link to="/xtease" className="block w-full h-full">
                 <img 
@@ -133,14 +132,7 @@ const XTeaseSection: React.FC = () => {
                   </div>
                 </div>
               </Link>
-              {/* Bottom info */}
-              <div className="absolute bottom-0 left-0 w-full px-4 pb-4 flex flex-col z-10">
-                <h3 className="font-bold text-lg text-white mb-1">{video.title}</h3>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-200">{video.performer}</span>
-                  <span className="text-sm text-gray-200">{video.views} vues</span>
-                </div>
-              </div>
+              
               {/* Like & Share vertical group (right) */}
               <div className="absolute top-4 right-4 flex flex-col gap-3 items-center">
                 <button 
@@ -166,6 +158,15 @@ const XTeaseSection: React.FC = () => {
                     anchorRef={shareBtnRefs[video.id]}
                   />
                 </div>
+              </div>
+            </div>
+            
+            {/* Titre et infos en dessous de la vidéo */}
+            <div className="xtease-info mt-3">
+              <h3 className="font-bold text-base md:text-lg text-white">{video.title}</h3>
+              <div className="flex justify-between items-center mt-1">
+                <span className="text-sm text-gray-200">{video.performer}</span>
+                <span className="text-sm text-gray-200">{video.views} vues</span>
               </div>
             </div>
           </div>
