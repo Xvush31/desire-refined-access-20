@@ -31,3 +31,24 @@
 .xtease-info {
   @apply mt-2 px-2;
 }
+
+/* Correction du z-index pour éviter les chevauchements */
+.badge-premium {
+  @apply z-10;
+}
+
+.video-card-content {
+  @apply z-0 relative bg-background;
+}
+
+/* Styles spécifiques pour la vue mobile */
+@media (max-width: 640px) {
+  .golden-grid,
+  .golden-grid-reverse {
+    @apply grid-cols-1 gap-4;
+  }
+  
+  .video-card {
+    @apply mb-4;
+  }
+}

@@ -6,6 +6,7 @@ import VideoCard from "@/components/VideoCard";
 import CategoryCard from "@/components/CategoryCard";
 import HeroSection from "@/components/HeroSection";
 import SubscriptionTiers from "@/components/SubscriptionTiers";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Search, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import XTeaseSection from "@/components/XTeaseSection";
@@ -103,6 +104,8 @@ const popularPerformers = [
 ];
 
 const Index = () => {
+  const isMobile = useIsMobile();
+  
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header />
@@ -112,16 +115,16 @@ const Index = () => {
       
       {/* Trending Videos - Utilisation du ratio d'or pour la structure */}
       <ContentSection title="Tendances" viewAllLink="/trending">
-        <div className="golden-grid-reverse">
+        <div className={`${isMobile ? 'flex flex-col gap-golden-md' : 'golden-grid-reverse'}`}>
           <div className="space-y-golden-sm">
             <h3 className="text-golden-lg font-medium">Vidéos populaires</h3>
             <p className="text-muted-foreground">Découvrez les vidéos tendances les plus regardées cette semaine</p>
-            <Button className="animated-gradient-bg text-white mt-golden-md">
+            <Button className="animated-gradient-bg text-white mt-golden-md w-full sm:w-auto">
               Explorer toutes les tendances
             </Button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-golden-md">
-            {trendingVideos.slice(0, 2).map((video) => (
+          <div className={`grid grid-cols-1 ${isMobile ? 'mt-5' : 'sm:grid-cols-2'} gap-golden-md`}>
+            {trendingVideos.slice(0, isMobile ? 1 : 2).map((video) => (
               <VideoCard
                 key={video.id}
                 title={video.title}
@@ -157,7 +160,7 @@ const Index = () => {
       
       {/* Categories - Grille basée sur le ratio d'or */}
       <ContentSection title="Catégories Populaires" viewAllLink="/categories" className="bg-secondary/30">
-        <div className="golden-grid mb-golden-md">
+        <div className={`${isMobile ? 'flex flex-col gap-golden-md' : 'golden-grid'} mb-golden-md`}>
           <div>
             <AspectRatio ratio={1.618} className="rounded-2xl overflow-hidden">
               <img 
@@ -216,7 +219,7 @@ const Index = () => {
       
       {/* Popular Performers - Section avec proportion d'or */}
       <ContentSection title="Créateurs Populaires" viewAllLink="/performers" className="bg-secondary/30">
-        <div className="golden-grid">
+        <div className={`${isMobile ? 'flex flex-col gap-golden-md' : 'golden-grid'}`}>
           <div className="flex flex-wrap justify-center gap-golden-md">
             {popularPerformers.map((performer) => (
               <div key={performer.id} className="text-center group">
@@ -246,13 +249,13 @@ const Index = () => {
       {/* Footer */}
       <footer className="py-golden-lg border-t border-muted">
         <div className="container px-golden-sm mx-auto">
-          <div className="golden-grid items-center">
+          <div className={`${isMobile ? 'flex flex-col gap-4' : 'golden-grid'} items-center`}>
             <div>
               <p className="text-muted-foreground text-sm">
                 © 2025 Visua. Tous droits réservés.
               </p>
             </div>
-            <div className="flex justify-end gap-golden-md">
+            <div className="flex justify-end gap-golden-md flex-wrap">
               <a href="/about" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">À propos</a>
               <a href="/terms" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">Conditions</a>
               <a href="/privacy" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">Confidentialité</a>
