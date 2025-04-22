@@ -7,6 +7,7 @@ import PrivateMessages from './dashboard/PrivateMessages';
 import ContentProtection from './dashboard/ContentProtection';
 import ContentSuggestions from './dashboard/ContentSuggestions';
 import RevenueForecast from './dashboard/RevenueForecast';
+import SecurityDashboard from './dashboard/SecurityDashboard';
 import CommunityBadges from '../features/community/CommunityBadges';
 import { useEngagementSequences } from '../hooks/useEngagementSequences';
 import MobileEditorActions from './dashboard/MobileEditorActions';
@@ -43,6 +44,7 @@ const CreatorDashboard: React.FC = () => {
       </div>
       
       <CommunityBadges />
+      <SecurityDashboard />
       <ContentProtection />
     </div>
   );

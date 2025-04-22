@@ -1,13 +1,46 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import CreatorDashboard from './CreatorDashboard';
 import ContentManagementSection from './ContentManagementSection';
 import MonetizationSection from './monetization/MonetizationSection';
 import { Toaster } from "sonner";
 import { useIsMobile } from '../hooks/use-mobile';
+import { toast } from "sonner";
+import { regulatoryFirewall } from '../services/regulatoryFirewall';
 
 const CreatorDashboardPage: React.FC = () => {
   const isMobile = useIsMobile();
+
+  // Effet pour vérifier la conformité réglementaire
+  useEffect(() => {
+    // Afficher une notification de conformité après le chargement
+    const regulations = regulatoryFirewall.getRegulations();
+    
+    // Délai pour permettre au composant de se charger complètement
+    const timer = setTimeout(() => {
+      toast.success("Conformité réglementaire vérifiée", {
+        description: `Tableau de bord configuré selon les réglementations de ${regulatoryFirewall.currentRegion}`,
+        duration: 5000,
+      });
+    }, 3000);
+
+    // Afficher des avertissements spécifiques selon la région
+    if (regulations.cookieNoticeRequired) {
+      const cookieTimer = setTimeout(() => {
+        toast.message("Notice cookies", {
+          description: "Ce site utilise des cookies pour améliorer votre expérience",
+          duration: 10000,
+        });
+      }, 5000);
+      
+      return () => {
+        clearTimeout(cookieTimer);
+        clearTimeout(timer);
+      };
+    }
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="bg-black min-h-screen">

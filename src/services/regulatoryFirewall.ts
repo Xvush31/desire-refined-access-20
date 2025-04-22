@@ -55,6 +55,26 @@ const regulationsByRegion: Record<string, RegionRegulations> = {
   }
 };
 
+// Fonction pour détecter la région à partir de la langue du navigateur (solution de repli)
+const detectRegionFromLanguage = (): string => {
+  const userLang = navigator.language || 'en-US';
+  
+  // Détecter la région à partir du code de langue
+  if (userLang.startsWith('fr') || 
+      userLang.startsWith('de') || 
+      userLang.startsWith('it') || 
+      userLang.startsWith('es') || 
+      userLang.startsWith('pt')) {
+    return 'EU';
+  } else if (userLang.startsWith('en-US')) {
+    return 'US';
+  } else if (userLang.startsWith('en-GB')) {
+    return 'UK';
+  }
+  
+  return 'DEFAULT';
+};
+
 // Service de géo-segmentation
 export const regulatoryFirewall = {
   // Région actuelle de l'utilisateur (détectée automatiquement)
@@ -65,8 +85,14 @@ export const regulatoryFirewall = {
     try {
       // Dans une vraie implémentation, nous ferions une requête API
       // pour déterminer la région de l'utilisateur en fonction de son IP
-      // Pour l'exemple, utilisons une API de géolocalisation
-      const response = await fetch('https://ipapi.co/json/');
+      const response = await fetch('https://ipapi.co/json/', { 
+        signal: AbortSignal.timeout(3000) // Timeout après 3 secondes
+      });
+      
+      if (!response.ok) {
+        throw new Error(`API responded with status: ${response.status}`);
+      }
+      
       const data = await response.json();
       
       // Obtient le code de pays
@@ -86,9 +112,15 @@ export const regulatoryFirewall = {
       }
     } catch (error) {
       console.error("Erreur lors de la détection de région:", error);
-      // En cas d'erreur, utiliser les paramètres par défaut
-      regulatoryFirewall.currentRegion = 'DEFAULT';
+      
+      // En cas d'erreur, utiliser la langue du navigateur comme solution de repli
+      regulatoryFirewall.currentRegion = detectRegionFromLanguage();
+      console.log(`Utilisation de la langue comme repli. Région définie: ${regulatoryFirewall.currentRegion}`);
     }
+    
+    // Log de la région détectée pour débogage
+    console.log(`Région réglementaire active: ${regulatoryFirewall.currentRegion}`);
+    console.log(`Réglementations appliquées:`, regulatoryFirewall.getRegulations());
   },
   
   // Obtenir les réglementations pour la région actuelle
