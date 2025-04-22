@@ -1,8 +1,7 @@
-
 import React from 'react';
 import CreatorDashboard from './CreatorDashboard';
 import ContentManagementSection from './ContentManagementSection';
-import MonetizationSection from './MonetizationSection';
+import MonetizationSection from './monetization/MonetizationSection';
 import { Toaster } from "sonner";
 
 const CreatorDashboardPage: React.FC = () => {
