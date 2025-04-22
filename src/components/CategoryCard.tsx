@@ -13,16 +13,16 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   videoCount,
 }) => {
   return (
-    <div className="category-card group rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
-      <div className="relative aspect-golden">
+    <div className="category-card group rounded-lg sm:rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
+      <div className="relative aspect-[4/3] sm:aspect-golden">
         <img
           src={image}
           alt={name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col items-center justify-end p-golden-sm">
-          <h3 className="text-white text-lg font-medium">{name}</h3>
-          <p className="text-white/80 text-sm">{videoCount} vidéos</p>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col items-center justify-end p-2 sm:p-golden-sm">
+          <h3 className="text-sm sm:text-lg font-medium text-white text-center">{name}</h3>
+          <p className="text-xs sm:text-sm text-white/80">{videoCount} vidéos</p>
         </div>
       </div>
     </div>

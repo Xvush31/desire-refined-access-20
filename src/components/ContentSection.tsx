@@ -18,13 +18,13 @@ const ContentSection: React.FC<ContentSectionProps> = ({
   children,
 }) => {
   return (
-    <section className={cn("py-golden-md", className)}>
-      <div className="container px-golden-sm mx-auto">
-        <div className="flex items-center justify-between mb-golden-sm">
-          <h2 className="text-xl md:text-golden-xl font-bold">{title}</h2>
+    <section className={cn("py-4 sm:py-golden-md", className)}>
+      <div className="container px-2 sm:px-golden-sm mx-auto">
+        <div className="flex items-center justify-between mb-4 sm:mb-golden-sm">
+          <h2 className="text-lg sm:text-xl md:text-golden-xl font-bold">{title}</h2>
           {viewAllLink && (
             <Button variant="link" className="text-brand-orange" asChild>
-              <a href={viewAllLink} className="flex items-center gap-1">
+              <a href={viewAllLink} className="flex items-center gap-1 text-sm sm:text-base">
                 Voir tout <ArrowRight size={16} />
               </a>
             </Button>

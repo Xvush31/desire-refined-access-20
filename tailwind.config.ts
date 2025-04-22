@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -28,6 +27,10 @@ export default {
         'golden-md': 'calc(1rem * 1.618)',
         'golden-lg': 'calc(1rem * 1.618 * 1.618)',
         'golden-xl': 'calc(1rem * 1.618 * 1.618 * 1.618)',
+        'golden-2xl': 'calc(1rem * 1.618 * 1.618 * 1.618 * 1.618)',
+        'mobile-golden-sm': 'calc(0.5rem / 1.618)',
+        'mobile-golden-md': 'calc(0.5rem * 1.618)',
+        'mobile-golden-lg': 'calc(0.5rem * 1.618 * 1.618)',
       },
       height: {
         'golden-screen': '61.8vh',
