@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import TimeScaleSelector from './TimeScaleSelector';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 type TimeScale = 'day' | 'week' | 'month';
 
@@ -121,6 +121,7 @@ const getHeatMapColor = (value: number) => {
 const DashboardCharts = () => {
   const [timeScale, setTimeScale] = useState<TimeScale>('month');
   const [showHeatMap, setShowHeatMap] = useState(false);
+  const isMobile = useIsMobile();
   
   const revenueData = revenueDataByScale[timeScale];
   const engagementData = engagementDataByScale[timeScale];
@@ -133,31 +134,31 @@ const DashboardCharts = () => {
   const maxRevenue = Math.max(...revenueData.map(item => item.revenue));
   
   return (
-    <div className="space-y-6 mb-8">
-      <div className="flex items-center justify-between mb-2">
+    <div className="space-y-4 md:space-y-6 mb-6 md:mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-2">
         <h2 className="text-xl font-semibold tracking-tight">Analyses & Tendances</h2>
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-wrap items-center gap-4">
           <TimeScaleSelector activeScale={timeScale} onChange={setTimeScale} />
           <button
             className={`text-sm micro-animation-pop ${showHeatMap ? 'text-brand-red' : 'text-muted-foreground'}`}
             onClick={() => setShowHeatMap(!showHeatMap)}
           >
-            {showHeatMap ? 'Voir Graphiques Standard' : 'Voir Carte de Chaleur'}
+            {showHeatMap ? 'Graphiques Standards' : 'Carte de Chaleur'}
           </button>
         </div>
       </div>
       
       {!showHeatMap ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           <Card className="bg-card border-border card-hover hover-card micro-pop">
-            <CardHeader>
-              <CardTitle>Revenus sur {timeScale === 'day' ? '24h' : timeScale === 'week' ? '7 jours' : '7 mois'}</CardTitle>
-              <CardDescription className="text-muted-foreground">
+            <CardHeader className="p-4 md:p-6">
+              <CardTitle className="text-lg md:text-xl">Revenus sur {timeScale === 'day' ? '24h' : timeScale === 'week' ? '7 jours' : '7 mois'}</CardTitle>
+              <CardDescription className="text-sm text-muted-foreground">
                 Évolution {timeScale === 'day' ? 'horaire' : timeScale === 'week' ? 'journalière' : 'mensuelle'} de vos revenus
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="h-[300px]">
+            <CardContent className="p-4">
+              <div className="h-[250px] md:h-[300px]">
                 <ChartContainer
                   config={{
                     revenue: {
@@ -199,18 +200,23 @@ const DashboardCharts = () => {
                   </ResponsiveContainer>
                 </ChartContainer>
               </div>
+              {isMobile && (
+                <div className="mt-4 text-sm text-muted-foreground text-center">
+                  Faites pivoter votre appareil pour une meilleure vue
+                </div>
+              )}
             </CardContent>
           </Card>
 
           <Card className="bg-card border-border card-hover hover-card micro-pop">
-            <CardHeader>
-              <CardTitle>Engagement {timeScale === 'day' ? 'sur 24h' : timeScale === 'week' ? 'Hebdomadaire' : 'Mensuel'}</CardTitle>
-              <CardDescription className="text-muted-foreground">
+            <CardHeader className="p-4 md:p-6">
+              <CardTitle className="text-lg md:text-xl">Engagement {timeScale === 'day' ? 'sur 24h' : timeScale === 'week' ? 'Hebdomadaire' : 'Mensuel'}</CardTitle>
+              <CardDescription className="text-sm text-muted-foreground">
                 Taux d'engagement {timeScale === 'day' ? 'par heure' : timeScale === 'week' ? 'par jour' : 'par mois'}
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="h-[300px]">
+            <CardContent className="p-4">
+              <div className="h-[250px] md:h-[300px]">
                 <ChartContainer
                   config={{
                     engagement: {
@@ -249,19 +255,24 @@ const DashboardCharts = () => {
                   </ResponsiveContainer>
                 </ChartContainer>
               </div>
+              {isMobile && (
+                <div className="mt-4 text-sm text-muted-foreground text-center">
+                  Faites pivoter votre appareil pour une meilleure vue
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
       ) : (
         <Card className="bg-card border-border card-hover hover-card micro-pop">
-          <CardHeader>
-            <CardTitle>Carte de Chaleur - Activité des Abonnés</CardTitle>
-            <CardDescription className="text-muted-foreground">
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="text-lg md:text-xl">Carte de Chaleur - Activité des Abonnés</CardTitle>
+            <CardDescription className="text-sm text-muted-foreground">
               Visualisation de l'activité par jour et heure
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="h-[400px] w-full p-4">
+          <CardContent className="p-4">
+            <div className="h-[400px] w-full overflow-x-auto">
               <div className="flex mb-2">
                 <div className="w-[60px]"></div>
                 {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(day => (
@@ -303,6 +314,11 @@ const DashboardCharts = () => {
                   <span className="text-xs">Plus actif</span>
                 </div>
               </div>
+              {isMobile && (
+                <div className="mt-4 text-sm text-muted-foreground text-center">
+                  Faites glisser horizontalement pour voir toutes les données
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

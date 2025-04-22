@@ -78,10 +78,10 @@ const PrivateMessages = () => {
   const priorityCount = messages.filter(msg => msg.priority === "super-fan" && !msg.read).length;
 
   return (
-    <section className="mb-8">
-      <div className="flex items-center justify-between mb-4">
+    <section className="mb-6 md:mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
         <h2 className="text-xl font-semibold tracking-tight">Messagerie Privée</h2>
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
           {unreadCount > 0 && (
             <Badge className="bg-brand-red animate-pulse">{unreadCount} non lu{unreadCount > 1 ? 's' : ''}</Badge>
           )}
@@ -96,12 +96,12 @@ const PrivateMessages = () => {
       <Card className="bg-card border-border card-hover hover-card micro-pop">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
-            <Table className="data-table">
+            <Table className="w-full">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[15%]">Expéditeur</TableHead>
-                  <TableHead className="w-[55%]">Message</TableHead>
-                  <TableHead className="w-[15%]">Reçu</TableHead>
+                  <TableHead className="w-[25%] md:w-[15%]">Expéditeur</TableHead>
+                  <TableHead className="w-[45%] md:w-[55%]">Message</TableHead>
+                  <TableHead className="w-[15%] hidden md:table-cell">Reçu</TableHead>
                   <TableHead className="w-[15%]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -110,14 +110,17 @@ const PrivateMessages = () => {
                   <React.Fragment key={message.id}>
                     <TableRow className={!message.read ? 'bg-muted/20' : ''}>
                       <TableCell className="font-medium">
-                        <div className="flex items-center space-x-2">
-                          {message.sender}
+                        <div className="flex flex-col md:flex-row items-start md:items-center gap-2">
+                          <span>{message.sender}</span>
                           {message.priority === "super-fan" && (
-                            <Badge className="bg-yellow-500 micro-animation-scale">
+                            <Badge className="bg-yellow-500 micro-animation-scale text-xs">
                               Super-fan
                             </Badge>
                           )}
                         </div>
+                        <span className="text-xs text-muted-foreground md:hidden">
+                          {message.time}
+                        </span>
                       </TableCell>
                       <TableCell>
                         {!message.read && (
@@ -127,9 +130,11 @@ const PrivateMessages = () => {
                           {message.message}
                         </span>
                       </TableCell>
-                      <TableCell>{message.time}</TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {message.time}
+                      </TableCell>
                       <TableCell>
-                        <div className="flex space-x-2">
+                        <div className="flex flex-col md:flex-row gap-2">
                           <button 
                             onClick={() => handleReply(message.id)}
                             className="text-brand-red hover:underline text-sm micro-animation-pop flex items-center"
@@ -150,14 +155,13 @@ const PrivateMessages = () => {
                     </TableRow>
                     {replyingTo === message.id && (
                       <TableRow className="micro-animation-fade-in">
-                        <TableCell colSpan={4} className="p-0">
-                          <div className="bg-muted/20 p-4">
-                            <div className="flex items-center space-x-2 mb-2">
+                        <TableCell colSpan={4} className="p-4">
+                          <div className="bg-muted/20 p-4 rounded-md">
+                            <div className="flex items-center gap-2 mb-2">
                               <span className="font-medium">Répondre à {message.sender}</span>
                             </div>
                             <textarea 
-                              className="w-full p-2 border border-border rounded-md bg-card"
-                              rows={3}
+                              className="w-full p-2 border border-border rounded-md bg-card min-h-[100px]"
                               value={replyText}
                               onChange={(e) => setReplyText(e.target.value)}
                               placeholder="Votre réponse..."
