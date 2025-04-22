@@ -1,3 +1,4 @@
+
 import React from 'react';
 import CreatorDashboard from './CreatorDashboard';
 import ContentManagementSection from './ContentManagementSection';
@@ -13,7 +14,13 @@ const CreatorDashboardPage: React.FC = () => {
         <ContentManagementSection />
         <div className="my-4 md:my-8 border-t border-border opacity-30" />
         <MonetizationSection />
-        <Toaster position="top-center" />
+        <Toaster 
+          position="top-center"
+          toastOptions={{
+            duration: 3000,
+            className: "micro-animation-pop"
+          }}
+        />
       </div>
     </div>
   );

@@ -3,6 +3,8 @@ import React from 'react';
 import KeyMetrics from './dashboard/KeyMetrics';
 import DashboardCharts from './dashboard/DashboardCharts';
 import SubscriberSegments from './dashboard/SubscriberSegments';
+import PrivateMessages from './dashboard/PrivateMessages';
+import ContentProtection from './dashboard/ContentProtection';
 
 const CreatorDashboard: React.FC = () => {
   return (
@@ -18,7 +20,13 @@ const CreatorDashboard: React.FC = () => {
       
       <KeyMetrics />
       <DashboardCharts />
-      <SubscriberSegments />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <PrivateMessages />
+        <SubscriberSegments />
+      </div>
+      
+      {/* Composant de protection du contenu */}
+      <ContentProtection />
     </div>
   );
 };
