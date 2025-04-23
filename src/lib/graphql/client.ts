@@ -10,4 +10,5 @@ export const client = new ApolloClient({
       fetchPolicy: 'cache-and-network',
     },
   },
+  connectToDevTools: false,
 });
