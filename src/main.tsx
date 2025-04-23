@@ -4,8 +4,8 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
-// Simple function to initialize the app
-function initApp() {
+// Wait for the DOM to be fully ready before initializing React
+document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('root');
   
   if (!container) {
@@ -24,11 +24,4 @@ function initApp() {
   } catch (error) {
     console.error('Error mounting app:', error);
   }
-}
-
-// Initialize when the DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initApp);
-} else {
-  initApp();
-}
+});
