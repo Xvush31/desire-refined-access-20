@@ -2,8 +2,11 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const SubscriptionTiers = () => {
+  const navigate = useNavigate();
+
   const tiers = [
     {
       name: "Standard",
@@ -16,7 +19,8 @@ const SubscriptionTiers = () => {
         "1 appareil à la fois"
       ],
       className: "tier-standard",
-      buttonVariant: "outline" as const
+      buttonVariant: "outline" as const,
+      isPaid: false
     },
     {
       name: "Premium",
@@ -31,10 +35,11 @@ const SubscriptionTiers = () => {
       ],
       className: "tier-premium",
       buttonVariant: "default" as const,
-      recommended: true
+      recommended: true,
+      isPaid: true
     },
     {
-      name: "Enterprise",
+      name: "Elite",
       price: "24,99 €",
       description: "L'expérience ultime sans compromis.",
       features: [
@@ -47,9 +52,16 @@ const SubscriptionTiers = () => {
         "Support prioritaire"
       ],
       className: "tier-enterprise",
-      buttonVariant: "outline" as const
+      buttonVariant: "outline" as const,
+      isPaid: true
     }
   ];
+
+  const handleSubscribe = (tier: typeof tiers[number]) => {
+    if (tier.isPaid) {
+      navigate("/subscription");
+    }
+  };
 
   return (
     <div className="py-12">
@@ -65,6 +77,7 @@ const SubscriptionTiers = () => {
           <div 
             key={tier.name}
             className={`tier-card ${tier.className} ${tier.recommended ? 'ring-2 ring-brand-accent' : ''}`}
+            onClick={() => handleSubscribe(tier)}
           >
             {tier.recommended && (
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-accent text-white absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -93,6 +106,7 @@ const SubscriptionTiers = () => {
               variant={tier.buttonVariant} 
               className="w-full"
               {...(tier.recommended ? { className: "bg-brand-accent hover:bg-brand-accent/90 text-white w-full" } : {})}
+              onClick={() => handleSubscribe(tier)}
             >
               {tier.recommended ? "Commencer maintenant" : "S'abonner"}
             </Button>
@@ -108,3 +122,4 @@ const SubscriptionTiers = () => {
 };
 
 export default SubscriptionTiers;
+
