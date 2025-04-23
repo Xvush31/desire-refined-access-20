@@ -11,7 +11,7 @@ import { useLocale } from "@/contexts/LocaleContext";
 import LanguageSelector from "./dashboard/LanguageSelector";
 
 const Header = () => {
-  const [showMenu, setShowMenu] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { t } = useLocale();
@@ -36,6 +36,21 @@ const Header = () => {
         <div className="flex items-center justify-between">
           <Logo />
 
+          <nav className="hidden md:flex items-center space-x-8">
+            <Link to="/" className="nav-link">{t("header.home")}</Link>
+            <Link to="/trending" className="nav-link">{t("header.trending")}</Link>
+            <Link to="/categories" className="nav-link">{t("header.categories")}</Link>
+            <Link to="/performers" className="nav-link">{t("header.performers")}</Link>
+            <Link to="/community" className="nav-link">{t("header.community")}</Link>
+            <Link to="/favorites" className="nav-link">{t("header.favorites")}</Link>
+            <Link to="/xtease" className="nav-link flex items-center">
+              XTease
+              <Badge className="ml-2 bg-brand-red text-white">{t("header.new")}</Badge>
+            </Link>
+            <Link to="/creator-dashboard" className="nav-link">{t("header.creator_dashboard")}</Link>
+            <Link to="/creators" className="nav-link">Créateurs</Link>
+          </nav>
+
           <div className="flex items-center space-x-4">
             <div className={`${showSearch ? 'w-64' : 'w-10'} transition-all duration-300 overflow-hidden flex items-center bg-secondary rounded-full`}>
               <button 
@@ -51,11 +66,13 @@ const Header = () => {
               />
             </div>
             
-            <div className="mr-2">
+            <div className="hidden md:block mr-2">
               <LanguageSelector compact />
             </div>
             
-            <GhostModeToggle />
+            <div className="hidden md:block">
+              <GhostModeToggle />
+            </div>
             
             <Button variant="ghost" className="hover:bg-muted rounded-full p-2">
               <User size={20} />
@@ -63,8 +80,8 @@ const Header = () => {
             
             <Button 
               variant="ghost" 
-              className="hover:bg-muted rounded-full p-2"
-              onClick={() => setShowMenu(true)}
+              className="md:hidden hover:bg-muted rounded-full p-2"
+              onClick={() => setShowMobileMenu(true)}
             >
               <Menu size={20} />
             </Button>
@@ -72,10 +89,7 @@ const Header = () => {
         </div>
       </div>
 
-      <MobileMenu 
-        isOpen={showMenu} 
-        onClose={() => setShowMenu(false)} 
-      />
+      <MobileMenu isOpen={showMobileMenu} onClose={() => setShowMobileMenu(false)} />
     </header>
   );
 };

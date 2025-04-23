@@ -13,6 +13,7 @@ import {
   X,
   Video,
   LayoutGrid,
+  Star
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -91,7 +92,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
     >
       <div 
         className={cn(
-          "fixed right-0 top-0 bottom-0 md:w-[400px] w-3/4 max-w-lg bg-black shadow-xl transition-transform duration-300 ease-in-out overflow-y-auto",
+          "fixed right-0 top-0 bottom-0 w-3/4 max-w-xs bg-black shadow-xl transition-transform duration-300 ease-in-out overflow-y-auto",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
         onClick={(e) => e.stopPropagation()}
@@ -118,25 +119,25 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                   <div>
                     <button 
                       onClick={() => toggleSubmenu(item.label)}
-                      className="flex items-center justify-between w-full px-4 py-3 rounded-lg hover:bg-secondary text-base"
+                      className="flex items-center justify-between w-full px-3 py-2 rounded-md hover:bg-secondary text-sm"
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
                         {item.icon}
                         <span>{item.label}</span>
                         {item.badge && (
-                          <Badge className="ml-2 animated-gradient-bg text-white">{item.badge}</Badge>
+                          <Badge className="ml-2 animated-gradient-bg text-white text-xs">{item.badge}</Badge>
                         )}
                       </div>
-                      <span className="text-lg">{expandedItems.includes(item.label) ? "-" : "+"}</span>
+                      <span>{expandedItems.includes(item.label) ? "-" : "+"}</span>
                     </button>
                     
                     {expandedItems.includes(item.label) && item.submenu && (
-                      <ul className="pl-8 mt-2 space-y-2 border-l border-muted ml-4">
+                      <ul className="pl-6 mt-1 space-y-1 border-l border-muted">
                         {item.submenu.map((subItem) => (
                           <li key={subItem.label}>
                             <Link 
                               to={subItem.href} 
-                              className="flex items-center px-4 py-2 rounded-lg hover:bg-secondary text-base"
+                              className="flex items-center px-3 py-2 rounded-md hover:bg-secondary text-sm"
                               onClick={onClose}
                             >
                               {subItem.label}
@@ -149,13 +150,13 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                 ) : (
                   <Link 
                     to={item.href} 
-                    className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary text-base w-full"
+                    className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-secondary text-sm w-full"
                     onClick={onClose}
                   >
                     {item.icon}
                     <span>{item.label}</span>
                     {item.badge && (
-                      <Badge className="ml-2 animated-gradient-bg text-white">{item.badge}</Badge>
+                      <Badge className="ml-2 animated-gradient-bg text-white text-xs">{item.badge}</Badge>
                     )}
                   </Link>
                 )}
