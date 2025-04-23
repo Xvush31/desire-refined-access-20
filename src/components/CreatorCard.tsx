@@ -63,4 +63,3 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => (
 );
 
 export default CreatorCard;
-
