@@ -134,11 +134,11 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header />
-      
+
       {/* Hero Section */}
       <HeroSection />
-      
-      {/* Trending Videos - Utilisation du ratio d'or pour la structure */}
+
+      {/* Trending Videos */}
       <ContentSection title={t("home.trending")} viewAllLink="/trending">
         <div className={`${isMobile ? 'flex flex-col gap-golden-md' : 'golden-grid-reverse'}`}>
           <div className="space-y-golden-sm">
@@ -179,13 +179,13 @@ const Index = () => {
           ))}
         </div>
       </ContentSection>
-      
-      {/* XTease Section : Nouveau format vertical short-vidéos */}
+
+      {/* XTease Section */}
       <div className="container mx-auto px-golden-sm py-golden-md">
         <XTeaseSection />
       </div>
-      
-      {/* Categories - Grille basée sur le ratio d'or */}
+
+      {/* Categories */}
       <ContentSection title={t("home.categories")} viewAllLink="/categories" className="bg-secondary/30">
         <div className={`${isMobile ? 'flex flex-col gap-golden-md' : 'golden-grid'} mb-golden-md`}>
           <div>
@@ -224,57 +224,8 @@ const Index = () => {
           ))}
         </div>
       </ContentSection>
-      
-      {/* Subscription Tiers */}
-      <SubscriptionTiers />
-      
-      {/* Recent Videos */}
-      <ContentSection title={t("home.recent")} viewAllLink="/recent">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-golden-md">
-          {recentVideos.map((video) => (
-            <VideoCard
-              key={video.id}
-              title={video.title}
-              thumbnail={video.thumbnail}
-              duration={video.duration}
-              views={video.views}
-              performer={video.performer}
-              isPremium={video.isPremium}
-            />
-          ))}
-        </div>
-      </ContentSection>
-      
-      {/* Popular Performers - Section avec proportion d'or */}
-      <ContentSection title={t("home.creators")} viewAllLink="/performers" className="bg-secondary/30">
-        <div className={`${isMobile ? 'flex flex-col gap-golden-md' : 'golden-grid'}`}>
-          <div className="flex flex-wrap justify-center gap-golden-md">
-            {popularPerformers.map((performer) => (
-              <div key={performer.id} className="text-center group">
-                <div className="w-32 h-32 mx-auto mb-golden-sm overflow-hidden rounded-full border-2 border-transparent group-hover:border-brand-accent transition-colors">
-                  <img 
-                    src={performer.image} 
-                    alt={performer.name} 
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                </div>
-                <h3 className="font-medium group-hover:text-brand-accent transition-colors">{performer.name}</h3>
-                <p className="text-sm text-muted-foreground">{performer.videos} {t("home.videos")}</p>
-                <p className="text-xs text-brand-accent">{performer.subscribers} {t("home.subscribers")}</p>
-              </div>
-            ))}
-          </div>
-          <div className="flex flex-col justify-center items-start space-y-golden-md px-golden-md">
-            <h3 className="text-golden-xl font-medium">{t("home.top_creators")}</h3>
-            <p className="text-muted-foreground">{t("home.creators_desc")}</p>
-            <Button className="animated-gradient-bg text-white">
-              {t("home.view_creators")}
-            </Button>
-          </div>
-        </div>
-      </ContentSection>
-      
-      {/* Section des créateurs sur la page d'accueil */}
+
+      {/* SECTION CREATOR - nouvelle position avant SubscriptionTiers */}
       <ContentSection 
         title="Nos meilleurs créateurs" 
         viewAllLink="/creators"
@@ -298,7 +249,58 @@ const Index = () => {
           </div>
         </div>
       </ContentSection>
-      
+
+      {/* Subscription Tiers */}
+      <SubscriptionTiers />
+
+      {/* Recent Videos */}
+      <ContentSection title={t("home.recent")} viewAllLink="/recent">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-golden-md">
+          {recentVideos.map((video) => (
+            <VideoCard
+              key={video.id}
+              title={video.title}
+              thumbnail={video.thumbnail}
+              duration={video.duration}
+              views={video.views}
+              performer={video.performer}
+              isPremium={video.isPremium}
+            />
+          ))}
+        </div>
+      </ContentSection>
+
+      {/* Popular Performers */}
+      <ContentSection title={t("home.creators")} viewAllLink="/creators" className="bg-secondary/30">
+        <div className={`${isMobile ? 'flex flex-col gap-golden-md' : 'golden-grid'}`}>
+          <div className="flex flex-wrap justify-center gap-golden-md">
+            {popularPerformers.map((performer) => (
+              <div key={performer.id} className="text-center group">
+                <div className="w-32 h-32 mx-auto mb-golden-sm overflow-hidden rounded-full border-2 border-transparent group-hover:border-brand-accent transition-colors">
+                  <img 
+                    src={performer.image} 
+                    alt={performer.name} 
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
+                <h3 className="font-medium group-hover:text-brand-accent transition-colors">{performer.name}</h3>
+                <p className="text-sm text-muted-foreground">{performer.videos} {t("home.videos")}</p>
+                <p className="text-xs text-brand-accent">{performer.subscribers} {t("home.subscribers")}</p>
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-col justify-center items-start space-y-golden-md px-golden-md">
+            <h3 className="text-golden-xl font-medium">{t("home.top_creators")}</h3>
+            <p className="text-muted-foreground">{t("home.creators_desc")}</p>
+            <Button className="animated-gradient-bg text-white">
+              <Link to="/creators" className="w-full h-full block">
+                {t("home.view_creators")}
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </ContentSection>
+
       {/* Footer */}
       <footer className="py-golden-lg border-t border-muted">
         <div className="container px-golden-sm mx-auto">
