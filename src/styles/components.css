@@ -41,7 +41,7 @@
   @apply z-0 relative bg-background;
 }
 
-/* Styles pour les boutons dans les cartes de créateurs */
+/* Styles pour les boutons dans les cartes de créateurs - VERSION DESKTOP INCLUSE */
 .creator-card-button {
   @apply w-full flex items-center justify-center gap-2 px-4 py-2 font-medium transition-colors;
 }
@@ -64,6 +64,13 @@
 
   .category-card {
     @apply mb-2;
+  }
+}
+
+/* Styles spécifiques pour la vue desktop */
+@media (min-width: 641px) {
+  .creator-card {
+    @apply cursor-pointer;
   }
 }
 
