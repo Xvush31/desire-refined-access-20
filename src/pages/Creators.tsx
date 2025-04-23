@@ -1,7 +1,5 @@
-
 import React from "react";
 import CreatorCard, { CreatorData } from "@/components/CreatorCard";
-import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import ContentSection from "@/components/ContentSection";
 
