@@ -16,7 +16,7 @@ const WithdrawRequest: React.FC = () => {
 
   return (
     <Button 
-      variant="brand" 
+      variant="default" 
       size="lg" 
       className="w-full md:w-auto flex items-center gap-2 bg-gradient-to-r from-[#ff8ba7] to-[#ffc6c7] hover:opacity-90 transition-all duration-300"
       onClick={handleWithdraw}
