@@ -48,6 +48,32 @@ const historyVideos = [
 ];
 
 const History: React.FC = () => {
+  // Fonction utilitaire pour trier les vidéos par date (utilisation sûre)
+  const isToday = (dateString: string): boolean => {
+    if (!dateString) return false;
+    try {
+      const today = new Date();
+      const date = new Date(dateString);
+      return date.toDateString() === today.toDateString();
+    } catch (e) {
+      console.error("Erreur lors de la comparaison des dates:", e);
+      return false;
+    }
+  };
+
+  const isYesterday = (dateString: string): boolean => {
+    if (!dateString) return false;
+    try {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const date = new Date(dateString);
+      return date.toDateString() === yesterday.toDateString();
+    } catch (e) {
+      console.error("Erreur lors de la comparaison des dates:", e);
+      return false;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -70,7 +96,7 @@ const History: React.FC = () => {
               <h3 className="text-lg font-medium mb-4">Aujourd'hui</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {historyVideos
-                  .filter(video => video.watchedDate === "2025-04-22")
+                  .filter(video => isToday(video.watchedDate))
                   .map((video) => (
                     <VideoCard
                       key={video.id}
@@ -90,7 +116,7 @@ const History: React.FC = () => {
               <h3 className="text-lg font-medium mb-4">Hier</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {historyVideos
-                  .filter(video => video.watchedDate === "2025-04-21")
+                  .filter(video => isYesterday(video.watchedDate))
                   .map((video) => (
                     <VideoCard
                       key={video.id}
@@ -110,7 +136,7 @@ const History: React.FC = () => {
               <h3 className="text-lg font-medium mb-4">Cette semaine</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {historyVideos
-                  .filter(video => video.watchedDate === "2025-04-20")
+                  .filter(video => !isToday(video.watchedDate) && !isYesterday(video.watchedDate))
                   .map((video) => (
                     <VideoCard
                       key={video.id}

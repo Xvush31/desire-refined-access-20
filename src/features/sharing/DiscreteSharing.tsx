@@ -75,13 +75,25 @@ const DiscreteSharing = () => {
     );
   };
 
+  // Fonction utilitaire sécurisée pour formater les dates
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString(undefined, { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
-    });
+    if (!dateString) return "Date inconnue";
+    
+    try {
+      const date = new Date(dateString);
+      // Vérifier si la date est valide
+      if (isNaN(date.getTime())) {
+        return "Date invalide";
+      }
+      return date.toLocaleDateString(undefined, { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    } catch (error) {
+      console.error("Erreur lors du formatage de la date:", error);
+      return "Date invalide";
+    }
   };
 
   return (

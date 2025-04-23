@@ -16,6 +16,23 @@ interface XTeaseSecurityTableProps {
   incidents: SecurityIncident[];
 }
 
+// Fonction utilitaire pour formater les dates en toute sécurité
+const formatTimestamp = (timestamp: string): string => {
+  if (!timestamp) return "Date inconnue";
+  
+  try {
+    const date = new Date(timestamp);
+    // Vérifier si la date est valide
+    if (isNaN(date.getTime())) {
+      return "Date invalide";
+    }
+    return date.toLocaleString();
+  } catch (error) {
+    console.error("Erreur lors du formatage de la date:", error);
+    return "Date invalide";
+  }
+};
+
 const XTeaseSecurityTable: React.FC<XTeaseSecurityTableProps> = ({ incidents }) => (
   <div className="overflow-x-auto">
     <Table>
@@ -34,7 +51,7 @@ const XTeaseSecurityTable: React.FC<XTeaseSecurityTableProps> = ({ incidents }) 
           <TableRow key={incident.id}>
             <TableCell>{incident.type}</TableCell>
             <TableCell className="font-mono text-xs">{incident.videoId}</TableCell>
-            <TableCell>{new Date(incident.timestamp).toLocaleString()}</TableCell>
+            <TableCell>{formatTimestamp(incident.timestamp)}</TableCell>
             <TableCell>{incident.ip}</TableCell>
             <TableCell>{incident.country}</TableCell>
             <TableCell>
