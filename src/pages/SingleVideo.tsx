@@ -1,9 +1,8 @@
-
 import React from "react";
 import Header from "@/components/Header";
 import HLSVideoPlayer from "@/components/HLSVideoPlayer";
 import { useParams, Navigate } from "react-router-dom";
-import { VideoCard } from "@/components/VideoCard";
+import VideoCard from "@/components/VideoCard";
 
 interface Video {
   id: number;
