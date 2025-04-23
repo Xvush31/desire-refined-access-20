@@ -40,7 +40,7 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => (
     <p className="text-sm text-foreground/90 text-center mb-4 line-clamp-3">{creator.description}</p>
     <div className="flex flex-col gap-2 w-full mt-1">
       <Link 
-        to={`/performer/${creator.id}`}
+        to={`/performers/${creator.id}`}
         className="w-full"
       >
         <Button
