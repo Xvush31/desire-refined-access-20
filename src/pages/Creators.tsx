@@ -2,6 +2,8 @@
 import React from "react";
 import CreatorCard, { CreatorData } from "@/components/CreatorCard";
 import { Link } from "react-router-dom";
+import Header from "@/components/Header";
+import ContentSection from "@/components/ContentSection";
 
 const creators: CreatorData[] = [
   {
@@ -48,19 +50,22 @@ const creators: CreatorData[] = [
 
 const Creators: React.FC = () => {
   return (
-    <main className="py-12 min-h-screen bg-background">
-      <section className="container mx-auto max-w-6xl px-4 text-center mb-12">
-        <h1 className="text-4xl font-bold mb-3 animated-gradient">Découvrez nos créateurs</h1>
-        <p className="max-w-2xl mx-auto text-muted-foreground text-lg">Une communauté de créateurs passionnés, authentiques et talentueux. Parcourez, découvrez et abonnez-vous à leurs contenus exclusifs.</p>
-      </section>
-      <section className="container mx-auto max-w-6xl px-4 mb-24">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7">
-          {creators.map((creator) => (
-            <CreatorCard key={creator.id} creator={creator} />
-          ))}
-        </div>
-      </section>
-    </main>
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main className="py-12">
+        <section className="container mx-auto max-w-6xl px-4 text-center mb-12">
+          <h1 className="text-4xl font-bold mb-3 animated-gradient">Découvrez nos créateurs</h1>
+          <p className="max-w-2xl mx-auto text-muted-foreground text-lg">Une communauté de créateurs passionnés, authentiques et talentueux. Parcourez, découvrez et abonnez-vous à leurs contenus exclusifs.</p>
+        </section>
+        <section className="container mx-auto max-w-6xl px-4 mb-24">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7">
+            {creators.map((creator) => (
+              <CreatorCard key={creator.id} creator={creator} />
+            ))}
+          </div>
+        </section>
+      </main>
+    </div>
   );
 };
 

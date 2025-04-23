@@ -73,9 +73,11 @@ const Performers: React.FC = () => {
                   )}
                 </Link>
                 
-                <Button variant="outline" size="sm" className="w-full max-w-[200px]">
-                  Voir le profil
-                </Button>
+                <Link to={`/performers/${performer.id}`}>
+                  <Button variant="outline" size="sm" className="w-full max-w-[200px]">
+                    Voir le profil
+                  </Button>
+                </Link>
               </div>
             ))}
           </div>
