@@ -36,11 +36,10 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => (
     </div>
     <h3 className="text-lg font-semibold mb-1">{creator.name}</h3>
     <div className="text-xs text-muted-foreground mb-2">{creator.category}</div>
-    {/* Suppression de l'affichage des fans et des revenus */}
+    {/* Les informations sur les fans et les revenus ont été supprimées */}
     <p className="text-sm text-foreground/90 text-center mb-4 line-clamp-3">{creator.description}</p>
     <Button variant="secondary" className="w-full">Voir le profil</Button>
   </div>
 );
 
 export default CreatorCard;
-
