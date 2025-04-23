@@ -22,7 +22,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
   
   return (
     <div 
-      className="video-card group transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg w-full"
+      className="video-card group transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg w-full sm:w-auto"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
@@ -42,7 +42,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
           </div>
         )}
       </div>
-      <div className="video-card-content mt-2 bg-background z-10">
+      <div className="video-card-content">
         <h3 className="text-xs sm:text-sm font-medium line-clamp-2 group-hover:text-red-500 transition-colors">
           {title}
         </h3>

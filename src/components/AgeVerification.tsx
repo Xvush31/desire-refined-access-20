@@ -5,11 +5,7 @@ import { Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ghostMode } from "@/services/ghostMode";
 
-interface AgeVerificationProps {
-  onVerification: (isVerified: boolean) => void;
-}
-
-const AgeVerification: React.FC<AgeVerificationProps> = ({ onVerification }) => {
+const AgeVerification = () => {
   const [verified, setVerified] = useState(false);
   const { toast } = useToast();
 
@@ -20,15 +16,11 @@ const AgeVerification: React.FC<AgeVerificationProps> = ({ onVerification }) => 
       : localStorage.getItem("age-verified") === "true";
     
     setVerified(isVerified);
-    if (isVerified) {
-      onVerification(true);
-    }
-  }, [onVerification]);
+  }, []);
 
   const handleAgeConfirmation = (isAdult: boolean) => {
     if (isAdult) {
       setVerified(true);
-      onVerification(true);
       
       // Stocker la vérification selon le mode de navigation
       if (ghostMode.isEnabled()) {

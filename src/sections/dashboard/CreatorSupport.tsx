@@ -29,17 +29,17 @@ const CreatorSupport = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="docs" className="w-full">
-          <TabsList className="w-full grid grid-cols-3 mb-4">
-            <TabsTrigger value="docs" className="flex items-center justify-center gap-2">
+        <Tabs defaultValue="docs">
+          <TabsList className="w-full justify-start">
+            <TabsTrigger value="docs" className="flex items-center gap-2">
               <BookOpen className="h-4 w-4" />
               Documentation
             </TabsTrigger>
-            <TabsTrigger value="faq" className="flex items-center justify-center gap-2">
+            <TabsTrigger value="faq" className="flex items-center gap-2">
               <HelpCircle className="h-4 w-4" />
               FAQ
             </TabsTrigger>
-            <TabsTrigger value="support" className="flex items-center justify-center gap-2">
+            <TabsTrigger value="support" className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4" />
               Support
             </TabsTrigger>
