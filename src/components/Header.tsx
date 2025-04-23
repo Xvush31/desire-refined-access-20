@@ -25,7 +25,7 @@ const Header = () => {
   return (
     <header className={`sticky top-0 z-40 transition-all duration-300 ${scrolled ? 'glass-effect' : 'bg-transparent'}`}>
       <div className="container mx-auto px-4 py-4">
-        {/* Desktop Header - ONLY Logo centered and minimal actions on right */}
+        {/* Desktop Header */}
         <div className="hidden md:flex items-center justify-between">
           {/* Left section - empty space for centering */}
           <div className="w-1/3"></div>
