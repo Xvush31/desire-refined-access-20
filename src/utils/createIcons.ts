@@ -8,7 +8,7 @@ import Logo from '@/components/Logo';
 
 const generateLogoPNG = async (size: number) => {
   // Convertir le logo en SVG
-  const logoSVG = ReactDOMServer.renderToStaticMarkup(<Logo />);
+  const logoSVG = ReactDOMServer.renderToStaticMarkup(React.createElement(Logo));
   
   // Convertir SVG en PNG de la taille spécifiée
   await sharp(Buffer.from(logoSVG))
