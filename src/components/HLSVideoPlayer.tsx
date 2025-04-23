@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Lock } from "lucide-react";
+import { Lock, Play } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useHLSPlayer } from "@/hooks/useHLSPlayer";
 import { useVideoControls } from "@/hooks/useVideoControls";
