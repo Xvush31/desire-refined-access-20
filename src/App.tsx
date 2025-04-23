@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -19,6 +20,13 @@ import Subscription from "./pages/Subscription";
 import SubscriptionConfirmationPage from "./pages/SubscriptionConfirmation";
 import { LocaleProvider } from "@/contexts/LocaleContext";
 import Creators from "./pages/Creators";
+import Categories from "./pages/Categories";
+import CategoryPage from "./pages/CategoryPage";
+import Trending from "./pages/Trending";
+import Performers from "./pages/Performers";
+import PerformerProfile from "./pages/PerformerProfile";
+import Recent from "./pages/Recent";
+import Favorites from "./pages/Favorites";
 
 const queryClient = new QueryClient();
 
@@ -74,6 +82,17 @@ const App = () => {
                   <Route path="/subscription" element={<React.Suspense fallback={null}><Subscription /></React.Suspense>} />
                   <Route path="/subscription-confirmation" element={<SubscriptionConfirmationPage />} />
                   <Route path="/creators" element={<Creators />} />
+                  
+                  {/* New routes added to avoid 404s */}
+                  <Route path="/categories" element={<Categories />} />
+                  <Route path="/categories/:categoryId" element={<CategoryPage />} />
+                  <Route path="/trending" element={<Trending />} />
+                  <Route path="/performers" element={<Performers />} />
+                  <Route path="/performers/:performerId" element={<PerformerProfile />} />
+                  <Route path="/recent" element={<Recent />} />
+                  <Route path="/favorites" element={<Favorites />} />
+                  
+                  {/* Catch-all route for 404 */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
