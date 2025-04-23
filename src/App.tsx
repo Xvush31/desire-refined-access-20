@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -63,6 +64,8 @@ const App = () => {
                 <Route path="/xtease" element={<XTease />} />
                 <Route path="/creator-dashboard" element={<CreatorDashboardPage />} />
                 <Route path="/creator-dashboard/xtease-security" element={<XTeaseSecurity />} />
+                <Route path="/subscription" element={<React.Suspense fallback={null}><Subscription /></React.Suspense>} />
+                <Route path="/subscription-confirmation" element={<SubscriptionConfirmationPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
