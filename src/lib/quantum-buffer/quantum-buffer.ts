@@ -1,10 +1,9 @@
 
 /**
  * Simplified buffer implementation
- * Stub replacement for the quantum buffer functionality
  */
 
-// Simplified implementation without dependencies
+// Simple protocol implementation
 class SimpleBufferProtocol {
   private initialized: boolean = false;
 
@@ -13,16 +12,15 @@ class SimpleBufferProtocol {
   }
 
   async initialize() {
-    if (this.initialized) {
-      return;
+    // Simple initialization
+    if (!this.initialized) {
+      this.initialized = true;
+      console.log("Simple Buffer Protocol initialized successfully");
     }
-    
-    this.initialized = true;
-    console.log("Simple Buffer Protocol initialized successfully");
     return true;
   }
 
-  // Stub methods to ensure compatibility
+  // Stub method
   async setConfig(config: any) {
     console.log("Buffer configuration updated", config);
   }
