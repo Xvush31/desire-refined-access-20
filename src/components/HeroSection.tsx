@@ -39,13 +39,13 @@ const freemiumVideos = [
 
 const HeroSection = () => {
   return (
-    <section className="relative py-12 overflow-hidden">
+    <section className="relative py-8 md:py-12 lg:py-16 overflow-hidden">
       {/* Background gradient avec les couleurs du logo */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#1A1F2C]/5 to-transparent z-0" />
       
       {/* Content */}
       <div className="container px-4 mx-auto relative z-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
           {freemiumVideos.map((video) => (
             <VideoCard
               key={video.id}
@@ -63,3 +63,4 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
+
