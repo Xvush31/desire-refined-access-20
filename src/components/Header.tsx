@@ -23,30 +23,35 @@ const Header = () => {
   }, []);
 
   return (
-    <header className={`sticky top-0 z-40 transition-all duration-300 ${scrolled ? 'glass-effect' : 'bg-transparent'}`}>
+    <header 
+      className={`sticky top-0 z-40 transition-all duration-300 ${
+        scrolled 
+          ? 'glass-effect dark:glass-effect light:glass-light' 
+          : 'bg-transparent'
+      }`}
+    >
       <div className="container mx-auto px-4">
-        {/* Main header row */}
         <div className="py-4">
           <div className="flex items-center justify-between gap-4">
-            {/* Left section - Logo */}
             <div className="flex-shrink-0">
               <Logo />
             </div>
 
-            {/* Center section - Search */}
             <div className="flex-grow flex justify-center max-w-2xl">
               <SearchBar />
             </div>
 
-            {/* Right section - Actions */}
             <div className="flex items-center space-x-4 flex-shrink-0">
-              <Button variant="ghost" className="hover:bg-muted rounded-full p-2">
+              <Button 
+                variant="ghost" 
+                className="hover:bg-muted rounded-full p-2 transition-colors"
+              >
                 <User size={20} />
               </Button>
               
               <Button 
                 variant="ghost" 
-                className="hover:bg-muted rounded-full p-2"
+                className="hover:bg-muted rounded-full p-2 transition-colors"
                 onClick={() => setShowMobileMenu(true)}
               >
                 <Menu size={20} />
@@ -55,8 +60,7 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Ad banner section - reduced height from 250px to 125px */}
-        <div className="w-full h-[125px] bg-gray-200 flex items-center justify-center text-gray-500 rounded-lg mb-4">
+        <div className="w-full h-[125px] bg-secondary/30 flex items-center justify-center text-muted-foreground rounded-lg mb-4 light-glass dark:bg-gray-200">
           Espace publicitaire
         </div>
       </div>

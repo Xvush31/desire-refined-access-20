@@ -1,47 +1,64 @@
-
 @tailwind base;
 
 @layer base {
-  :root {
+  :root[data-theme="dark"] {
     --background: 0 0% 6%;
     --foreground: 0 0% 100%;
-
     --card: 0 0% 8%;
     --card-foreground: 0 0% 100%;
-
     --popover: 0 0% 8%;
     --popover-foreground: 0 0% 100%;
-
     --primary: 0 0% 100%;
     --primary-foreground: 0 0% 0%;
-
     --secondary: 0 0% 15%;
     --secondary-foreground: 0 0% 100%;
-
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 65%;
-
     --accent: 0 0% 15%;
     --accent-foreground: 0 0% 100%;
-
     --destructive: 0 85% 65%;
     --destructive-foreground: 0 0% 100%;
-
     --border: 0 0% 20%;
     --input: 0 0% 20%;
     --ring: 0 0% 45%;
+    --radius: 0.5rem;
+  }
 
+  :root[data-theme="light"] {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 346 77% 49%;
+    --primary-foreground: 355 100% 97%;
+    --secondary: 346 77% 95%;
+    --secondary-foreground: 346 77% 49%;
+    --muted: 346 77% 95%;
+    --muted-foreground: 346 77% 49%;
+    --accent: 346 77% 95%;
+    --accent-foreground: 346 77% 49%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 346 77% 90%;
+    --input: 346 77% 90%;
+    --ring: 346 77% 49%;
     --radius: 0.5rem;
 
-    /* Ratio d'or - Variables */
-    --golden-ratio: 1.618;
-    --golden-large: calc(1rem * var(--golden-ratio) * var(--golden-ratio));
-    --golden-medium: calc(1rem * var(--golden-ratio));
-    --golden-small: calc(1rem / var(--golden-ratio));
+    /* Nouvelles variables pour le thème clair */
+    --brand-gradient: linear-gradient(to right, #ff8ba7 0%, #ffc6c7 100%);
+    --soft-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   }
+
+  /* Ratio d'or - Variables */
+  --golden-ratio: 1.618;
+  --golden-large: calc(1rem * var(--golden-ratio) * var(--golden-ratio));
+  --golden-medium: calc(1rem * var(--golden-ratio));
+  --golden-small: calc(1rem / var(--golden-ratio));
 }
 
-/* Réinitialisation des styles globaux pour éliminer les marges et bordures */
+/* Réinitialisation des styles globaux */
 html, body, #root {
   margin: 0;
   padding: 0;
@@ -73,4 +90,19 @@ h2 {
 p {
   line-height: calc(1rem * var(--golden-ratio));
   margin-bottom: var(--golden-small);
+}
+
+/* Nouvelles classes utilitaires pour le thème clair */
+.glass-light {
+  @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-sm;
+}
+
+.gradient-border-light {
+  background: linear-gradient(white, white) padding-box,
+              var(--brand-gradient) border-box;
+  border: 2px solid transparent;
+}
+
+.hover-lift {
+  @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-md;
 }

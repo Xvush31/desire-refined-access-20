@@ -1,7 +1,6 @@
-
 @tailwind utilities;
 
-/* Utilitaires et animations, grilles, espace, etc. */
+/* Utilitaires et animations */
 @layer utilities {
   .card-hover {
     @apply transition-transform duration-300;
@@ -92,6 +91,47 @@
   /* Rotation animation for watermarks */
   .-rotate-30 {
     transform: rotate(-30deg);
+  }
+
+  /* Nouvelles classes pour le thème clair */
+  .light-card {
+    @apply bg-white/90 shadow-sm border border-pink-100/50 rounded-xl transition-all duration-300;
+  }
+
+  .light-glass {
+    @apply backdrop-blur-md bg-white/60 border border-pink-100/30 rounded-xl shadow-sm;
+  }
+
+  .brand-gradient {
+    @apply bg-gradient-to-r from-[#ff8ba7] to-[#ffc6c7];
+  }
+
+  /* Animation du gradient */
+  .gradient-shine {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .gradient-shine::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    animation: shine 2s infinite;
+  }
+
+  @keyframes shine {
+    100% {
+      left: 200%;
+    }
   }
 }
 
