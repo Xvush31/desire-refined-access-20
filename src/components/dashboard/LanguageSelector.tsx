@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useLocale } from "@/contexts/LocaleContext";
 import { Globe } from "lucide-react";
 
