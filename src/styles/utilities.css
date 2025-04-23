@@ -94,8 +94,9 @@
   }
 
   /* Nouvelles classes pour le thème clair */
-  .light-card {
-    @apply bg-white/90 shadow-sm border-primary/20 rounded-xl transition-all duration-300;
+  .light-theme {
+    background: var(--brand-gradient);
+    color: #333;
   }
 
   .light-glass {
@@ -108,10 +109,6 @@
 
   .text-readable-light {
     @apply text-gray-900;
-  }
-
-  .text-readable-dark {
-    @apply text-white;
   }
 
   /* Animation du gradient */
