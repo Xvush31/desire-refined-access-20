@@ -4,20 +4,19 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
-// Make sure React is initialized before anything else
+// Make sure React is globally available
 window.React = React;
 
+// Get the root element
 const rootElement = document.getElementById('root');
 if (!rootElement) throw new Error('Failed to find the root element');
 
-// Create root outside of render to ensure proper initialization
+// Create root
 const root = createRoot(rootElement);
 
-// Wrap in a small timeout to ensure all initialization is complete
-setTimeout(() => {
-  root.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  );
-}, 0);
+// Render the app
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);

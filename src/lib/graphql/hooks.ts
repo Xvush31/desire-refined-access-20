@@ -34,7 +34,6 @@ const optimizeVideoQuality = async (videos, connectionSpeed = 5000000) => {
 };
 
 // Custom hooks for using GraphQL queries
-
 export const useTrendingVideos = () => {
   const { data, loading, error } = useQuery(GET_TRENDING_VIDEOS);
   const [optimizedVideos, setOptimizedVideos] = useState([]);
@@ -46,6 +45,7 @@ export const useTrendingVideos = () => {
     const optimize = async () => {
       if (data?.trendingVideos) {
         try {
+          console.log("Optimizing trending videos quality");
           const optimized = await optimizeVideoQuality(data.trendingVideos);
           if (isMounted) {
             setOptimizedVideos(optimized);
@@ -90,6 +90,7 @@ export const useRecentVideos = () => {
     const optimize = async () => {
       if (data?.recentVideos) {
         try {
+          console.log("Optimizing recent videos quality");
           const optimized = await optimizeVideoQuality(data.recentVideos);
           if (isMounted) {
             setOptimizedVideos(optimized);

@@ -66,7 +66,7 @@ export const client = new ApolloClient({
   },
 });
 
-// Initialize the Quantum Buffer Protocol - make it safer
+// Initialize the Quantum Buffer Protocol safely
 export const initQuantumBuffer = async () => {
   try {
     await quantumBuffer.initialize();
