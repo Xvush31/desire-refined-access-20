@@ -1,9 +1,11 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ContentSection from "@/components/ContentSection";
 import VideoCard from "@/components/VideoCard";
 import { useRecentVideos } from "@/lib/graphql/hooks";
 import { Skeleton } from "@/components/ui/skeleton";
+import { quantumBuffer } from "@/lib/quantum-buffer/quantum-buffer";
+import { toast } from "@/hooks/use-toast";
 
 // Fallback data in case GraphQL query fails
 const fallbackVideos = [
@@ -45,10 +47,40 @@ const fallbackVideos = [
 
 const RecentVideosSection: React.FC = () => {
   // Use GraphQL hook for recent videos
-  const { videos, loading, error } = useRecentVideos();
+  const { videos, loading, error, optimizedVideos } = useRecentVideos();
+  const [isBufferEnabled, setIsBufferEnabled] = useState(true);
 
   // In case of error, use fallback data
   const displayVideos = error || videos.length === 0 ? fallbackVideos : videos;
+
+  // Effect to initialize Quantum Buffer Protocol
+  useEffect(() => {
+    // Notify when using quantum buffer
+    if (isBufferEnabled) {
+      toast({
+        title: "Quantum Buffer actif",
+        description: "Préchargement prédictif activé pour une expérience optimale",
+        duration: 3000
+      });
+    }
+  }, [isBufferEnabled]);
+
+  // Function to toggle Quantum Buffer for testing
+  const toggleQuantumBuffer = () => {
+    setIsBufferEnabled(prev => !prev);
+    quantumBuffer.setConfig({ 
+      enableWasm: !isBufferEnabled,
+      predictiveThreshold: isBufferEnabled ? 0.99 : 0.7 // Effectively disable/enable
+    });
+    
+    toast({
+      title: isBufferEnabled ? "Quantum Buffer désactivé" : "Quantum Buffer activé",
+      description: isBufferEnabled 
+        ? "Le préchargement prédictif est maintenant désactivé" 
+        : "Le préchargement prédictif est maintenant activé",
+      duration: 3000
+    });
+  };
 
   // Render skeleton during loading
   if (loading) {
@@ -69,6 +101,22 @@ const RecentVideosSection: React.FC = () => {
 
   return (
     <ContentSection title="Récemment Ajoutées" viewAllLink="/recent">
+      <div className="flex justify-between items-center mb-4">
+        <span className="text-sm text-muted-foreground">
+          {isBufferEnabled && (
+            <span className="text-brand-red">
+              Quantum Buffer: Actif
+            </span>
+          )}
+        </span>
+        <button 
+          onClick={toggleQuantumBuffer}
+          className="text-xs bg-muted hover:bg-muted/80 px-2 py-1 rounded-md"
+        >
+          {isBufferEnabled ? "Désactiver" : "Activer"} Quantum Buffer
+        </button>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-golden-md">
         {displayVideos.map((video) => (
           <VideoCard
