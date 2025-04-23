@@ -1,14 +1,17 @@
+
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { MessageCircle } from "lucide-react";
 import { toast } from "sonner";
+
 interface SendMessageDialogProps {
   performerName: string;
   performerId: number;
   isOpen?: boolean;
   onOpenChange?: (isOpen: boolean) => void;
 }
+
 const SendMessageDialog: React.FC<SendMessageDialogProps> = ({
   performerName,
   performerId,
@@ -19,6 +22,7 @@ const SendMessageDialog: React.FC<SendMessageDialogProps> = ({
   const [internalOpen, setInternalOpen] = useState(false);
   const open = isOpen !== undefined ? isOpen : internalOpen;
   const setOpen = onOpenChange || setInternalOpen;
+
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) {
@@ -31,9 +35,13 @@ const SendMessageDialog: React.FC<SendMessageDialogProps> = ({
     setMessage("");
     setOpen(false);
   };
+
   return <Dialog open={open} onOpenChange={setOpen}>
       {!isOpen && <DialogTrigger asChild>
-          
+          <Button variant="outline" className="flex items-center gap-2">
+            <MessageCircle className="h-4 w-4" />
+            <span>Contacter</span>
+          </Button>
         </DialogTrigger>}
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -51,4 +59,5 @@ const SendMessageDialog: React.FC<SendMessageDialogProps> = ({
       </DialogContent>
     </Dialog>;
 };
+
 export default SendMessageDialog;
