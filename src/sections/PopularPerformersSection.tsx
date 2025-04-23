@@ -3,8 +3,11 @@ import React from "react";
 import ContentSection from "@/components/ContentSection";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { usePopularPerformers } from "@/lib/graphql/hooks";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const popularPerformers = [
+// Données de secours en cas d'échec de la requête GraphQL
+const fallbackPerformers = [
   { id: 1, name: "JulieSky", videos: 58, subscribers: "1.2M", image: "https://picsum.photos/seed/perf1/150/150" },
   { id: 2, name: "MaxPower", videos: 42, subscribers: "850K", image: "https://picsum.photos/seed/perf2/150/150" },
   { id: 3, name: "LexiLove", videos: 63, subscribers: "1.5M", image: "https://picsum.photos/seed/perf3/150/150" },
@@ -13,11 +16,41 @@ const popularPerformers = [
 
 const PopularPerformersSection: React.FC = () => {
   const isMobile = useIsMobile();
+  // Utilisation du hook GraphQL pour les créateurs populaires
+  const { performers, loading, error } = usePopularPerformers();
+
+  // En cas d'erreur, utiliser les données de secours
+  const displayPerformers = error || performers.length === 0 ? fallbackPerformers : performers;
+
+  // Rendu du skeleton pendant le chargement
+  if (loading) {
+    return (
+      <ContentSection title="Créateurs Populaires" viewAllLink="/performers" className="bg-secondary/30">
+        <div className={`${isMobile ? 'flex flex-col gap-golden-md' : 'golden-grid'}`}>
+          <div className="flex flex-wrap justify-center gap-golden-md">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="text-center">
+                <Skeleton className="w-32 h-32 mx-auto mb-golden-sm rounded-full" />
+                <Skeleton className="h-4 w-20 mx-auto" />
+                <Skeleton className="h-3 w-16 mx-auto mt-1" />
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-col justify-center items-start space-y-golden-md px-golden-md">
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-10 w-40" />
+          </div>
+        </div>
+      </ContentSection>
+    );
+  }
+
   return (
     <ContentSection title="Créateurs Populaires" viewAllLink="/performers" className="bg-secondary/30">
       <div className={`${isMobile ? 'flex flex-col gap-golden-md' : 'golden-grid'}`}>
         <div className="flex flex-wrap justify-center gap-golden-md">
-          {popularPerformers.map((performer) => (
+          {displayPerformers.map((performer) => (
             <div key={performer.id} className="text-center group">
               <div className="w-32 h-32 mx-auto mb-golden-sm overflow-hidden rounded-full border-2 border-transparent group-hover:border-brand-accent transition-colors">
                 <img 

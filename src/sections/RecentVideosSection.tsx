@@ -2,8 +2,11 @@
 import React from "react";
 import ContentSection from "@/components/ContentSection";
 import VideoCard from "@/components/VideoCard";
+import { useRecentVideos } from "@/lib/graphql/hooks";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const recentVideos = [
+// Données de secours en cas d'échec de la requête GraphQL
+const fallbackVideos = [
   {
     id: 5,
     title: "Soirée improvisée qui se transforme en moment intime",
@@ -41,10 +44,33 @@ const recentVideos = [
 ];
 
 const RecentVideosSection: React.FC = () => {
+  // Utilisation du hook GraphQL pour les vidéos récentes
+  const { videos, loading, error } = useRecentVideos();
+
+  // En cas d'erreur, utiliser les données de secours
+  const displayVideos = error || videos.length === 0 ? fallbackVideos : videos;
+
+  // Rendu du skeleton pendant le chargement
+  if (loading) {
+    return (
+      <ContentSection title="Récemment Ajoutées" viewAllLink="/recent">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-golden-md">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="space-y-2">
+              <Skeleton className="aspect-video w-full rounded-lg" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-3 w-1/2" />
+            </div>
+          ))}
+        </div>
+      </ContentSection>
+    );
+  }
+
   return (
     <ContentSection title="Récemment Ajoutées" viewAllLink="/recent">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-golden-md">
-        {recentVideos.map((video) => (
+        {displayVideos.map((video) => (
           <VideoCard
             key={video.id}
             title={video.title}

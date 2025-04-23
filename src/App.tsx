@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -6,6 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { ApolloProvider } from '@apollo/client';
+import { client } from './lib/graphql/client';
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AgeVerification from "./components/AgeVerification";
@@ -41,7 +42,6 @@ const App = () => {
     initServices();
   }, []);
 
-  // Function to handle age verification state at app level
   const handleAgeVerification = (isVerified: boolean) => {
     setAgeVerified(isVerified);
   };
@@ -56,29 +56,31 @@ const App = () => {
 
   return (
     <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <div className="min-h-screen bg-background overflow-x-hidden">
-            <Toaster />
-            <Sonner />
-            {!ageVerified && <AgeVerification onVerification={handleAgeVerification} />}
-            <CookieConsentBanner />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/community" element={<Community />} />
-                <Route path="/invite/:code" element={<Invite />} />
-                <Route path="/xtease" element={<XTease />} />
-                <Route path="/creator-dashboard" element={<CreatorDashboardPage />} />
-                <Route path="/creator-dashboard/xtease-security" element={<XTeaseSecurity />} />
-                <Route path="/subscription" element={<React.Suspense fallback={null}><Subscription /></React.Suspense>} />
-                <Route path="/subscription-confirmation" element={<SubscriptionConfirmationPage />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </div>
-        </TooltipProvider>
-      </QueryClientProvider>
+      <ApolloProvider client={client}>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <div className="min-h-screen bg-background overflow-x-hidden">
+              <Toaster />
+              <Sonner />
+              {!ageVerified && <AgeVerification onVerification={handleAgeVerification} />}
+              <CookieConsentBanner />
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/community" element={<Community />} />
+                  <Route path="/invite/:code" element={<Invite />} />
+                  <Route path="/xtease" element={<XTease />} />
+                  <Route path="/creator-dashboard" element={<CreatorDashboardPage />} />
+                  <Route path="/creator-dashboard/xtease-security" element={<XTeaseSecurity />} />
+                  <Route path="/subscription" element={<React.Suspense fallback={null}><Subscription /></React.Suspense>} />
+                  <Route path="/subscription-confirmation" element={<SubscriptionConfirmationPage />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </div>
+          </TooltipProvider>
+        </QueryClientProvider>
+      </ApolloProvider>
     </React.StrictMode>
   );
 };

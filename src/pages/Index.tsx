@@ -9,12 +9,14 @@ import CategoriesSection from "@/sections/CategoriesSection";
 import PopularPerformersSection from "@/sections/PopularPerformersSection";
 import RecentVideosSection from "@/sections/RecentVideosSection";
 import { useIsMobile } from "@/hooks/use-mobile";
+import SEOSchema from "@/components/SEOSchema";
 
 const Index = () => {
   const isMobile = useIsMobile();
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <SEOSchema pageType="home" />
       <Header />
       <HeroSection />
 
