@@ -5,10 +5,11 @@ import App from './App.tsx';
 import './index.css';
 
 // Wait for DOM content to be fully loaded
-document.addEventListener('DOMContentLoaded', () => {
-  const rootElement = document.getElementById('root');
+const rootElement = document.getElementById('root');
 
-  if (rootElement) {
+if (rootElement) {
+  // Use a function that runs after React is defined
+  const renderApp = () => {
     const root = ReactDOM.createRoot(rootElement);
     
     root.render(
@@ -18,7 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     
     console.log('Application mounted successfully');
-  } else {
-    console.error('Root element not found');
-  }
-});
+  };
+
+  // Use setTimeout to ensure React is fully loaded
+  setTimeout(renderApp, 0);
+} else {
+  console.error('Root element not found');
+}
