@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -28,6 +29,13 @@ import Recent from "./pages/Recent";
 import Favorites from "./pages/Favorites";
 import CreatorsPopular from "./pages/CreatorsPopular";
 import CreatorsRecent from "./pages/CreatorsRecent";
+import About from "./pages/About";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import Contact from "./pages/Contact";
+import History from "./pages/History";
+import Upload from "./pages/Upload";
+import Login from "./pages/Login";
 
 const queryClient = new QueryClient();
 
@@ -94,6 +102,15 @@ const App = () => {
                   <Route path="/performers/:performerId" element={<PerformerProfile />} />
                   <Route path="/recent" element={<Recent />} />
                   <Route path="/favorites" element={<Favorites />} />
+                  
+                  {/* Nouvelles routes ajoutées */}
+                  <Route path="/about" element={<About />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/history" element={<History />} />
+                  <Route path="/upload" element={<Upload />} />
+                  <Route path="/login" element={<Login />} />
                   
                   <Route path="*" element={<NotFound />} />
                 </Routes>

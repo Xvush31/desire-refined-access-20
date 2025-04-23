@@ -11,6 +11,7 @@ import RecentVideosSection from "@/components/RecentVideosSection";
 import PopularPerformersSection from "@/components/PopularPerformersSection";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocale } from "@/contexts/LocaleContext";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   const isMobile = useIsMobile();
@@ -56,10 +57,10 @@ const Index = () => {
               </p>
             </div>
             <div className="flex justify-end gap-golden-md flex-wrap">
-              <a href="/about" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">{t("footer.about")}</a>
-              <a href="/terms" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">{t("footer.terms")}</a>
-              <a href="/privacy" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">{t("footer.privacy")}</a>
-              <a href="/contact" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">{t("footer.contact")}</a>
+              <Link to="/about" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">{t("footer.about")}</Link>
+              <Link to="/terms" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">{t("footer.terms")}</Link>
+              <Link to="/privacy" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">{t("footer.privacy")}</Link>
+              <Link to="/contact" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">{t("footer.contact")}</Link>
             </div>
           </div>
         </div>

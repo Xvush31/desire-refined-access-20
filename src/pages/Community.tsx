@@ -6,6 +6,7 @@ import CommunityBadges from "@/features/community/CommunityBadges";
 import DiscreteSharing from "@/features/sharing/DiscreteSharing";
 import { Button } from "@/components/ui/button";
 import { Users } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Community = () => {
   return (
@@ -42,10 +43,10 @@ const Community = () => {
               </p>
             </div>
             <div className="flex gap-6">
-              <a href="/about" className="text-sm text-muted-foreground hover:text-[#D2C7BA] transition-colors">À propos</a>
-              <a href="/terms" className="text-sm text-muted-foreground hover:text-[#D2C7BA] transition-colors">Conditions</a>
-              <a href="/privacy" className="text-sm text-muted-foreground hover:text-[#D2C7BA] transition-colors">Confidentialité</a>
-              <a href="/contact" className="text-sm text-muted-foreground hover:text-[#D2C7BA] transition-colors">Contact</a>
+              <Link to="/about" className="text-sm text-muted-foreground hover:text-[#D2C7BA] transition-colors">À propos</Link>
+              <Link to="/terms" className="text-sm text-muted-foreground hover:text-[#D2C7BA] transition-colors">Conditions</Link>
+              <Link to="/privacy" className="text-sm text-muted-foreground hover:text-[#D2C7BA] transition-colors">Confidentialité</Link>
+              <Link to="/contact" className="text-sm text-muted-foreground hover:text-[#D2C7BA] transition-colors">Contact</Link>
             </div>
           </div>
         </div>

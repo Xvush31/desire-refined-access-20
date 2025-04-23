@@ -37,18 +37,18 @@ const Header = () => {
           <Logo />
 
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="/" className="nav-link">{t("header.home")}</a>
-            <a href="/trending" className="nav-link">{t("header.trending")}</a>
-            <a href="/categories" className="nav-link">{t("header.categories")}</a>
-            <a href="/performers" className="nav-link">{t("header.performers")}</a>
-            <a href="/community" className="nav-link">{t("header.community")}</a>
-            <a href="/favorites" className="nav-link">{t("header.favorites")}</a>
-            <a href="/xtease" className="nav-link flex items-center">
+            <Link to="/" className="nav-link">{t("header.home")}</Link>
+            <Link to="/trending" className="nav-link">{t("header.trending")}</Link>
+            <Link to="/categories" className="nav-link">{t("header.categories")}</Link>
+            <Link to="/performers" className="nav-link">{t("header.performers")}</Link>
+            <Link to="/community" className="nav-link">{t("header.community")}</Link>
+            <Link to="/favorites" className="nav-link">{t("header.favorites")}</Link>
+            <Link to="/xtease" className="nav-link flex items-center">
               XTease
               <Badge className="ml-2 bg-brand-red text-white">{t("header.new")}</Badge>
-            </a>
+            </Link>
             <Link to="/creator-dashboard" className="nav-link">{t("header.creator_dashboard")}</Link>
-+            <Link to="/creators" className="nav-link">Créateurs</Link>
+            <Link to="/creators" className="nav-link">Créateurs</Link>
           </nav>
 
           <div className="flex items-center space-x-4">
