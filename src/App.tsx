@@ -17,6 +17,8 @@ import XTease from "./pages/XTease";
 import CreatorDashboardPage from "./sections/CreatorDashboardPage";
 import XTeaseSecurity from "./sections/dashboard/XTeaseSecurity";
 import CookieConsentBanner from "@/components/CookieConsentBanner";
+import Subscription from "./pages/Subscription";
+import SubscriptionConfirmationPage from "./pages/SubscriptionConfirmation";
 
 const queryClient = new QueryClient();
 
