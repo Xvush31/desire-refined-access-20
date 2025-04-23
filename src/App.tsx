@@ -41,6 +41,11 @@ const App = () => {
     initServices();
   }, []);
 
+  // Function to handle age verification state at app level
+  const handleAgeVerification = (isVerified: boolean) => {
+    setAgeVerified(isVerified);
+  };
+
   if (loading) {
     return (
       <div className="fixed inset-0 bg-background flex items-center justify-center">
@@ -56,7 +61,7 @@ const App = () => {
           <div className="min-h-screen bg-background overflow-x-hidden">
             <Toaster />
             <Sonner />
-            {!ageVerified && <AgeVerification />}
+            {!ageVerified && <AgeVerification onVerification={handleAgeVerification} />}
             <CookieConsentBanner />
             <BrowserRouter>
               <Routes>

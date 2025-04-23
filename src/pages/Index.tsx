@@ -1,4 +1,3 @@
-
 import React from "react";
 import Header from "@/components/Header";
 import ContentSection from "@/components/ContentSection";
@@ -187,12 +186,13 @@ const Index = () => {
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-golden-sm">
           {popularCategories.slice(5).map((category) => (
-            <CategoryCard
-              key={category.id}
-              name={category.name}
-              image={category.image}
-              videoCount={category.videoCount}
-            />
+            <div key={category.id} className="w-full">
+              <CategoryCard
+                name={category.name}
+                image={category.image}
+                videoCount={category.videoCount}
+              />
+            </div>
           ))}
         </div>
       </ContentSection>
