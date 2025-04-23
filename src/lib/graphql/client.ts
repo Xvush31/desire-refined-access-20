@@ -1,10 +1,10 @@
 
 import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
-// Import Observable from the local quantum-buffer module instead of using rxjs
+// Utiliser le tampon quantique local au lieu de rxjs
 import { Observable, quantumBuffer } from '../quantum-buffer/quantum-buffer';
 
-// Error link to intercept and handle GraphQL errors
+// Lien d'erreur pour intercepter et gérer les erreurs GraphQL
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors)
     graphQLErrors.forEach(({ message, locations, path }) =>
@@ -15,18 +15,18 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (networkError) console.error(`[Network error]: ${networkError}`);
 });
 
-// Custom link for quantum buffer integration
+// Lien personnalisé pour l'intégration du tampon quantique
 const quantumBufferLink = (operation, forward) => {
   const { operationName, variables } = operation;
   
-  // Generate an ID for this query
+  // Générer un ID pour cette requête
   const queryId = `${operationName}:${JSON.stringify(variables)}`;
   
-  // Check if this query is in the buffer
+  // Vérifier si cette requête est dans le tampon
   const cachedData = quantumBuffer.getFromBuffer(queryId);
   if (cachedData) {
-    console.log(`[Quantum Buffer] Using cached result for ${operationName}`);
-    // If yes, return the buffer data directly
+    console.log(`[Quantum Buffer] Utilisation du résultat en cache pour ${operationName}`);
+    // Si oui, renvoyer directement les données du tampon
     return new Observable(observer => {
       observer.next({ data: cachedData });
       observer.complete();
@@ -34,10 +34,10 @@ const quantumBufferLink = (operation, forward) => {
     });
   }
   
-  // Otherwise, let the request pass through and trigger predictive preloading
+  // Sinon, laisser passer la requête et déclencher le préchargement prédictif
   const result = forward(operation);
   
-  // After the query executes, trigger predictive preloading
+  // Après l'exécution de la requête, déclencher le préchargement prédictif
   setTimeout(() => {
     quantumBuffer.predictAndBuffer({
       lastQuery: operationName,
@@ -48,15 +48,15 @@ const quantumBufferLink = (operation, forward) => {
   return result;
 };
 
-// HTTP link to define our GraphQL API URL
+// Lien HTTP pour définir notre URL d'API GraphQL
 const httpLink = createHttpLink({
   uri: 'https://api.xvush.com/graphql',
 });
 
-// Apollo cache configuration
+// Configuration du cache Apollo
 const cache = new InMemoryCache();
 
-// Creating the Apollo client
+// Création du client Apollo
 export const client = new ApolloClient({
   link: from([errorLink, httpLink]),
   cache,
@@ -67,15 +67,15 @@ export const client = new ApolloClient({
   },
 });
 
-// Initialize the Quantum Buffer Protocol safely
+// Initialiser le Protocole de Tampon Quantique en toute sécurité
 export const initQuantumBuffer = async () => {
   try {
-    console.log("Starting Quantum Buffer initialization");
+    console.log("Démarrage de l'initialisation du Tampon Quantique");
     await quantumBuffer.initialize();
-    console.log("Quantum Buffer Protocol initialized for Apollo Client");
+    console.log("Protocole de Tampon Quantique initialisé pour Apollo Client");
     return true;
   } catch (error) {
-    console.error("Failed to initialize Quantum Buffer:", error);
+    console.error("Échec de l'initialisation du Tampon Quantique:", error);
     return false;
   }
 };

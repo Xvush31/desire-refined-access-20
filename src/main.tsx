@@ -4,42 +4,40 @@ import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
-// Don't expose React globally as this can cause issues
-// Instead, make sure React is properly imported where needed
-
+// Initialisation de console debugging
 console.log("React version:", React.version);
 // Remove the ReactDOM.version reference as it's not available in the type definition
 
-// Initialize React only after DOM is fully loaded
+// Initialiser React uniquement après que le DOM est complètement chargé
 function initializeReact() {
-  console.log("Initializing React application...");
+  console.log("Initialisation de l'application React...");
   
   const rootElement = document.getElementById('root');
   if (!rootElement) {
-    console.error('Failed to find the root element');
+    console.error('Élément root non trouvé');
     return;
   }
   
   try {
-    console.log("Creating React root...");
+    console.log("Création de la racine React...");
     const root = ReactDOM.createRoot(rootElement);
     
-    console.log("Rendering React app...");
+    console.log("Rendu de l'application React...");
     root.render(
       <React.StrictMode>
         <App />
       </React.StrictMode>
     );
-    console.log("React app rendered successfully");
+    console.log("Application React rendue avec succès");
   } catch (error) {
-    console.error("Error initializing React application:", error);
+    console.error("Erreur lors de l'initialisation de l'application React:", error);
   }
 }
 
-// Check if DOM is already loaded
+// Vérifier si le DOM est déjà chargé
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initializeReact);
 } else {
-  // DOM already loaded, initialize immediately
+  // DOM déjà chargé, initialisation immédiate
   initializeReact();
 }
