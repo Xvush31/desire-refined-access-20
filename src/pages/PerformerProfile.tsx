@@ -75,6 +75,43 @@ const performerDetails: Record<string, PerformerData> = {
   },
 };
 
+const performerVideos = [
+  {
+    id: 1,
+    title: "Ma routine matinale sensuelle",
+    thumbnail: "https://picsum.photos/seed/vid1/640/360",
+    duration: "12:34",
+    views: "1.2M",
+    performer: "JulieSky",
+    isPremium: true
+  },
+  {
+    id: 2,
+    title: "Séance en lingerie exclusive",
+    thumbnail: "https://picsum.photos/seed/vid2/640/360",
+    duration: "18:22",
+    views: "843K",
+    performer: "JulieSky"
+  },
+  {
+    id: 3,
+    title: "Danse sensuelle en privé",
+    thumbnail: "https://picsum.photos/seed/vid3/640/360",
+    duration: "22:15",
+    views: "1.5M",
+    performer: "JulieSky",
+    isPremium: true
+  },
+  {
+    id: 4,
+    title: "Moment de détente dans mon bain",
+    thumbnail: "https://picsum.photos/seed/vid4/640/360",
+    duration: "14:08",
+    views: "950K",
+    performer: "JulieSky"
+  }
+];
+
 const PerformerProfile: React.FC = () => {
   const { performerId } = useParams<{ performerId: string }>();
   const performer = performerDetails[performerId || "1"] || performerDetails["1"];
