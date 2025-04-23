@@ -1,7 +1,6 @@
 
 import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
-// Utiliser le tampon quantique local au lieu de rxjs
 import { quantumBuffer } from '../quantum-buffer/quantum-buffer';
 
 // Créer une classe Observable personnalisée pour Apollo sans dépendance à rxjs
@@ -9,7 +8,14 @@ export class Observable {
   constructor(private subscribeFn: (observer: any) => any) {}
   
   subscribe(observer: any) {
-    return this.subscribeFn(observer);
+    const subscription = this.subscribeFn(observer);
+    return {
+      unsubscribe: () => {
+        if (subscription && typeof subscription.unsubscribe === 'function') {
+          subscription.unsubscribe();
+        }
+      }
+    };
   }
 }
 
@@ -32,7 +38,7 @@ const httpLink = createHttpLink({
 // Configuration du cache Apollo
 const cache = new InMemoryCache();
 
-// Création du client Apollo
+// Création du client Apollo avec configuration minimale
 export const client = new ApolloClient({
   link: from([errorLink, httpLink]),
   cache,
