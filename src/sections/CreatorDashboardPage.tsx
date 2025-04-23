@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import CreatorDashboard from './CreatorDashboard';
 import ContentManagementSection from './ContentManagementSection';
 import MonetizationSection from './monetization/MonetizationSection';
