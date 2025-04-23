@@ -5,17 +5,13 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
   },
   plugins: [
-    react({
-      jsxImportSource: 'react',
-      // No exclude property as it's not supported
-    }),
+    react(),
     mode === 'development' && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
@@ -45,26 +41,14 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      // Ensure React is resolved correctly to avoid duplicates
-      "react": path.resolve(__dirname, "./node_modules/react"),
-      "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
     },
   },
   optimizeDeps: {
     include: ['react', 'react-dom'],
-    // Use force to ensure dependencies are optimized
-    force: true,
   },
   build: {
     commonjsOptions: {
       transformMixedEsModules: true,
-    },
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
-        },
-      },
     },
   },
 }));
