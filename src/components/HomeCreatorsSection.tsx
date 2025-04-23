@@ -13,6 +13,8 @@ const creators: CreatorData[] = [
     avatar: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=facearea&w=256&h=256&q=80",
     category: "Performeuse & Danse",
     trending: true,
+    followers: 23800,
+    revenue: "12 930",
     description: "Artiste passionnée et créative, Lola partage ses chorégraphies exclusives et moments privés avec ses abonnés."
   },
   {
@@ -21,6 +23,8 @@ const creators: CreatorData[] = [
     avatar: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=facearea&w=256&h=256&q=80",
     category: "Modèle masculin",
     trending: false,
+    followers: 15000,
+    revenue: "8 400",
     description: "Lucas propose des séances exclusives axées sur la confiance en soi, l'humour et la détente."
   },
 ];
