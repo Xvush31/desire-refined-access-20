@@ -36,19 +36,27 @@ const Header = () => {
         <div className="flex items-center justify-between">
           <Logo />
 
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="nav-link">{t("header.home")}</Link>
-            <Link to="/trending" className="nav-link">{t("header.trending")}</Link>
-            <Link to="/categories" className="nav-link">{t("header.categories")}</Link>
-            <Link to="/performers" className="nav-link">{t("header.performers")}</Link>
-            <Link to="/community" className="nav-link">{t("header.community")}</Link>
-            <Link to="/favorites" className="nav-link">{t("header.favorites")}</Link>
-            <Link to="/xtease" className="nav-link flex items-center">
-              XTease
-              <Badge className="ml-2 bg-brand-red text-white">{t("header.new")}</Badge>
-            </Link>
-            <Link to="/creator-dashboard" className="nav-link">{t("header.creator_dashboard")}</Link>
-            <Link to="/creators" className="nav-link">Créateurs</Link>
+          <nav className="hidden md:flex items-center space-x-6">
+            <div className="flex items-center space-x-6">
+              <Link to="/" className="nav-link">{t("header.home")}</Link>
+              <Link to="/trending" className="nav-link">{t("header.trending")}</Link>
+              <Link to="/categories" className="nav-link">{t("header.categories")}</Link>
+              <Link to="/performers" className="nav-link">{t("header.performers")}</Link>
+            </div>
+
+            <div className="flex items-center space-x-6">
+              <Link to="/community" className="nav-link">{t("header.community")}</Link>
+              <Link to="/favorites" className="nav-link">{t("header.favorites")}</Link>
+              <div className="flex flex-col items-center">
+                <Link to="/xtease" className="nav-link">XTease</Link>
+                <Badge className="mt-1 bg-brand-red text-white text-[10px] py-0">{t("header.new")}</Badge>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-6">
+              <Link to="/creator-dashboard" className="nav-link">{t("header.creator_dashboard")}</Link>
+              <Link to="/creators" className="nav-link">Créateurs</Link>
+            </div>
           </nav>
 
           <div className="flex items-center space-x-4">
@@ -95,3 +103,4 @@ const Header = () => {
 };
 
 export default Header;
+
