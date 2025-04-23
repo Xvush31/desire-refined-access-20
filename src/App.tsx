@@ -36,6 +36,7 @@ import History from "./pages/History";
 import Upload from "./pages/Upload";
 import Login from "./pages/Login";
 import SingleVideo from "./pages/SingleVideo";
+import PWAInstallPrompt from './components/PWAInstallPrompt';
 
 const queryClient = new QueryClient();
 
@@ -80,6 +81,7 @@ const App = () => {
               <Sonner />
               {!ageVerified && <AgeVerification onVerification={handleAgeVerification} />}
               <CookieConsentBanner />
+              <PWAInstallPrompt />
               <BrowserRouter>
                 <Routes>
                   <Route path="/" element={<Index />} />
