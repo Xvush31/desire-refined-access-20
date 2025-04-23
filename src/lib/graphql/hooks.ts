@@ -42,15 +42,21 @@ export const useTrendingVideos = () => {
   // Use WebAssembly to optimize video quality if available
   useEffect(() => {
     let isMounted = true;
-    if (data?.trendingVideos) {
-      optimizeVideoQuality(data.trendingVideos)
-        .then(optimized => {
+    
+    const optimize = async () => {
+      if (data?.trendingVideos) {
+        try {
+          const optimized = await optimizeVideoQuality(data.trendingVideos);
           if (isMounted) {
             setOptimizedVideos(optimized);
           }
-        })
-        .catch(err => console.error("Failed to optimize videos:", err));
-    }
+        } catch (err) {
+          console.error("Failed to optimize videos:", err);
+        }
+      }
+    };
+    
+    optimize();
     return () => { isMounted = false; };
   }, [data?.trendingVideos]);
   
@@ -80,15 +86,21 @@ export const useRecentVideos = () => {
   // Use WebAssembly to optimize video quality if available
   useEffect(() => {
     let isMounted = true;
-    if (data?.recentVideos) {
-      optimizeVideoQuality(data.recentVideos)
-        .then(optimized => {
+    
+    const optimize = async () => {
+      if (data?.recentVideos) {
+        try {
+          const optimized = await optimizeVideoQuality(data.recentVideos);
           if (isMounted) {
             setOptimizedVideos(optimized);
           }
-        })
-        .catch(err => console.error("Failed to optimize videos:", err));
-    }
+        } catch (err) {
+          console.error("Failed to optimize videos:", err);
+        }
+      }
+    };
+    
+    optimize();
     return () => { isMounted = false; };
   }, [data?.recentVideos]);
   

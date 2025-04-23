@@ -15,18 +15,18 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (networkError) console.error(`[Network error]: ${networkError}`);
 });
 
-// Quantum Buffer Link pour intercepter les requêtes et utiliser le buffer prédictif
+// Custom link for quantum buffer integration
 const quantumBufferLink = (operation, forward) => {
   const { operationName, variables } = operation;
   
-  // Générer un ID pour cette requête
+  // Generate an ID for this query
   const queryId = `${operationName}:${JSON.stringify(variables)}`;
   
-  // Vérifier si cette requête est dans le buffer
+  // Check if this query is in the buffer
   const cachedData = quantumBuffer.getFromBuffer(queryId);
   if (cachedData) {
     console.log(`[Quantum Buffer] Using cached result for ${operationName}`);
-    // Si oui, retourner les données du buffer directement
+    // If yes, return the buffer data directly
     return new Observable(observer => {
       observer.next({ data: cachedData });
       observer.complete();
@@ -36,7 +36,7 @@ const quantumBufferLink = (operation, forward) => {
   // Sinon, laisser passer la requête et déclencher le préchargement prédictif
   const result = forward(operation);
   
-  // Après l'exécution de la requête, déclencher le préchargement prédictif
+  // After the query executes, trigger predictive preloading
   setTimeout(() => {
     quantumBuffer.predictAndBuffer({
       lastQuery: operationName,
@@ -48,7 +48,6 @@ const quantumBufferLink = (operation, forward) => {
 };
 
 // HTTP link to define our GraphQL API URL
-// For now, we're using a mock URL that will be replaced with a real one later
 const httpLink = createHttpLink({
   uri: 'https://api.xvush.com/graphql',
 });
@@ -67,8 +66,14 @@ export const client = new ApolloClient({
   },
 });
 
-// Initialize the Quantum Buffer Protocol
+// Initialize the Quantum Buffer Protocol - make it safer
 export const initQuantumBuffer = async () => {
-  await quantumBuffer.initialize();
-  console.log("Quantum Buffer Protocol initialized for Apollo Client");
+  try {
+    await quantumBuffer.initialize();
+    console.log("Quantum Buffer Protocol initialized for Apollo Client");
+    return true;
+  } catch (error) {
+    console.error("Failed to initialize Quantum Buffer:", error);
+    return false;
+  }
 };

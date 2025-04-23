@@ -21,17 +21,28 @@ import CookieConsentBanner from "@/components/CookieConsentBanner";
 import Subscription from "./pages/Subscription";
 import SubscriptionConfirmationPage from "./pages/SubscriptionConfirmation";
 
-const queryClient = new QueryClient();
+// Create query client outside component to avoid re-creation
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => {
   const [loading, setLoading] = useState(true);
   const [ageVerified, setAgeVerified] = useState(false);
+  const [servicesInitialized, setServicesInitialized] = useState(false);
 
   useEffect(() => {
     const initServices = async () => {
       try {
+        // Initialize services sequentially to avoid race conditions
         await regulatoryFirewall.init();
         await initQuantumBuffer();
+        setServicesInitialized(true);
       } catch (error) {
         console.error("Error initializing services:", error);
       } finally {
