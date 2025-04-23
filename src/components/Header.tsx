@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Search, Menu, User } from "lucide-react";
@@ -6,11 +7,14 @@ import MobileMenu from "./MobileMenu";
 import Logo from "./Logo";
 import GhostModeToggle from "./GhostModeToggle";
 import { Link } from "react-router-dom";
+import { useLocale } from "@/contexts/LocaleContext";
+import LanguageSelector from "./dashboard/LanguageSelector";
 
 const Header = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { t } = useLocale();
   
   useEffect(() => {
     const handleScroll = () => {
@@ -33,17 +37,17 @@ const Header = () => {
           <Logo />
 
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="/" className="nav-link">Accueil</a>
-            <a href="/trending" className="nav-link">Tendances</a>
-            <a href="/categories" className="nav-link">Catégories</a>
-            <a href="/performers" className="nav-link">Créateurs</a>
-            <a href="/community" className="nav-link">Communauté</a>
-            <a href="/favorites" className="nav-link">Favoris</a>
+            <a href="/" className="nav-link">{t("header.home")}</a>
+            <a href="/trending" className="nav-link">{t("header.trending")}</a>
+            <a href="/categories" className="nav-link">{t("header.categories")}</a>
+            <a href="/performers" className="nav-link">{t("header.performers")}</a>
+            <a href="/community" className="nav-link">{t("header.community")}</a>
+            <a href="/favorites" className="nav-link">{t("header.favorites")}</a>
             <a href="/xtease" className="nav-link flex items-center">
               XTease
-              <Badge className="ml-2 bg-brand-red text-white">Nouveau</Badge>
+              <Badge className="ml-2 bg-brand-red text-white">{t("header.new")}</Badge>
             </a>
-            <Link to="/creator-dashboard" className="nav-link">Tableau de Bord Créateurs</Link>
+            <Link to="/creator-dashboard" className="nav-link">{t("header.creator_dashboard")}</Link>
           </nav>
 
           <div className="flex items-center space-x-4">
@@ -56,9 +60,13 @@ const Header = () => {
               </button>
               <input 
                 type="text" 
-                placeholder="Rechercher..." 
+                placeholder={t("header.search")}
                 className={`${showSearch ? 'w-full opacity-100' : 'w-0 opacity-0'} transition-all duration-300 bg-transparent border-none focus:outline-none px-2 py-1 text-foreground`}
               />
+            </div>
+            
+            <div className="hidden md:block mr-2">
+              <LanguageSelector compact />
             </div>
             
             <div className="hidden md:block">

@@ -1,13 +1,17 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 import { useLocale } from "@/contexts/LocaleContext";
 import { Globe } from "lucide-react";
 
-const LanguageSelector: React.FC = () => {
+interface LanguageSelectorProps {
+  compact?: boolean;
+}
+
+const LanguageSelector: React.FC<LanguageSelectorProps> = ({ compact = false }) => {
   const { lang, setLang } = useLocale();
 
   return (
-    <div className="relative flex items-center bg-[#221F26] rounded-lg px-3 py-2 border border-[#403E43] hover:border-[#8B5CF6] transition-colors group">
+    <div className={`relative flex items-center bg-[#221F26] rounded-lg px-3 py-2 border border-[#403E43] hover:border-[#8B5CF6] transition-colors group ${compact ? 'scale-90' : ''}`}>
       <Globe className="w-4 h-4 mr-1 text-[#8B5CF6]" />
       <select
         className="bg-transparent text-white pl-1 pr-5 py-1 appearance-none outline-none cursor-pointer border-0 focus:ring-0 focus:outline-none"

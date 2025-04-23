@@ -6,12 +6,11 @@ import CategoryCard from "@/components/CategoryCard";
 import HeroSection from "@/components/HeroSection";
 import SubscriptionTiers from "@/components/SubscriptionTiers";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Search, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import XTeaseSection from "@/components/XTeaseSection";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { useLocale } from "@/contexts/LocaleContext";
 
-// Sample data - normally this would come from an API
 const trendingVideos = [
   {
     id: 1,
@@ -104,6 +103,7 @@ const popularPerformers = [
 
 const Index = () => {
   const isMobile = useIsMobile();
+  const { t } = useLocale();
   
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -113,13 +113,15 @@ const Index = () => {
       <HeroSection />
       
       {/* Trending Videos - Utilisation du ratio d'or pour la structure */}
-      <ContentSection title="Tendances" viewAllLink="/trending">
+      <ContentSection title={t("home.trending")} viewAllLink="/trending">
         <div className={`${isMobile ? 'flex flex-col gap-golden-md' : 'golden-grid-reverse'}`}>
           <div className="space-y-golden-sm">
-            <h3 className="text-golden-lg font-medium">Vidéos populaires</h3>
-            <p className="text-muted-foreground">Découvrez les vidéos tendances les plus regardées cette semaine</p>
+            <h3 className="text-golden-lg font-medium">{t("home.popular_videos")}</h3>
+            <p className="text-muted-foreground">
+              {t("home.trending_desc") || "Découvrez les vidéos tendances les plus regardées cette semaine"}
+            </p>
             <Button className="animated-gradient-bg text-white mt-golden-md w-full sm:w-auto">
-              Explorer toutes les tendances
+              {t("home.explore_trends")}
             </Button>
           </div>
           <div className={`grid grid-cols-1 ${isMobile ? 'mt-5' : 'sm:grid-cols-2'} gap-golden-md`}>
@@ -158,7 +160,7 @@ const Index = () => {
       </div>
       
       {/* Categories - Grille basée sur le ratio d'or */}
-      <ContentSection title="Catégories Populaires" viewAllLink="/categories" className="bg-secondary/30">
+      <ContentSection title={t("home.categories")} viewAllLink="/categories" className="bg-secondary/30">
         <div className={`${isMobile ? 'flex flex-col gap-golden-md' : 'golden-grid'} mb-golden-md`}>
           <div>
             <AspectRatio ratio={1.618} className="rounded-2xl overflow-hidden">
@@ -201,7 +203,7 @@ const Index = () => {
       <SubscriptionTiers />
       
       {/* Recent Videos */}
-      <ContentSection title="Récemment Ajoutées" viewAllLink="/recent">
+      <ContentSection title={t("home.recent")} viewAllLink="/recent">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-golden-md">
           {recentVideos.map((video) => (
             <VideoCard
@@ -218,7 +220,7 @@ const Index = () => {
       </ContentSection>
       
       {/* Popular Performers - Section avec proportion d'or */}
-      <ContentSection title="Créateurs Populaires" viewAllLink="/performers" className="bg-secondary/30">
+      <ContentSection title={t("home.creators")} viewAllLink="/performers" className="bg-secondary/30">
         <div className={`${isMobile ? 'flex flex-col gap-golden-md' : 'golden-grid'}`}>
           <div className="flex flex-wrap justify-center gap-golden-md">
             {popularPerformers.map((performer) => (
@@ -231,16 +233,16 @@ const Index = () => {
                   />
                 </div>
                 <h3 className="font-medium group-hover:text-brand-accent transition-colors">{performer.name}</h3>
-                <p className="text-sm text-muted-foreground">{performer.videos} vidéos</p>
-                <p className="text-xs text-brand-accent">{performer.subscribers} abonnés</p>
+                <p className="text-sm text-muted-foreground">{performer.videos} {t("home.videos")}</p>
+                <p className="text-xs text-brand-accent">{performer.subscribers} {t("home.subscribers")}</p>
               </div>
             ))}
           </div>
           <div className="flex flex-col justify-center items-start space-y-golden-md px-golden-md">
-            <h3 className="text-golden-xl font-medium">Nos meilleurs créateurs</h3>
-            <p className="text-muted-foreground">Découvrez les créateurs les plus populaires sur notre plateforme et abonnez-vous pour ne rien manquer de leur contenu exclusif.</p>
+            <h3 className="text-golden-xl font-medium">{t("home.top_creators")}</h3>
+            <p className="text-muted-foreground">{t("home.creators_desc")}</p>
             <Button className="animated-gradient-bg text-white">
-              Voir tous les créateurs
+              {t("home.view_creators")}
             </Button>
           </div>
         </div>
@@ -252,14 +254,14 @@ const Index = () => {
           <div className={`${isMobile ? 'flex flex-col gap-4' : 'golden-grid'} items-center`}>
             <div>
               <p className="text-muted-foreground text-sm">
-                © 2025 Visua. Tous droits réservés.
+                {t("footer.copyright")}
               </p>
             </div>
             <div className="flex justify-end gap-golden-md flex-wrap">
-              <a href="/about" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">À propos</a>
-              <a href="/terms" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">Conditions</a>
-              <a href="/privacy" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">Confidentialité</a>
-              <a href="/contact" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">Contact</a>
+              <a href="/about" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">{t("footer.about")}</a>
+              <a href="/terms" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">{t("footer.terms")}</a>
+              <a href="/privacy" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">{t("footer.privacy")}</a>
+              <a href="/contact" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">{t("footer.contact")}</a>
             </div>
           </div>
         </div>
