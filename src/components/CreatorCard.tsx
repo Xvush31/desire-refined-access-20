@@ -2,8 +2,9 @@
 import React from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 export interface CreatorData {
   id: number;
@@ -36,10 +37,30 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => (
     </div>
     <h3 className="text-lg font-semibold mb-1">{creator.name}</h3>
     <div className="text-xs text-muted-foreground mb-2">{creator.category}</div>
-    {/* Les informations sur les fans et les revenus ont été supprimées */}
     <p className="text-sm text-foreground/90 text-center mb-4 line-clamp-3">{creator.description}</p>
-    <Button variant="secondary" className="w-full">Voir le profil</Button>
+    <div className="flex flex-col gap-2 w-full mt-1">
+      <Button
+        asChild
+        variant="secondary"
+        className="w-full font-semibold"
+      >
+        <Link to={`/performer/${creator.id}`}>
+          Voir le profil
+        </Link>
+      </Button>
+      <Button
+        asChild
+        variant="default"
+        className="w-full bg-brand-accent hover:bg-brand-accent/90 text-white font-bold"
+      >
+        <Link to={`/subscription?creator=${creator.id}`}>
+          <Plus className="mr-2" size={18} />
+          Abonnez-vous
+        </Link>
+      </Button>
+    </div>
   </div>
 );
 
 export default CreatorCard;
+
