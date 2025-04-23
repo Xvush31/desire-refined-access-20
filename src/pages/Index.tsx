@@ -1,3 +1,4 @@
+
 import React from "react";
 import Header from "@/components/Header";
 import ContentSection from "@/components/ContentSection";
@@ -184,9 +185,12 @@ const Index = () => {
             ))}
           </div>
         </div>
+
+        {/* Correction: Uniformiser la grille pour toutes les catégories */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-golden-sm">
+          {/* On s'assure que chaque catégorie a une div parent de même taille */}
           {popularCategories.slice(5).map((category) => (
-            <div key={category.id} className="w-full">
+            <div key={category.id} className="w-full aspect-[4/3]">
               <CategoryCard
                 name={category.name}
                 image={category.image}
