@@ -154,19 +154,19 @@ const PerformerProfile: React.FC = () => {
                 </div>
                 
                 <div className="flex flex-wrap justify-center md:justify-start gap-6 mb-6">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 bg-secondary/40 px-3 py-2 rounded-md">
                     <Heart size={18} className="text-brand-red" />
-                    <span>{performer.stats.likes} likes</span>
+                    <span className="text-white">{performer.stats.likes} likes</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 bg-secondary/40 px-3 py-2 rounded-md">
                     <Video size={18} className="text-foreground/70" />
-                    <span>{performer.stats.views} vues</span>
+                    <span className="text-white">{performer.stats.views} vues</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 bg-secondary/40 px-3 py-2 rounded-md">
                     <Users size={18} className="text-foreground/70" />
-                    <span>{performer.subscribers} abonnés</span>
+                    <span className="text-white">{performer.subscribers} abonnés</span>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 bg-secondary/40 px-3 py-2 rounded-md">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <Star 
                         key={i} 
@@ -174,7 +174,7 @@ const PerformerProfile: React.FC = () => {
                         className={i < Math.floor(performer.stats.rating) ? "fill-yellow-400 text-yellow-400" : "text-muted"}
                       />
                     ))}
-                    <span className="ml-1">{performer.stats.rating.toFixed(1)}</span>
+                    <span className="text-white ml-1">{performer.stats.rating.toFixed(1)}</span>
                   </div>
                 </div>
                 
@@ -189,7 +189,7 @@ const PerformerProfile: React.FC = () => {
                   <Button 
                     variant="outline" 
                     type="button"
-                    className="min-w-[140px]"
+                    className="min-w-[140px] bg-secondary/40 text-white hover:text-white hover:bg-secondary/60"
                     onClick={() => setIsMessageDialogOpen(true)}
                   >
                     <MessageCircle size={18} className="mr-2" /> 
