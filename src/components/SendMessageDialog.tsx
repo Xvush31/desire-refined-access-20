@@ -14,11 +14,21 @@ import { toast } from "sonner";
 interface SendMessageDialogProps {
   performerName: string;
   performerId: number;
+  isOpen?: boolean;
+  onOpenChange?: (isOpen: boolean) => void;
 }
 
-const SendMessageDialog: React.FC<SendMessageDialogProps> = ({ performerName, performerId }) => {
+const SendMessageDialog: React.FC<SendMessageDialogProps> = ({ 
+  performerName, 
+  performerId,
+  isOpen,
+  onOpenChange
+}) => {
   const [message, setMessage] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  
+  const open = isOpen !== undefined ? isOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,23 +40,25 @@ const SendMessageDialog: React.FC<SendMessageDialogProps> = ({ performerName, pe
     // Simulate sending message - will be replaced with actual backend integration
     toast.success(`Message envoyé à ${performerName}`);
     setMessage("");
-    setIsOpen(false);
+    setOpen(false);
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">
-          <MessageCircle size={18} className="mr-2" /> Message privé
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      {!isOpen && (
+        <DialogTrigger asChild>
+          <Button variant="outline">
+            <MessageCircle size={18} className="mr-2" /> Message privé
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Envoyer un message à {performerName}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSendMessage} className="space-y-4 mt-4">
           <textarea
-            className="w-full min-h-[120px] rounded-md border border-input bg-background px-3 py-2 text-sm text-white"
+            className="w-full min-h-[120px] rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
             placeholder="Votre message..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}

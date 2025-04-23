@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import Header from "@/components/Header";
 import ContentSection from "@/components/ContentSection";
@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heart, MessageCircle, Star, Clock, Video, Users } from "lucide-react";
 import SendMessageDialog from "@/components/SendMessageDialog";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface PerformerData {
   id: number;
@@ -116,9 +117,11 @@ const PerformerProfile: React.FC = () => {
   const { performerId } = useParams<{ performerId: string }>();
   const performer = performerDetails[performerId || "1"] || performerDetails["1"];
   const navigate = useNavigate();
+  const [isMessageDialogOpen, setIsMessageDialogOpen] = useState(false);
 
   const handleSubscribe = () => {
     navigate(`/subscription?creator=${performer.id}`);
+    toast.success("Redirection vers l'abonnement");
   };
   
   return (
@@ -177,10 +180,26 @@ const PerformerProfile: React.FC = () => {
                 </div>
                 
                 <div className="flex flex-wrap justify-center md:justify-start gap-4">
-                  <Button className="animated-gradient-bg text-white" onClick={handleSubscribe}>
+                  <Button 
+                    className="animated-gradient-bg text-white" 
+                    onClick={handleSubscribe}
+                    type="button"
+                  >
                     S'abonner
                   </Button>
-                  <SendMessageDialog performerName={performer.name} performerId={performer.id} />
+                  <Button 
+                    variant="outline" 
+                    type="button"
+                    onClick={() => setIsMessageDialogOpen(true)}
+                  >
+                    <MessageCircle size={18} className="mr-2" /> Message privé
+                  </Button>
+                  <SendMessageDialog 
+                    performerName={performer.name} 
+                    performerId={performer.id}
+                    isOpen={isMessageDialogOpen}
+                    onOpenChange={setIsMessageDialogOpen}
+                  />
                 </div>
               </div>
             </div>
