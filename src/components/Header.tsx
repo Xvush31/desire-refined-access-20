@@ -36,8 +36,8 @@ const Header = () => {
         <div className="flex items-center justify-between">
           <Logo />
 
-          <nav className="hidden md:flex items-center space-x-6">
-            {/* Navigation Group - Main content */}
+          <nav className="hidden md:flex items-center space-x-8">
+            {/* Navigation Group - Core Navigation */}
             <div className="flex items-center space-x-6">
               <Link to="/" className="nav-link">{t("header.home")}</Link>
               <Link to="/trending" className="nav-link">{t("header.trending")}</Link>
@@ -45,20 +45,19 @@ const Header = () => {
               <Link to="/performers" className="nav-link">{t("header.performers")}</Link>
             </div>
 
-            {/* Navigation Group - User Content */}
+            {/* Navigation Group - User Features */}
             <div className="flex items-center space-x-6">
               <Link to="/community" className="nav-link">{t("header.community")}</Link>
               <Link to="/favorites" className="nav-link">{t("header.favorites")}</Link>
-              <div className="flex flex-col items-center justify-center">
+              <div className="flex flex-col items-center">
                 <Link to="/xtease" className="nav-link">XTease</Link>
-                <Badge className="mt-1 bg-brand-red text-white text-[10px] py-0">{t("header.new")}</Badge>
+                <Badge className="bg-brand-red text-white text-[10px] py-0 px-2 rounded-md">{t("header.new")}</Badge>
               </div>
             </div>
 
-            {/* Navigation Group - Creator content (removed duplicate) */}
+            {/* Navigation Group - Creator Tools */}
             <div className="flex items-center space-x-6">
               <Link to="/creator-dashboard" className="nav-link">{t("header.creator_dashboard")}</Link>
-              <Link to="/creators" className="nav-link">{t("header.creators")}</Link>
             </div>
           </nav>
 
