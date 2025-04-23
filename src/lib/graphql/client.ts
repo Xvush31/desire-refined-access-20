@@ -1,7 +1,8 @@
+
 import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
-import { Observable } from '../quantum-buffer/quantum-buffer';
-import { quantumBuffer } from '../quantum-buffer/quantum-buffer';
+// Import Observable from the local quantum-buffer module instead of using rxjs
+import { Observable, quantumBuffer } from '../quantum-buffer/quantum-buffer';
 
 // Error link to intercept and handle GraphQL errors
 const errorLink = onError(({ graphQLErrors, networkError }) => {

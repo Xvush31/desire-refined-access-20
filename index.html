@@ -24,12 +24,12 @@
 
   <body>
     <div id="root"></div>
-    <!-- IMPORTANT: This script order is critical - React integration must be loaded first -->
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-    <!-- Give a small delay before loading the main app script -->
     <script>
       console.log("Page loaded, preparing to load application script");
     </script>
+    <!-- Add React and ReactDOM directly to ensure they're available -->
     <script type="module" src="/src/main.tsx"></script>
+    <!-- Load gptengineer.js after React is initialized -->
+    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
   </body>
 </html>

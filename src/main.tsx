@@ -1,27 +1,28 @@
 
 import React from 'react';
-import { createRoot } from 'react-dom/client';
+import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
-// Make sure React is globally available before anything else
-window.React = React;
+// Don't expose React globally as this can cause issues
+// Instead, make sure React is properly imported where needed
 
-// Wait for DOMContentLoaded to ensure the DOM is fully available
-document.addEventListener('DOMContentLoaded', () => {
-  console.log("DOM fully loaded, initializing React...");
+console.log("React version:", React.version);
+console.log("ReactDOM version:", ReactDOM.version);
+
+// Initialize React only after DOM is fully loaded
+function initializeReact() {
+  console.log("Initializing React application...");
   
-  // Get the root element
   const rootElement = document.getElementById('root');
   if (!rootElement) {
     console.error('Failed to find the root element');
     return;
   }
   
-  // Create root and render the app
   try {
     console.log("Creating React root...");
-    const root = createRoot(rootElement);
+    const root = ReactDOM.createRoot(rootElement);
     
     console.log("Rendering React app...");
     root.render(
@@ -33,5 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch (error) {
     console.error("Error initializing React application:", error);
   }
-});
+}
 
+// Check if DOM is already loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeReact);
+} else {
+  // DOM already loaded, initialize immediately
+  initializeReact();
+}
