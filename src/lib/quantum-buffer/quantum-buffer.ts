@@ -1,30 +1,15 @@
 
 /**
- * Simplified buffer implementation
+ * Simplified stub buffer implementation
  */
 
-// Simple protocol implementation
-class SimpleBufferProtocol {
-  private initialized: boolean = false;
-
-  constructor() {
-    console.log("Simple Buffer Protocol instance created");
-  }
-
-  async initialize() {
-    // Simple initialization
-    if (!this.initialized) {
-      this.initialized = true;
-      console.log("Simple Buffer Protocol initialized successfully");
-    }
+export const quantumBuffer = {
+  initialize: async () => {
+    console.log("Simple Buffer initialized");
     return true;
-  }
-
-  // Stub method
-  async setConfig(config: any) {
+  },
+  
+  setConfig: async (config: any) => {
     console.log("Buffer configuration updated", config);
   }
-}
-
-// Export a singleton instance
-export const quantumBuffer = new SimpleBufferProtocol();
+};
