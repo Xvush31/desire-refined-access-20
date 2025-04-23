@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -36,6 +35,7 @@ import Contact from "./pages/Contact";
 import History from "./pages/History";
 import Upload from "./pages/Upload";
 import Login from "./pages/Login";
+import SingleVideo from "./pages/SingleVideo";
 
 const queryClient = new QueryClient();
 
@@ -83,6 +83,7 @@ const App = () => {
               <BrowserRouter>
                 <Routes>
                   <Route path="/" element={<Index />} />
+                  <Route path="/video/:videoId" element={<SingleVideo />} />
                   <Route path="/community" element={<Community />} />
                   <Route path="/invite/:code" element={<Invite />} />
                   <Route path="/xtease" element={<XTease />} />
@@ -103,7 +104,6 @@ const App = () => {
                   <Route path="/recent" element={<Recent />} />
                   <Route path="/favorites" element={<Favorites />} />
                   
-                  {/* Nouvelles routes ajoutées */}
                   <Route path="/about" element={<About />} />
                   <Route path="/terms" element={<Terms />} />
                   <Route path="/privacy" element={<Privacy />} />

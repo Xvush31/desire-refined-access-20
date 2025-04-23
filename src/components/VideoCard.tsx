@@ -1,5 +1,6 @@
 
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface VideoCardProps {
   title: string;
@@ -19,12 +20,26 @@ const VideoCard: React.FC<VideoCardProps> = ({
   isPremium = false,
 }) => {
   const [isHovering, setIsHovering] = useState(false);
+  const navigate = useNavigate();
+  
+  // Extract video ID from thumbnail URL for demo purposes
+  const getVideoId = () => {
+    const seed = thumbnail.split('/seed/')[1].split('/')[0];
+    switch(seed) {
+      case 'paris': return 1;
+      case 'night': return 2;
+      case 'relax': return 3;
+      case 'urban': return 4;
+      default: return 1;
+    }
+  };
   
   return (
     <div 
-      className="video-card group transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg w-full"
+      className="video-card group transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg w-full cursor-pointer"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
+      onClick={() => navigate(`/video/${getVideoId()}`)}
     >
       <div className="relative overflow-hidden aspect-golden-inverse sm:aspect-golden">
         <img
