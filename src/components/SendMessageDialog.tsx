@@ -46,7 +46,7 @@ const SendMessageDialog: React.FC<SendMessageDialogProps> = ({ performerName, pe
         </DialogHeader>
         <form onSubmit={handleSendMessage} className="space-y-4 mt-4">
           <textarea
-            className="w-full min-h-[120px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="w-full min-h-[120px] rounded-md border border-input bg-background px-3 py-2 text-sm text-white"
             placeholder="Votre message..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
