@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Search, Menu, User } from "lucide-react";
@@ -24,18 +25,18 @@ const Header = () => {
   return (
     <header className={`sticky top-0 z-40 transition-all duration-300 ${scrolled ? 'glass-effect' : 'bg-transparent'}`}>
       <div className="container mx-auto px-4 py-4">
-        {/* Desktop Header - Logo centered, actions on right */}
+        {/* Desktop Header - ONLY Logo centered and minimal actions on right */}
         <div className="hidden md:flex items-center justify-between">
           {/* Left section - empty space for centering */}
-          <div className="w-1/4 lg:w-1/3"></div>
+          <div className="w-1/3"></div>
           
           {/* Center section - Logo */}
-          <div className="flex justify-center">
+          <div className="flex-1 flex justify-center">
             <Logo />
           </div>
           
-          {/* Right section - Actions */}
-          <div className="flex items-center space-x-4 w-1/4 lg:w-1/3 justify-end">
+          {/* Right section - ONLY Search, Profile, Menu icons */}
+          <div className="w-1/3 flex items-center space-x-2 justify-end">
             <div className={`${showSearch ? 'w-64' : 'w-10'} transition-all duration-300 overflow-hidden flex items-center bg-secondary rounded-full`}>
               <button 
                 onClick={() => setShowSearch(!showSearch)}
