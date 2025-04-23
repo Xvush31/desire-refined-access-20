@@ -37,6 +37,7 @@ const Header = () => {
           <Logo />
 
           <nav className="hidden md:flex items-center space-x-6">
+            {/* Navigation Group - Main content */}
             <div className="flex items-center space-x-6">
               <Link to="/" className="nav-link">{t("header.home")}</Link>
               <Link to="/trending" className="nav-link">{t("header.trending")}</Link>
@@ -44,18 +45,20 @@ const Header = () => {
               <Link to="/performers" className="nav-link">{t("header.performers")}</Link>
             </div>
 
+            {/* Navigation Group - User Content */}
             <div className="flex items-center space-x-6">
               <Link to="/community" className="nav-link">{t("header.community")}</Link>
               <Link to="/favorites" className="nav-link">{t("header.favorites")}</Link>
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col items-center justify-center">
                 <Link to="/xtease" className="nav-link">XTease</Link>
                 <Badge className="mt-1 bg-brand-red text-white text-[10px] py-0">{t("header.new")}</Badge>
               </div>
             </div>
 
+            {/* Navigation Group - Creator content (removed duplicate) */}
             <div className="flex items-center space-x-6">
               <Link to="/creator-dashboard" className="nav-link">{t("header.creator_dashboard")}</Link>
-              <Link to="/creators" className="nav-link">Créateurs</Link>
+              <Link to="/creators" className="nav-link">{t("header.creators")}</Link>
             </div>
           </nav>
 
@@ -103,4 +106,3 @@ const Header = () => {
 };
 
 export default Header;
-
