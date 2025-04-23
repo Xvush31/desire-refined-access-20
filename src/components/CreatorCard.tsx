@@ -25,6 +25,11 @@ interface CreatorCardProps {
 const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => {
   const isMobile = useIsMobile();
   
+  // Log for debugging outside of the JSX
+  React.useEffect(() => {
+    console.log("CreatorCard rendered, isMobile:", isMobile);
+  }, [isMobile]);
+  
   return (
     <div className="bg-card-gradient rounded-2xl p-5 shadow hover:shadow-lg transition-all duration-200 relative min-w-[270px] flex flex-col justify-between creator-card">
       <Link 
@@ -65,9 +70,6 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => {
           </Button>
         </Link>
       </div>
-      
-      {/* Add console logs for debugging, but ensure they return null instead of void */}
-      {console.log("CreatorCard rendered, isMobile:", isMobile) || null}
     </div>
   );
 };
