@@ -46,6 +46,7 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => (
         <Button
           variant="secondary"
           className="w-full font-semibold"
+          type="button"
         >
           Voir le profil
         </Button>
@@ -57,6 +58,7 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => (
         <Button
           variant="default"
           className="w-full bg-brand-accent hover:bg-brand-accent/90 text-white font-bold"
+          type="button"
         >
           <Plus className="mr-2" size={18} />
           Abonnez-vous
