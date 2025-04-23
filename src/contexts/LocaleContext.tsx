@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 type Lang = "fr" | "en";
@@ -17,7 +16,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "dashboard.revenue": "Revenus",
     "dashboard.select_currency": "Sélectionnez la devise",
     "dashboard.language": "Langue",
-    // ajoutez plus de traductions ici si besoin !
+    "dashboard.withdraw_description": "Votre demande de retrait sera traitée sous 48h.",
   },
   en: {
     "dashboard.currency": "Display currency",
@@ -26,7 +25,7 @@ const translations: Record<Lang, Record<string, string>> = {
     "dashboard.revenue": "Revenue",
     "dashboard.select_currency": "Select currency",
     "dashboard.language": "Language",
-    // add more translations here if needed!
+    "dashboard.withdraw_description": "Your withdrawal request will be processed within 48 hours.",
   }
 };
 
