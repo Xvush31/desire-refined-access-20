@@ -42,7 +42,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
           </div>
         )}
       </div>
-      <div className="video-card-content mt-2">
+      <div className="video-card-content mt-2 bg-background z-10">
         <h3 className="text-xs sm:text-sm font-medium line-clamp-2 group-hover:text-red-500 transition-colors">
           {title}
         </h3>

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Heart, Share2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
@@ -111,9 +112,9 @@ const XTeaseSection: React.FC = () => {
         <span>ease · Vidéos verticales captivantes</span>
       </h2>
       
-      <div className="flex flex-row justify-center gap-4 md:gap-8 px-4 overflow-x-auto pb-4">
+      <div className="flex flex-row justify-start px-4 overflow-x-auto pb-4 ml-0 gap-4 md:gap-8">
         {xteaseData.map((video) => (
-          <div key={video.id} className="xtease-container min-w-[200px] max-w-[280px] md:min-w-0 md:max-w-none">
+          <div key={video.id} className="xtease-container min-w-[200px] max-w-[280px] md:min-w-0 md:max-w-none flex-shrink-0">
             <div className="relative w-full aspect-[9/16] bg-black rounded-xl overflow-hidden shadow-lg">
               <Link to="/xtease" className="block w-full h-full">
                 <img 

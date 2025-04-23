@@ -51,4 +51,19 @@
   .video-card {
     @apply mb-4;
   }
+
+  .category-card {
+    @apply mb-2;
+  }
+}
+
+/* Assurez-vous que les vignettes de catégories s'affichent correctement */
+.category-card {
+  @apply relative z-10;
+}
+
+/* Styles pour le slider XTease */
+.xtease-container:first-child {
+  @apply ml-0;
+  margin-left: 0 !important;
 }
