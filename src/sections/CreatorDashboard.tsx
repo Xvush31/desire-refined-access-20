@@ -15,12 +15,13 @@ import WithdrawRequest from '@/components/dashboard/WithdrawRequest';
 import LanguageSelector from '@/components/dashboard/LanguageSelector';
 import { useLocale } from '@/contexts/LocaleContext';
 
-// Simulé : affichage revenus par devise (EUR, USD, GBP)
+// Simulé : affichage revenus par devise (EUR, USD, GBP, USDT)
 const getRevenue = (currency: string) => {
   switch (currency) {
     case "EUR": return "7 245€";
     case "USD": return "$7,765";
     case "GBP": return "£6,210";
+    case "USDT": return "7,765₮";
     default: return "7 245€";
   }
 };
@@ -33,14 +34,16 @@ const CreatorDashboard: React.FC = () => {
 
   return (
     <div className="bg-black min-h-screen text-white p-6">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-row gap-2 justify-start items-center mb-4">
         <LanguageSelector />
         <CurrencySelector currency={currency} onChange={setCurrency} />
       </div>
 
       <div className="mb-6 md:flex md:items-center md:gap-12">
         <div>
-          <div className="text-lg md:text-2xl font-bold mb-1">{t("dashboard.revenue")} ({currency}):</div>
+          <div className="text-lg md:text-2xl font-bold mb-1">
+            {t("dashboard.revenue")} ({currency}):
+          </div>
           <div className="text-2xl md:text-3xl text-brand-red font-extrabold">{getRevenue(currency)}</div>
         </div>
         <div className="mt-4 md:mt-0 md:ml-auto flex items-center">
@@ -61,3 +64,4 @@ const CreatorDashboard: React.FC = () => {
 };
 
 export default CreatorDashboard;
+
