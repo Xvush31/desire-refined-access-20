@@ -70,7 +70,16 @@
 /* Styles spécifiques pour la vue desktop */
 @media (min-width: 641px) {
   .creator-card {
-    @apply cursor-pointer;
+    @apply cursor-pointer hover:scale-105 transition-transform duration-300;
+  }
+  
+  .creator-card-content {
+    @apply flex flex-col h-full;
+  }
+  
+  /* Ajout d'effets de survol uniquement pour desktop */
+  .desktop-hover-effect {
+    @apply hover:shadow-xl hover:translate-y-[-5px] transition-all duration-300;
   }
 }
 

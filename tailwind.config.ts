@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss"
 
 const config = {
@@ -53,6 +54,7 @@ const config = {
           foreground: "hsl(var(--card-foreground))",
         },
         "brand-red": "#e91e63",
+        "brand-accent": "#8B5CF6", // Couleur d'accent ajoutée
       },
       borderRadius: {
         lg: "var(--radius)",

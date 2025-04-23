@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 const MOBILE_BREAKPOINT = 768;
 
 export function useIsMobile() {
-  const [isMobile, setIsMobile] = useState<boolean>(false); // Initialize with a default value
+  const [isMobile, setIsMobile] = useState<boolean>(false);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
 
   useEffect(() => {
@@ -14,15 +14,17 @@ export function useIsMobile() {
       if (!isInitialized) {
         setIsInitialized(true);
       }
+      // Ajouter un log pour le débogage
+      console.log("Screen width:", window.innerWidth, "isMobile:", mobile);
     };
     
-    // Check immediately on mount
+    // Vérifier immédiatement au montage
     checkMobile();
     
-    // Then set up listener for resize events
+    // Ajouter un écouteur d'événements pour les changements de taille
     window.addEventListener("resize", checkMobile);
     
-    // Clean up
+    // Nettoyage
     return () => window.removeEventListener("resize", checkMobile);
   }, [isInitialized]);
 
