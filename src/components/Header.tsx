@@ -55,8 +55,8 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Ad banner section */}
-        <div className="w-full h-[250px] bg-gray-200 flex items-center justify-center text-gray-500 rounded-lg mb-4">
+        {/* Ad banner section - reduced height from 250px to 125px */}
+        <div className="w-full h-[125px] bg-gray-200 flex items-center justify-center text-gray-500 rounded-lg mb-4">
           Espace publicitaire
         </div>
       </div>
