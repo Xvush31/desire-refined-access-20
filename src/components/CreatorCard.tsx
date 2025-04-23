@@ -66,8 +66,8 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => {
         </Link>
       </div>
       
-      {/* Ajout de logs pour déboguer le problème desktop */}
-      {console.log("CreatorCard rendered, isMobile:", isMobile)}
+      {/* Add console logs for debugging, but ensure they return null instead of void */}
+      {console.log("CreatorCard rendered, isMobile:", isMobile) || null}
     </div>
   );
 };
