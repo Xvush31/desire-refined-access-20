@@ -4,39 +4,39 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
-console.log("Initialisation de l'application...");
+console.log("Application initialization starting");
 
-// Fonction pour initialiser React
-function initializeReact() {
-  console.log("DOM chargé, initialisation de React");
-  
-  const rootElement = document.getElementById('root');
-  if (!rootElement) {
-    console.error('Élément root non trouvé dans le DOM');
-    return;
-  }
-  
+// Simple function to initialize React
+function initReact() {
   try {
-    console.log("Création de la racine React");
-    const root = createRoot(rootElement);
+    console.log("Finding root element");
+    const container = document.getElementById('root');
     
-    console.log("Rendu de l'application React");
+    if (!container) {
+      console.error('Root element not found in DOM');
+      return;
+    }
+    
+    console.log("Creating React root");
+    const root = createRoot(container);
+    
+    console.log("Rendering React application");
     root.render(
       <React.StrictMode>
         <App />
       </React.StrictMode>
     );
-    console.log("Application React rendue avec succès");
+    console.log("React application successfully rendered");
   } catch (error) {
-    console.error("Erreur lors de l'initialisation de React:", error);
+    console.error("Error initializing React:", error);
   }
 }
 
-// Vérifier si le DOM est déjà chargé et initialiser React
+// Wait for DOM to be ready before initializing React
 if (document.readyState === 'loading') {
-  console.log("Document en cours de chargement, attente de DOMContentLoaded");
-  document.addEventListener('DOMContentLoaded', initializeReact);
+  console.log("Document still loading, waiting for DOMContentLoaded");
+  document.addEventListener('DOMContentLoaded', initReact);
 } else {
-  console.log("Document déjà chargé, initialisation immédiate");
-  initializeReact();
+  console.log("Document already loaded, initializing React immediately");
+  initReact();
 }

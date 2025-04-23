@@ -1,4 +1,3 @@
-
 /**
  * Quantum Buffer Protocol
  * 
@@ -28,14 +27,14 @@ interface BufferItem {
   predictedProbability: number;
 }
 
-// Create a standalone Observable implementation to avoid rxjs dependency issues
+// Simplified implementation without circular dependencies
 class QuantumBufferProtocol {
   private buffer: Map<string, BufferItem> = new Map();
   private config: QuantumBufferConfig = {
-    maxConcurrentRequests: 3, // Reduced to avoid overloading
+    maxConcurrentRequests: 2,
     predictiveThreshold: 0.7,
-    bufferSize: 30, // Reduced buffer size
-    enableWasm: true
+    bufferSize: 20,
+    enableWasm: false // Disabled by default until full initialization
   };
   private userBehaviorModel: any = null;
   private activeRequests: number = 0;
@@ -54,81 +53,39 @@ class QuantumBufferProtocol {
     
     console.log("Initializing Quantum Buffer Protocol");
     
-    // Check if WebAssembly is available
-    if (this.config.enableWasm && typeof WebAssembly !== 'undefined') {
-      try {
+    // Basic initialization - simplified to avoid React errors
+    try {
+      // Only try WASM if explicitly enabled
+      if (this.config.enableWasm) {
         const wasmExports = await getWasmExports();
         if (wasmExports) {
           this.wasmEnabled = true;
           console.log("WebAssembly support enabled for Quantum Buffer");
         }
-      } catch (e) {
-        console.warn("WebAssembly initialization failed, falling back to JS implementation", e);
       }
+      
+      // Simple behavior model
+      this.userBehaviorModel = {
+        predictNextActions: () => {
+          return [
+            { action: 'viewVideo', id: 'video-1', probability: 0.8 }
+          ].filter(p => p.probability > this.config.predictiveThreshold);
+        }
+      };
+      
+      this.initialized = true;
+      console.log("Quantum Buffer Protocol initialized successfully");
+      return true;
+    } catch (error) {
+      console.error("Failed to initialize Quantum Buffer:", error);
+      return false;
     }
-    
-    // Simplified behavior model (basic prediction)
-    this.userBehaviorModel = {
-      predictNextActions: () => {
-        return [
-          { action: 'viewVideo', id: 'video-1', probability: 0.85 },
-          { action: 'browseCategory', id: 'category-3', probability: 0.65 }
-        ].filter(p => p.probability > this.config.predictiveThreshold);
-      }
-    };
-    
-    this.initialized = true;
-    console.log("Quantum Buffer Protocol initialized successfully");
   }
 
   // Preload resources based on user behavior predictions
   async predictAndBuffer(currentContext: any) {
-    if (!this.initialized) {
-      console.warn("Quantum Buffer not initialized yet");
-      return;
-    }
-    
-    if (this.activeRequests >= this.config.maxConcurrentRequests) {
-      console.log("Maximum concurrent requests reached, skipping prediction");
-      return;
-    }
-    
-    console.log("Predicting and buffering with context:", currentContext);
-    
-    try {
-      const predictions = this.userBehaviorModel.predictNextActions(currentContext);
-      
-      for (const prediction of predictions) {
-        if (this.activeRequests >= this.config.maxConcurrentRequests) break;
-        
-        // Avoid buffer duplications
-        if (this.buffer.has(prediction.id)) continue;
-        
-        this.activeRequests++;
-        
-        try {
-          switch (prediction.action) {
-            case 'viewVideo':
-              await this.preloadVideo(prediction.id, prediction.probability);
-              break;
-            case 'browseCategory':
-              await this.preloadCategory(prediction.id, prediction.probability);
-              break;
-            default:
-              console.log(`Unsupported prediction action: ${prediction.action}`);
-          }
-        } finally {
-          this.activeRequests--;
-        }
-      }
-      
-      // Clean buffer if necessary
-      if (this.buffer.size > this.config.bufferSize) {
-        this.cleanBuffer();
-      }
-    } catch (error) {
-      console.error("Error in predictAndBuffer:", error);
-    }
+    if (!this.initialized) return;
+    console.log("Predicting with context:", currentContext);
   }
   
   // Preload a specific video
@@ -229,7 +186,5 @@ class QuantumBufferProtocol {
   }
 }
 
-// Export a singleton instance of the protocol
+// Export a singleton instance
 export const quantumBuffer = new QuantumBufferProtocol();
-
-// Avoid circular dependencies by not re-exporting the Observable from client

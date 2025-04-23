@@ -10,64 +10,41 @@ import {
 import { quantumBuffer } from '../quantum-buffer/quantum-buffer';
 import { getWasmExports } from '../wasm/critical-ops';
 
-// Helper function to optimize video quality using WebAssembly if available
+// Simplified helper function for video quality optimization
 const optimizeVideoQuality = async (videos, connectionSpeed = 5000000) => {
   try {
     const wasmExports = await getWasmExports();
     if (!wasmExports) return videos;
     
-    return videos.map(video => {
-      const optimizedQuality = wasmExports.optimizeStreamingQuality(
+    return videos.map(video => ({
+      ...video,
+      optimizedQuality: wasmExports.optimizeStreamingQuality(
         connectionSpeed, 
         video.resolution || '1080p'
-      );
-      return {
-        ...video,
-        optimizedQuality
-      };
-    });
+      )
+    }));
   } catch (error) {
     console.error("Error optimizing video quality:", error);
     return videos;
   }
 };
 
-// Custom hooks for using GraphQL queries
+// Custom hooks with simplified implementation
 export const useTrendingVideos = () => {
   const { data, loading, error } = useQuery(GET_TRENDING_VIDEOS);
   const [optimizedVideos, setOptimizedVideos] = useState([]);
   
-  // Use WebAssembly to optimize video quality if available
   useEffect(() => {
+    if (!data?.trendingVideos) return;
+    
     let isMounted = true;
-    
-    const optimize = async () => {
-      if (data?.trendingVideos) {
-        try {
-          console.log("Optimizing trending videos quality");
-          const optimized = await optimizeVideoQuality(data.trendingVideos);
-          if (isMounted) {
-            setOptimizedVideos(optimized);
-          }
-        } catch (err) {
-          console.error("Failed to optimize videos:", err);
-        }
-      }
-    };
-    
-    optimize();
+    optimizeVideoQuality(data.trendingVideos)
+      .then(optimized => {
+        if (isMounted) setOptimizedVideos(optimized);
+      })
+      .catch(err => console.error("Failed to optimize videos:", err));
+      
     return () => { isMounted = false; };
-  }, [data?.trendingVideos]);
-  
-  // Trigger predictive preloading
-  useEffect(() => {
-    if (data?.trendingVideos?.length) {
-      // Trigger quantum buffer preloading for related content
-      quantumBuffer.predictAndBuffer({
-        context: 'trending',
-        currentVideos: data.trendingVideos.map(v => v.id)
-      });
-    }
   }, [data?.trendingVideos]);
   
   return {
@@ -82,35 +59,14 @@ export const useRecentVideos = () => {
   const { data, loading, error } = useQuery(GET_RECENT_VIDEOS);
   const [optimizedVideos, setOptimizedVideos] = useState([]);
   
-  // Use WebAssembly to optimize video quality if available
-  useEffect(() => {
-    let isMounted = true;
-    
-    const optimize = async () => {
-      if (data?.recentVideos) {
-        try {
-          console.log("Optimizing recent videos quality");
-          const optimized = await optimizeVideoQuality(data.recentVideos);
-          if (isMounted) {
-            setOptimizedVideos(optimized);
-          }
-        } catch (err) {
-          console.error("Failed to optimize videos:", err);
-        }
-      }
-    };
-    
-    optimize();
-    return () => { isMounted = false; };
-  }, [data?.recentVideos]);
-  
-  // Trigger predictive preloading
   useEffect(() => {
     if (data?.recentVideos?.length) {
-      quantumBuffer.predictAndBuffer({
-        context: 'recent',
-        currentVideos: data.recentVideos.map(v => v.id)
-      });
+      let isMounted = true;
+      optimizeVideoQuality(data.recentVideos)
+        .then(optimized => {
+          if (isMounted) setOptimizedVideos(optimized);
+        })
+        .catch(err => console.error("Failed to optimize videos:", err));
     }
   }, [data?.recentVideos]);
   

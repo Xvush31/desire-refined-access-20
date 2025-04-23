@@ -3,8 +3,8 @@ import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/clien
 import { onError } from '@apollo/client/link/error';
 import { quantumBuffer } from '../quantum-buffer/quantum-buffer';
 
-// Créer une classe Observable personnalisée pour Apollo sans dépendance à rxjs
-export class Observable {
+// Simplified Observable class for Apollo Client
+class SimpleObservable {
   constructor(private subscribeFn: (observer: any) => any) {}
   
   subscribe(observer: any) {
@@ -19,26 +19,25 @@ export class Observable {
   }
 }
 
-// Lien d'erreur pour intercepter et gérer les erreurs GraphQL
+// Error link
 const errorLink = onError(({ graphQLErrors, networkError }) => {
-  if (graphQLErrors)
-    graphQLErrors.forEach(({ message, locations, path }) =>
-      console.error(
-        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
-      )
-    );
+  if (graphQLErrors) {
+    graphQLErrors.forEach(({ message, locations, path }) => {
+      console.error(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`);
+    });
+  }
   if (networkError) console.error(`[Network error]: ${networkError}`);
 });
 
-// Lien HTTP pour définir notre URL d'API GraphQL
+// HTTP link
 const httpLink = createHttpLink({
   uri: 'https://api.xvush.com/graphql',
 });
 
-// Configuration du cache Apollo
+// Apollo cache
 const cache = new InMemoryCache();
 
-// Création du client Apollo avec configuration minimale
+// Create Apollo client with minimal configuration
 export const client = new ApolloClient({
   link: from([errorLink, httpLink]),
   cache,
@@ -49,15 +48,17 @@ export const client = new ApolloClient({
   },
 });
 
-// Initialiser le Protocole de Tampon Quantique en toute sécurité
+// Initialize quantum buffer without circular dependencies
 export const initQuantumBuffer = async () => {
   try {
-    console.log("Démarrage de l'initialisation du Tampon Quantique");
+    console.log("Starting Quantum Buffer initialization");
     await quantumBuffer.initialize();
-    console.log("Protocole de Tampon Quantique initialisé pour Apollo Client");
     return true;
   } catch (error) {
-    console.error("Échec de l'initialisation du Tampon Quantique:", error);
+    console.error("Failed to initialize Quantum Buffer:", error);
     return false;
   }
 };
+
+// Export the Observable for use elsewhere if needed
+export const Observable = SimpleObservable;
