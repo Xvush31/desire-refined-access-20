@@ -2,7 +2,16 @@
 import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 // Utiliser le tampon quantique local au lieu de rxjs
-import { Observable, quantumBuffer } from '../quantum-buffer/quantum-buffer';
+import { quantumBuffer } from '../quantum-buffer/quantum-buffer';
+
+// Créer une classe Observable personnalisée pour Apollo sans dépendance à rxjs
+export class Observable {
+  constructor(private subscribeFn: (observer: any) => any) {}
+  
+  subscribe(observer: any) {
+    return this.subscribeFn(observer);
+  }
+}
 
 // Lien d'erreur pour intercepter et gérer les erreurs GraphQL
 const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -14,39 +23,6 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
     );
   if (networkError) console.error(`[Network error]: ${networkError}`);
 });
-
-// Lien personnalisé pour l'intégration du tampon quantique
-const quantumBufferLink = (operation, forward) => {
-  const { operationName, variables } = operation;
-  
-  // Générer un ID pour cette requête
-  const queryId = `${operationName}:${JSON.stringify(variables)}`;
-  
-  // Vérifier si cette requête est dans le tampon
-  const cachedData = quantumBuffer.getFromBuffer(queryId);
-  if (cachedData) {
-    console.log(`[Quantum Buffer] Utilisation du résultat en cache pour ${operationName}`);
-    // Si oui, renvoyer directement les données du tampon
-    return new Observable(observer => {
-      observer.next({ data: cachedData });
-      observer.complete();
-      return { unsubscribe: () => {} };
-    });
-  }
-  
-  // Sinon, laisser passer la requête et déclencher le préchargement prédictif
-  const result = forward(operation);
-  
-  // Après l'exécution de la requête, déclencher le préchargement prédictif
-  setTimeout(() => {
-    quantumBuffer.predictAndBuffer({
-      lastQuery: operationName,
-      variables: variables
-    });
-  }, 0);
-  
-  return result;
-};
 
 // Lien HTTP pour définir notre URL d'API GraphQL
 const httpLink = createHttpLink({

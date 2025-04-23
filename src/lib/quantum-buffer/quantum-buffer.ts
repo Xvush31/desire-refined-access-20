@@ -1,4 +1,3 @@
-
 /**
  * Quantum Buffer Protocol
  * 
@@ -29,7 +28,7 @@ interface BufferItem {
 }
 
 // Create a standalone Observable implementation to avoid rxjs dependency issues
-class SimpleObservable {
+export class SimpleObservable {
   private callbacks: Array<(value: any) => void> = [];
   
   next(value: any) {
@@ -256,11 +255,5 @@ class QuantumBufferProtocol {
 // Export a singleton instance of the protocol
 export const quantumBuffer = new QuantumBufferProtocol();
 
-// Create a custom version of Observable for Apollo client
-export class Observable {
-  constructor(private subscribeFn: (observer: any) => any) {}
-  
-  subscribe(observer: any) {
-    return this.subscribeFn(observer);
-  }
-}
+// Export Observable for Apollo client
+export { Observable } from '../graphql/client';

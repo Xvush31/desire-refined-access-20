@@ -1,12 +1,11 @@
 
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
 // Initialisation de console debugging
 console.log("React version:", React.version);
-// Remove the ReactDOM.version reference as it's not available in the type definition
 
 // Initialiser React uniquement après que le DOM est complètement chargé
 function initializeReact() {
@@ -20,7 +19,7 @@ function initializeReact() {
   
   try {
     console.log("Création de la racine React...");
-    const root = ReactDOM.createRoot(rootElement);
+    const root = createRoot(rootElement);
     
     console.log("Rendu de l'application React...");
     root.render(
