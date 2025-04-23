@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import ContentSection from "@/components/ContentSection";
 import VideoCard from "@/components/VideoCard";
@@ -10,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import XTeaseSection from "@/components/XTeaseSection";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { useLocale } from "@/contexts/LocaleContext";
+import CreatorCard, { CreatorData } from "@/components/CreatorCard";
+import { ArrowRight } from "lucide-react";
 
 const trendingVideos = [
   {
@@ -99,6 +102,29 @@ const popularPerformers = [
   { id: 2, name: "MaxPower", videos: 42, subscribers: "850K", image: "https://picsum.photos/seed/perf2/150/150" },
   { id: 3, name: "LexiLove", videos: 63, subscribers: "1.5M", image: "https://picsum.photos/seed/perf3/150/150" },
   { id: 4, name: "TomSecret", videos: 37, subscribers: "720K", image: "https://picsum.photos/seed/perf4/150/150" }
+];
+
+const creators: CreatorData[] = [
+  {
+    id: 1,
+    name: "Lola Mystik",
+    avatar: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=facearea&w=256&h=256&q=80",
+    category: "Performeuse & Danse",
+    followers: 23800,
+    revenue: "12 930",
+    trending: true,
+    description: "Artiste passionnée et créative, Lola partage ses chorégraphies exclusives et moments privés avec ses abonnés."
+  },
+  {
+    id: 2,
+    name: "Lucas Zen",
+    avatar: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=facearea&w=256&h=256&q=80",
+    category: "Modèle masculin",
+    followers: 15000,
+    revenue: "8 400",
+    trending: false,
+    description: "Lucas propose des séances exclusives axées sur la confiance en soi, l'humour et la détente."
+  },
 ];
 
 const Index = () => {
@@ -243,6 +269,31 @@ const Index = () => {
             <p className="text-muted-foreground">{t("home.creators_desc")}</p>
             <Button className="animated-gradient-bg text-white">
               {t("home.view_creators")}
+            </Button>
+          </div>
+        </div>
+      </ContentSection>
+      
+      {/* Section des créateurs sur la page d'accueil */}
+      <ContentSection 
+        title="Nos meilleurs créateurs" 
+        viewAllLink="/creators"
+        className="bg-muted/20"
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {creators.map((creator) => (
+            <CreatorCard key={creator.id} creator={creator} />
+          ))}
+          <div className="flex items-center justify-center">
+            <Button 
+              variant="secondary" 
+              className="w-full h-full min-h-[400px] flex flex-col items-center justify-center"
+              asChild
+            >
+              <Link to="/creators" className="text-center">
+                <span className="text-lg font-semibold mb-2">Voir tous les créateurs</span>
+                <ArrowRight size={32} />
+              </Link>
             </Button>
           </div>
         </div>

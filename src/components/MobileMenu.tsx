@@ -1,5 +1,5 @@
-
 import React from "react";
+import { Link } from "react-router-dom";
 import { 
   Home, 
   TrendingUp, 
@@ -53,12 +53,12 @@ const menuItems: MenuItem[] = [
   { 
     label: "Créateurs", 
     icon: <User size={18} />, 
-    href: "/performers",
+    href: "/creators",
     hasSubmenu: true,
     submenu: [
-      { label: "Les plus populaires", href: "/performers/popular" },
-      { label: "Récents", href: "/performers/recent" },
-      { label: "Voir tout", href: "/performers" },
+      { label: "Les plus populaires", href: "/creators/popular" },
+      { label: "Récents", href: "/creators/recent" },
+      { label: "Voir tout", href: "/creators" },
     ] 
   },
   { label: "Favoris", icon: <Heart size={18} />, href: "/favorites" },
@@ -133,28 +133,30 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                       <ul className="pl-6 mt-1 space-y-1 border-l border-muted">
                         {item.submenu.map((subItem) => (
                           <li key={subItem.label}>
-                            <a 
-                              href={subItem.href} 
+                            <Link 
+                              to={subItem.href} 
                               className="flex items-center px-3 py-2 rounded-md hover:bg-secondary text-sm"
+                              onClick={onClose}
                             >
                               {subItem.label}
-                            </a>
+                            </Link>
                           </li>
                         ))}
                       </ul>
                     )}
                   </div>
                 ) : (
-                  <a 
-                    href={item.href} 
+                  <Link 
+                    to={item.href} 
                     className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-secondary text-sm w-full"
+                    onClick={onClose}
                   >
                     {item.icon}
                     <span>{item.label}</span>
                     {item.badge && (
                       <Badge className="ml-2 animated-gradient-bg text-white text-xs">{item.badge}</Badge>
                     )}
-                  </a>
+                  </Link>
                 )}
               </li>
             ))}
