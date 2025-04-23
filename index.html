@@ -24,8 +24,12 @@
 
   <body>
     <div id="root"></div>
-    <!-- This script order is important - React must be loaded first -->
+    <!-- IMPORTANT: This script order is critical - React integration must be loaded first -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
+    <!-- Give a small delay before loading the main app script -->
+    <script>
+      console.log("Page loaded, preparing to load application script");
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

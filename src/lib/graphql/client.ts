@@ -1,7 +1,6 @@
-
 import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
-import { Observable } from 'rxjs';
+import { Observable } from '../quantum-buffer/quantum-buffer';
 import { quantumBuffer } from '../quantum-buffer/quantum-buffer';
 
 // Error link to intercept and handle GraphQL errors
@@ -30,10 +29,11 @@ const quantumBufferLink = (operation, forward) => {
     return new Observable(observer => {
       observer.next({ data: cachedData });
       observer.complete();
+      return { unsubscribe: () => {} };
     });
   }
   
-  // Sinon, laisser passer la requête et déclencher le préchargement prédictif
+  // Otherwise, let the request pass through and trigger predictive preloading
   const result = forward(operation);
   
   // After the query executes, trigger predictive preloading
@@ -69,6 +69,7 @@ export const client = new ApolloClient({
 // Initialize the Quantum Buffer Protocol safely
 export const initQuantumBuffer = async () => {
   try {
+    console.log("Starting Quantum Buffer initialization");
     await quantumBuffer.initialize();
     console.log("Quantum Buffer Protocol initialized for Apollo Client");
     return true;

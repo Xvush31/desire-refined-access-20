@@ -8,8 +8,8 @@
  */
 
 import { getWasmExports } from '../wasm/critical-ops';
-import { client } from '../graphql/client';
 
+// Simplified buffer implementation to avoid React initialization issues
 type BufferPriority = 'high' | 'medium' | 'low';
 
 interface QuantumBufferConfig {
@@ -28,26 +28,57 @@ interface BufferItem {
   predictedProbability: number;
 }
 
+// Create a standalone Observable implementation to avoid rxjs dependency issues
+class SimpleObservable {
+  private callbacks: Array<(value: any) => void> = [];
+  
+  next(value: any) {
+    this.callbacks.forEach(callback => callback(value));
+  }
+  
+  complete() {
+    // Implementation for completion if needed
+  }
+  
+  subscribe(observer: { next: (value: any) => void, complete?: () => void }) {
+    if (observer.next) {
+      this.callbacks.push(observer.next);
+    }
+    
+    return {
+      unsubscribe: () => {
+        this.callbacks = this.callbacks.filter(cb => cb !== observer.next);
+      }
+    };
+  }
+}
+
 class QuantumBufferProtocol {
   private buffer: Map<string, BufferItem> = new Map();
   private config: QuantumBufferConfig = {
-    maxConcurrentRequests: 4,
+    maxConcurrentRequests: 3, // Reduced to avoid overloading
     predictiveThreshold: 0.7,
-    bufferSize: 50,
+    bufferSize: 30, // Reduced buffer size
     enableWasm: true
   };
   private userBehaviorModel: any = null;
   private activeRequests: number = 0;
   private wasmEnabled: boolean = false;
+  private initialized: boolean = false;
 
   constructor() {
-    this.initialize();
+    console.log("Quantum Buffer Protocol instance created");
   }
 
   async initialize() {
+    if (this.initialized) {
+      console.log("Quantum Buffer already initialized");
+      return;
+    }
+    
     console.log("Initializing Quantum Buffer Protocol");
     
-    // Vérifier si WebAssembly est disponible
+    // Check if WebAssembly is available
     if (this.config.enableWasm && typeof WebAssembly !== 'undefined') {
       try {
         const wasmExports = await getWasmExports();
@@ -60,72 +91,79 @@ class QuantumBufferProtocol {
       }
     }
     
-    // Initialiser le modèle de comportement utilisateur (simulé)
+    // Simplified behavior model (basic prediction)
     this.userBehaviorModel = {
-      predictNextActions: (currentState: any) => {
-        // Simule des prédictions de comportement utilisateur
-        // Dans une implémentation réelle, ceci utiliserait un vrai modèle ML
-        const predictions = [
+      predictNextActions: () => {
+        return [
           { action: 'viewVideo', id: 'video-1', probability: 0.85 },
-          { action: 'browseCategory', id: 'category-3', probability: 0.65 },
-          { action: 'viewProfile', id: 'performer-2', probability: 0.45 }
-        ];
-        
-        return predictions.filter(p => p.probability > this.config.predictiveThreshold);
+          { action: 'browseCategory', id: 'category-3', probability: 0.65 }
+        ].filter(p => p.probability > this.config.predictiveThreshold);
       }
     };
+    
+    this.initialized = true;
+    console.log("Quantum Buffer Protocol initialized successfully");
   }
 
-  // Précharge des ressources basé sur les prédictions du comportement utilisateur
+  // Preload resources based on user behavior predictions
   async predictAndBuffer(currentContext: any) {
-    if (this.activeRequests >= this.config.maxConcurrentRequests) return;
-    
-    const predictions = this.userBehaviorModel.predictNextActions(currentContext);
-    
-    for (const prediction of predictions) {
-      if (this.activeRequests >= this.config.maxConcurrentRequests) break;
-      
-      // Éviter les duplications dans le buffer
-      if (this.buffer.has(prediction.id)) continue;
-      
-      this.activeRequests++;
-      
-      try {
-        // Précharger différents types de ressources selon les prédictions
-        switch (prediction.action) {
-          case 'viewVideo':
-            await this.preloadVideo(prediction.id, prediction.probability);
-            break;
-          case 'browseCategory':
-            await this.preloadCategory(prediction.id, prediction.probability);
-            break;
-          case 'viewProfile':
-            await this.preloadProfile(prediction.id, prediction.probability);
-            break;
-        }
-      } catch (error) {
-        console.error("Error during predictive buffering:", error);
-      } finally {
-        this.activeRequests--;
-      }
+    if (!this.initialized) {
+      console.warn("Quantum Buffer not initialized yet");
+      return;
     }
     
-    // Nettoyer le buffer si nécessaire
-    this.cleanBuffer();
+    if (this.activeRequests >= this.config.maxConcurrentRequests) {
+      console.log("Maximum concurrent requests reached, skipping prediction");
+      return;
+    }
+    
+    console.log("Predicting and buffering with context:", currentContext);
+    
+    try {
+      const predictions = this.userBehaviorModel.predictNextActions(currentContext);
+      
+      for (const prediction of predictions) {
+        if (this.activeRequests >= this.config.maxConcurrentRequests) break;
+        
+        // Avoid buffer duplications
+        if (this.buffer.has(prediction.id)) continue;
+        
+        this.activeRequests++;
+        
+        try {
+          switch (prediction.action) {
+            case 'viewVideo':
+              await this.preloadVideo(prediction.id, prediction.probability);
+              break;
+            case 'browseCategory':
+              await this.preloadCategory(prediction.id, prediction.probability);
+              break;
+            default:
+              console.log(`Unsupported prediction action: ${prediction.action}`);
+          }
+        } finally {
+          this.activeRequests--;
+        }
+      }
+      
+      // Clean buffer if necessary
+      if (this.buffer.size > this.config.bufferSize) {
+        this.cleanBuffer();
+      }
+    } catch (error) {
+      console.error("Error in predictAndBuffer:", error);
+    }
   }
   
-  // Précharge une vidéo spécifique
+  // Preload a specific video
   async preloadVideo(videoId: string, probability: number) {
     console.log(`Preloading video ${videoId} with probability ${probability}`);
     
-    // Simuler la précharge d'une vidéo
-    // Dans une implémentation réelle, cela préchargerait réellement le manifeste HLS et les segments initiaux
+    // Simulate video preloading
     const mockVideoData = {
       id: videoId,
-      segments: ['init.mp4', 'segment1.m4s', 'segment2.m4s'],
-      quality: this.wasmEnabled ? 
-        (await getWasmExports()).optimizeStreamingQuality(5000000, '1080p') : 
-        1
+      segments: ['init.mp4', 'segment1.m4s'],
+      quality: this.wasmEnabled && await this.getOptimizedQuality()
     };
     
     this.addToBuffer({
@@ -138,12 +176,23 @@ class QuantumBufferProtocol {
     });
   }
   
-  // Précharge les données d'une catégorie
+  // Helper method to get optimized quality using WebAssembly
+  private async getOptimizedQuality() {
+    try {
+      if (this.wasmEnabled) {
+        const exports = await getWasmExports();
+        return exports ? exports.optimizeStreamingQuality(5000000, '1080p') : 1;
+      }
+    } catch (e) {
+      console.warn("Failed to get optimized quality", e);
+    }
+    return 1;
+  }
+  
+  // Preload category data
   async preloadCategory(categoryId: string, probability: number) {
     console.log(`Preloading category ${categoryId} with probability ${probability}`);
     
-    // Simuler la précharge des données de catégorie via GraphQL
-    // Dans une implémentation réelle, cela exécuterait réellement la requête GraphQL
     this.addToBuffer({
       id: categoryId,
       type: 'query',
@@ -154,48 +203,31 @@ class QuantumBufferProtocol {
     });
   }
   
-  // Précharge les données d'un profil performer
-  async preloadProfile(profileId: string, probability: number) {
-    console.log(`Preloading profile ${profileId} with probability ${probability}`);
-    
-    this.addToBuffer({
-      id: profileId,
-      type: 'query',
-      data: { query: 'PERFORMER_QUERY', variables: { id: profileId } },
-      priority: 'low',
-      timestamp: Date.now(),
-      predictedProbability: probability
-    });
-  }
-  
-  // Ajoute un élément au buffer
+  // Add an item to the buffer
   private addToBuffer(item: BufferItem) {
     this.buffer.set(item.id, item);
     console.log(`Added ${item.type} ${item.id} to quantum buffer. Current buffer size: ${this.buffer.size}`);
   }
   
-  // Nettoie le buffer en fonction de l'âge et de la priorité
+  // Clean the buffer based on priority and age
   private cleanBuffer() {
-    if (this.buffer.size <= this.config.bufferSize) return;
-    
-    // Convertir le Map en Array pour trier
     const bufferItems = Array.from(this.buffer.values())
       .sort((a, b) => {
-        // Trier d'abord par priorité
+        // Sort by priority first
         const priorityOrder = { high: 3, medium: 2, low: 1 };
         const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
         
         if (priorityDiff !== 0) return priorityDiff;
         
-        // Ensuite par probabilité prédite
+        // Then by predicted probability
         const probDiff = b.predictedProbability - a.predictedProbability;
         if (Math.abs(probDiff) > 0.1) return probDiff;
         
-        // Enfin par fraîcheur (timestamp)
+        // Finally by freshness (timestamp)
         return b.timestamp - a.timestamp;
       });
     
-    // Supprimer les éléments les moins importants
+    // Remove least important items
     const itemsToRemove = bufferItems.slice(this.config.bufferSize);
     for (const item of itemsToRemove) {
       this.buffer.delete(item.id);
@@ -203,7 +235,7 @@ class QuantumBufferProtocol {
     }
   }
   
-  // Récupère un élément du buffer s'il existe
+  // Get an item from the buffer if it exists
   getFromBuffer(id: string): any {
     const item = this.buffer.get(id);
     if (item) {
@@ -214,12 +246,21 @@ class QuantumBufferProtocol {
     return null;
   }
   
-  // Configure le protocole de buffer
+  // Configure the buffer protocol
   setConfig(config: Partial<QuantumBufferConfig>) {
     this.config = { ...this.config, ...config };
     console.log("Quantum Buffer Protocol configuration updated", this.config);
   }
 }
 
-// Exporter une instance singleton du protocole
+// Export a singleton instance of the protocol
 export const quantumBuffer = new QuantumBufferProtocol();
+
+// Create a custom version of Observable for Apollo client
+export class Observable {
+  constructor(private subscribeFn: (observer: any) => any) {}
+  
+  subscribe(observer: any) {
+    return this.subscribeFn(observer);
+  }
+}
