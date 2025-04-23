@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useParams } from "react-router-dom";
 import Header from "@/components/Header";
@@ -9,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import VideoCard from "@/components/VideoCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heart, MessageCircle, Star, Clock, Video, Users } from "lucide-react";
+import SendMessageDialog from "@/components/SendMessageDialog";
+import { useNavigate } from "react-router-dom";
 
 interface PerformerData {
   id: number;
@@ -74,47 +75,14 @@ const performerDetails: Record<string, PerformerData> = {
   },
 };
 
-// Sample videos for the performer
-const performerVideos = [
-  {
-    id: 1,
-    title: "Ma routine matinale sensuelle",
-    thumbnail: "https://picsum.photos/seed/vid1/640/360",
-    duration: "12:34",
-    views: "1.2M",
-    performer: "JulieSky",
-    isPremium: true
-  },
-  {
-    id: 2,
-    title: "Séance en lingerie exclusive",
-    thumbnail: "https://picsum.photos/seed/vid2/640/360",
-    duration: "18:22",
-    views: "843K",
-    performer: "JulieSky"
-  },
-  {
-    id: 3,
-    title: "Danse sensuelle en privé",
-    thumbnail: "https://picsum.photos/seed/vid3/640/360",
-    duration: "22:15",
-    views: "1.5M",
-    performer: "JulieSky",
-    isPremium: true
-  },
-  {
-    id: 4,
-    title: "Moment de détente dans mon bain",
-    thumbnail: "https://picsum.photos/seed/vid4/640/360",
-    duration: "14:08",
-    views: "950K",
-    performer: "JulieSky"
-  }
-];
-
 const PerformerProfile: React.FC = () => {
   const { performerId } = useParams<{ performerId: string }>();
   const performer = performerDetails[performerId || "1"] || performerDetails["1"];
+  const navigate = useNavigate();
+
+  const handleSubscribe = () => {
+    navigate(`/subscription?creator=${performer.id}`);
+  };
   
   return (
     <div className="min-h-screen bg-background">
@@ -172,12 +140,10 @@ const PerformerProfile: React.FC = () => {
                 </div>
                 
                 <div className="flex flex-wrap justify-center md:justify-start gap-4">
-                  <Button className="animated-gradient-bg text-white">
+                  <Button className="animated-gradient-bg text-white" onClick={handleSubscribe}>
                     S'abonner
                   </Button>
-                  <Button variant="outline">
-                    <MessageCircle size={18} className="mr-2" /> Message privé
-                  </Button>
+                  <SendMessageDialog performerName={performer.name} performerId={performer.id} />
                 </div>
               </div>
             </div>
