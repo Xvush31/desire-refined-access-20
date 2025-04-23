@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
@@ -20,7 +19,7 @@ const SubscriptionTiers = () => {
       ],
       className: "tier-standard",
       buttonVariant: "outline" as const,
-      isPaid: false
+      isPaid: true
     },
     {
       name: "Premium",
@@ -122,4 +121,3 @@ const SubscriptionTiers = () => {
 };
 
 export default SubscriptionTiers;
-
