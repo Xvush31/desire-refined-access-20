@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -16,6 +15,7 @@ import Invite from "./pages/Invite";
 import XTease from "./pages/XTease";
 import CreatorDashboardPage from "./sections/CreatorDashboardPage";
 import XTeaseSecurity from "./sections/dashboard/XTeaseSecurity";
+import CookieConsentBanner from "@/components/CookieConsentBanner";
 
 const queryClient = new QueryClient();
 
@@ -23,13 +23,10 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [ageVerified, setAgeVerified] = useState(false);
 
-  // Initialisation des services
   useEffect(() => {
     const initServices = async () => {
-      // Initialisation du firewall réglementaire
       await regulatoryFirewall.init();
       
-      // Vérification de l'âge via localStorage
       const isVerified = ghostMode.isEnabled() 
         ? ghostMode.get("age-verified") === "true"
         : localStorage.getItem("age-verified") === "true";
@@ -57,6 +54,7 @@ const App = () => {
             <Toaster />
             <Sonner />
             {!ageVerified && <AgeVerification />}
+            <CookieConsentBanner />
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Index />} />
@@ -65,7 +63,6 @@ const App = () => {
                 <Route path="/xtease" element={<XTease />} />
                 <Route path="/creator-dashboard" element={<CreatorDashboardPage />} />
                 <Route path="/creator-dashboard/xtease-security" element={<XTeaseSecurity />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
