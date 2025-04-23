@@ -5,7 +5,7 @@ import VideoCard from "@/components/VideoCard";
 import { useRecentVideos } from "@/lib/graphql/hooks";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Données de secours en cas d'échec de la requête GraphQL
+// Fallback data in case GraphQL query fails
 const fallbackVideos = [
   {
     id: 5,
@@ -44,13 +44,13 @@ const fallbackVideos = [
 ];
 
 const RecentVideosSection: React.FC = () => {
-  // Utilisation du hook GraphQL pour les vidéos récentes
+  // Use GraphQL hook for recent videos
   const { videos, loading, error } = useRecentVideos();
 
-  // En cas d'erreur, utiliser les données de secours
+  // In case of error, use fallback data
   const displayVideos = error || videos.length === 0 ? fallbackVideos : videos;
 
-  // Rendu du skeleton pendant le chargement
+  // Render skeleton during loading
   if (loading) {
     return (
       <ContentSection title="Récemment Ajoutées" viewAllLink="/recent">

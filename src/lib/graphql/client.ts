@@ -2,7 +2,7 @@
 import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 
-// Lien d'erreur pour intercepter et gérer les erreurs GraphQL
+// Error link to intercept and handle GraphQL errors
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors)
     graphQLErrors.forEach(({ message, locations, path }) =>
@@ -13,16 +13,16 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (networkError) console.error(`[Network error]: ${networkError}`);
 });
 
-// Lien HTTP pour définir l'URL de notre API GraphQL
-// Pour l'instant, nous utilisons une URL fictive qui sera remplacée par une réelle plus tard
+// HTTP link to define our GraphQL API URL
+// For now, we're using a mock URL that will be replaced with a real one later
 const httpLink = createHttpLink({
   uri: 'https://api.xvush.com/graphql',
 });
 
-// Configuration du cache Apollo
+// Apollo cache configuration
 const cache = new InMemoryCache();
 
-// Création du client Apollo
+// Creating the Apollo client
 export const client = new ApolloClient({
   link: from([errorLink, httpLink]),
   cache,

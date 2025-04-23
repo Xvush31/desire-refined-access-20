@@ -8,7 +8,7 @@ import {
   GET_SUBSCRIPTION_TIERS
 } from './queries';
 
-// Hooks personnalisés pour utiliser les requêtes GraphQL
+// Custom hooks for using GraphQL queries
 
 export const useTrendingVideos = () => {
   const { data, loading, error } = useQuery(GET_TRENDING_VIDEOS);

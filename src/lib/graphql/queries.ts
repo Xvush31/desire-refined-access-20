@@ -1,7 +1,7 @@
 
 import { gql } from '@apollo/client';
 
-// Fragments pour réduire la duplication et faciliter les mises à jour
+// Fragments to reduce duplication and make updates easier
 export const VIDEO_FRAGMENT = gql`
   fragment VideoFields on Video {
     id
@@ -24,7 +24,7 @@ export const PERFORMER_FRAGMENT = gql`
   }
 `;
 
-// Requête pour les vidéos en tendance
+// Query for trending videos
 export const GET_TRENDING_VIDEOS = gql`
   query GetTrendingVideos {
     trendingVideos {
@@ -34,7 +34,7 @@ export const GET_TRENDING_VIDEOS = gql`
   ${VIDEO_FRAGMENT}
 `;
 
-// Requête pour les vidéos récemment ajoutées
+// Query for recently added videos
 export const GET_RECENT_VIDEOS = gql`
   query GetRecentVideos {
     recentVideos {
@@ -44,7 +44,7 @@ export const GET_RECENT_VIDEOS = gql`
   ${VIDEO_FRAGMENT}
 `;
 
-// Requête pour les catégories
+// Query for categories
 export const GET_CATEGORIES = gql`
   query GetCategories {
     categories {
@@ -56,7 +56,7 @@ export const GET_CATEGORIES = gql`
   }
 `;
 
-// Requête pour les créateurs populaires
+// Query for popular creators
 export const GET_POPULAR_PERFORMERS = gql`
   query GetPopularPerformers {
     popularPerformers {
@@ -66,7 +66,7 @@ export const GET_POPULAR_PERFORMERS = gql`
   ${PERFORMER_FRAGMENT}
 `;
 
-// Requête pour les formules d'abonnement
+// Query for subscription tiers
 export const GET_SUBSCRIPTION_TIERS = gql`
   query GetSubscriptionTiers {
     subscriptionTiers {
