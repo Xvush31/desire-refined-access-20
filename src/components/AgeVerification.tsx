@@ -75,7 +75,7 @@ const AgeVerification: React.FC<AgeVerificationProps> = ({ onVerification }) => 
           <div className="flex flex-col space-y-4">
             <Button 
               variant="default" 
-              className="w-full bg-brand-accent hover:bg-brand-accent/90"
+              className="w-full bg-brand-accent hover:bg-brand-accent/90 text-white"
               onClick={() => handleAgeConfirmation(true)}
             >
               J'ai 18 ans ou plus - Entrer
