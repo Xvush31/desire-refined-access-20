@@ -1,6 +1,7 @@
 
 import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
+import { Observable } from 'rxjs';
 import { quantumBuffer } from '../quantum-buffer/quantum-buffer';
 
 // Error link to intercept and handle GraphQL errors

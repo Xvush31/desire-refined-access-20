@@ -1,4 +1,5 @@
 
+import React, { useEffect, useMemo } from 'react';
 import { useQuery } from '@apollo/client';
 import { 
   GET_TRENDING_VIDEOS, 
@@ -38,13 +39,13 @@ export const useTrendingVideos = () => {
   const { data, loading, error } = useQuery(GET_TRENDING_VIDEOS);
   
   // Use WebAssembly to optimize video quality if available
-  const optimizedVideos = React.useMemo(async () => {
+  const optimizedVideos = useMemo(async () => {
     if (!data?.trendingVideos) return [];
     return await optimizeVideoQuality(data.trendingVideos);
   }, [data?.trendingVideos]);
   
   // Trigger predictive preloading
-  React.useEffect(() => {
+  useEffect(() => {
     if (data?.trendingVideos?.length) {
       // Trigger quantum buffer preloading for related content
       quantumBuffer.predictAndBuffer({
@@ -66,13 +67,13 @@ export const useRecentVideos = () => {
   const { data, loading, error } = useQuery(GET_RECENT_VIDEOS);
   
   // Use WebAssembly to optimize video quality if available
-  const optimizedVideos = React.useMemo(async () => {
+  const optimizedVideos = useMemo(async () => {
     if (!data?.recentVideos) return [];
     return await optimizeVideoQuality(data.recentVideos);
   }, [data?.recentVideos]);
   
   // Trigger predictive preloading
-  React.useEffect(() => {
+  useEffect(() => {
     if (data?.recentVideos?.length) {
       quantumBuffer.predictAndBuffer({
         context: 'recent',
