@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -27,6 +26,8 @@ import Performers from "./pages/Performers";
 import PerformerProfile from "./pages/PerformerProfile";
 import Recent from "./pages/Recent";
 import Favorites from "./pages/Favorites";
+import CreatorsPopular from "./pages/CreatorsPopular";
+import CreatorsRecent from "./pages/CreatorsRecent";
 
 const queryClient = new QueryClient();
 
@@ -83,7 +84,9 @@ const App = () => {
                   <Route path="/subscription-confirmation" element={<SubscriptionConfirmationPage />} />
                   <Route path="/creators" element={<Creators />} />
                   
-                  {/* New routes added to avoid 404s */}
+                  <Route path="/creators/popular" element={<CreatorsPopular />} />
+                  <Route path="/creators/recent" element={<CreatorsRecent />} />
+                  
                   <Route path="/categories" element={<Categories />} />
                   <Route path="/categories/:categoryId" element={<CategoryPage />} />
                   <Route path="/trending" element={<Trending />} />
@@ -92,7 +95,6 @@ const App = () => {
                   <Route path="/recent" element={<Recent />} />
                   <Route path="/favorites" element={<Favorites />} />
                   
-                  {/* Catch-all route for 404 */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
