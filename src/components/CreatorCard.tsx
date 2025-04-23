@@ -2,7 +2,7 @@
 import React from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Users, TrendingUp } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export interface CreatorData {
@@ -36,17 +36,11 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => (
     </div>
     <h3 className="text-lg font-semibold mb-1">{creator.name}</h3>
     <div className="text-xs text-muted-foreground mb-2">{creator.category}</div>
-    <div className="flex gap-3 mb-3">
-      <span className="flex items-center text-xs text-foreground bg-muted/30 rounded-full px-2 py-1">
-        <Users className="w-4 h-4 mr-1" /> {creator.followers.toLocaleString()} fans
-      </span>
-      <span className="flex items-center text-xs text-foreground bg-muted/30 rounded-full px-2 py-1">
-        <TrendingUp className="w-4 h-4 mr-1" /> {creator.revenue}€
-      </span>
-    </div>
+    {/* Suppression de l'affichage des fans et des revenus */}
     <p className="text-sm text-foreground/90 text-center mb-4 line-clamp-3">{creator.description}</p>
     <Button variant="secondary" className="w-full">Voir le profil</Button>
   </div>
 );
 
 export default CreatorCard;
+
