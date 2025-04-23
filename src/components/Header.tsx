@@ -52,7 +52,7 @@ const Header = () => {
               <Link to="/favorites" className="nav-link">{t("header.favorites")}</Link>
               <div className="flex flex-col items-center">
                 <Link to="/xtease" className="nav-link">XTease</Link>
-                <Badge className="bg-brand-red text-white text-[10px] py-0 px-2 mt-1 rounded-md">
+                <Badge variant="default" className="bg-brand-red text-white text-[10px] py-0 px-2 mt-1 rounded-md">
                   {t("header.new")}
                 </Badge>
               </div>
