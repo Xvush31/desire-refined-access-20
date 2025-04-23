@@ -11,5 +11,7 @@ export const quantumBuffer = {
   
   setConfig: async (config: any) => {
     console.log("Buffer configuration updated", config);
+    // Make sure we don't return undefined
+    return true;
   }
 };

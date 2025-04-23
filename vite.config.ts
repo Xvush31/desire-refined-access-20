@@ -14,8 +14,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react({
       jsxImportSource: 'react',
-      // Ensure single React instance
-      exclude: [],
+      // No exclude property as it's not supported
     }),
     mode === 'development' && componentTagger(),
     VitePWA({
@@ -53,7 +52,7 @@ export default defineConfig(({ mode }) => ({
   },
   optimizeDeps: {
     include: ['react', 'react-dom'],
-    // Ensure no conflicts with React
+    // Use force to ensure dependencies are optimized
     force: true,
   },
   build: {

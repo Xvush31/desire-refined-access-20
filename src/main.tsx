@@ -4,19 +4,24 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
-// Wait for document to be fully loaded
-document.addEventListener('DOMContentLoaded', () => {
+// Make sure React is fully loaded before we try to use it
+// Wait until the document is fully loaded before mounting React
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+  initializeApp();
+}
+
+function initializeApp() {
   try {
-    // Get the root element
     const container = document.getElementById('root');
     
-    // Ensure the root element exists
     if (!container) {
       console.error('Root element not found in DOM');
       return;
     }
     
-    // Create a root with explicit type annotation
+    // Create a root
     const root = createRoot(container);
     
     // Render the app
@@ -30,4 +35,4 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch (error) {
     console.error('Error mounting React application:', error);
   }
-});
+}
