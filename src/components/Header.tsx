@@ -2,28 +2,18 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Search, Menu, User } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import MobileMenu from "./MobileMenu";
 import Logo from "./Logo";
-import GhostModeToggle from "./GhostModeToggle";
-import { Link } from "react-router-dom";
-import { useLocale } from "@/contexts/LocaleContext";
-import LanguageSelector from "./dashboard/LanguageSelector";
 
 const Header = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { t } = useLocale();
   
   useEffect(() => {
     const handleScroll = () => {
       const offset = window.scrollY;
-      if (offset > 10) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(offset > 10);
     };
     
     window.addEventListener("scroll", handleScroll);
@@ -34,24 +24,16 @@ const Header = () => {
     <header className={`sticky top-0 z-40 transition-all duration-300 ${scrolled ? 'glass-effect' : 'bg-transparent'}`}>
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <Logo />
+          {/* Left section - empty */}
+          <div className="w-32"></div>
 
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="nav-link">{t("header.home")}</Link>
-            <Link to="/trending" className="nav-link">{t("header.trending")}</Link>
-            <Link to="/categories" className="nav-link">{t("header.categories")}</Link>
-            <Link to="/performers" className="nav-link">{t("header.performers")}</Link>
-            <Link to="/community" className="nav-link">{t("header.community")}</Link>
-            <Link to="/favorites" className="nav-link">{t("header.favorites")}</Link>
-            <Link to="/xtease" className="nav-link flex items-center">
-              XTease
-              <Badge className="ml-2 bg-brand-red text-white">{t("header.new")}</Badge>
-            </Link>
-            <Link to="/creator-dashboard" className="nav-link">{t("header.creator_dashboard")}</Link>
-            <Link to="/creators" className="nav-link">Créateurs</Link>
-          </nav>
+          {/* Center section - Logo */}
+          <div className="flex justify-center">
+            <Logo />
+          </div>
 
-          <div className="flex items-center space-x-4">
+          {/* Right section - Actions */}
+          <div className="flex items-center space-x-4 w-32 justify-end">
             <div className={`${showSearch ? 'w-64' : 'w-10'} transition-all duration-300 overflow-hidden flex items-center bg-secondary rounded-full`}>
               <button 
                 onClick={() => setShowSearch(!showSearch)}
@@ -61,17 +43,9 @@ const Header = () => {
               </button>
               <input 
                 type="text" 
-                placeholder={t("header.search")}
+                placeholder="Rechercher..."
                 className={`${showSearch ? 'w-full opacity-100' : 'w-0 opacity-0'} transition-all duration-300 bg-transparent border-none focus:outline-none px-2 py-1 text-foreground`}
               />
-            </div>
-            
-            <div className="hidden md:block mr-2">
-              <LanguageSelector compact />
-            </div>
-            
-            <div className="hidden md:block">
-              <GhostModeToggle />
             </div>
             
             <Button variant="ghost" className="hover:bg-muted rounded-full p-2">
@@ -80,7 +54,7 @@ const Header = () => {
             
             <Button 
               variant="ghost" 
-              className="md:hidden hover:bg-muted rounded-full p-2"
+              className="hover:bg-muted rounded-full p-2"
               onClick={() => setShowMobileMenu(true)}
             >
               <Menu size={20} />
