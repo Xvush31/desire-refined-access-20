@@ -31,29 +31,21 @@ const queryClient = new QueryClient({
   },
 });
 
-// Initialize console debugging
-console.log("App component is being evaluated");
-
 const App = () => {
-  console.log("App component rendering");
   const [loading, setLoading] = useState(true);
   const [ageVerified, setAgeVerified] = useState(false);
   const [servicesInitialized, setServicesInitialized] = useState(false);
 
   useEffect(() => {
-    console.log("App useEffect running - initializing services");
     let isMounted = true;
 
     const initServices = async () => {
       try {
-        console.log("Starting service initialization");
         // Initialize services sequentially to avoid race conditions
         await regulatoryFirewall.init();
-        console.log("Regulatory firewall initialized");
         
         if (isMounted) {
           setServicesInitialized(true);
-          console.log("All services initialized successfully");
         }
       } catch (error) {
         console.error("Error initializing services:", error);
@@ -65,7 +57,6 @@ const App = () => {
           
           setAgeVerified(isVerified);
           setLoading(false);
-          console.log("App initialization complete, loading set to false");
         }
       }
     };
@@ -74,7 +65,6 @@ const App = () => {
     
     return () => { 
       isMounted = false; 
-      console.log("App useEffect cleanup");
     };
   }, []);
 
