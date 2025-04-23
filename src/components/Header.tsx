@@ -48,6 +48,7 @@ const Header = () => {
               <Badge className="ml-2 bg-brand-red text-white">{t("header.new")}</Badge>
             </a>
             <Link to="/creator-dashboard" className="nav-link">{t("header.creator_dashboard")}</Link>
++            <Link to="/creators" className="nav-link">Créateurs</Link>
           </nav>
 
           <div className="flex items-center space-x-4">

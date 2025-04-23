@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -19,6 +18,7 @@ import CookieConsentBanner from "@/components/CookieConsentBanner";
 import Subscription from "./pages/Subscription";
 import SubscriptionConfirmationPage from "./pages/SubscriptionConfirmation";
 import { LocaleProvider } from "@/contexts/LocaleContext";
+import Creators from "./pages/Creators";
 
 const queryClient = new QueryClient();
 
@@ -41,7 +41,6 @@ const App = () => {
     initServices();
   }, []);
 
-  // Function to handle age verification state at app level
   const handleAgeVerification = (isVerified: boolean) => {
     setAgeVerified(isVerified);
   };
@@ -74,6 +73,7 @@ const App = () => {
                   <Route path="/creator-dashboard/xtease-security" element={<XTeaseSecurity />} />
                   <Route path="/subscription" element={<React.Suspense fallback={null}><Subscription /></React.Suspense>} />
                   <Route path="/subscription-confirmation" element={<SubscriptionConfirmationPage />} />
+                  <Route path="/creators" element={<Creators />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
