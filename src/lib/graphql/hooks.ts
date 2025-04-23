@@ -1,5 +1,5 @@
 
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useQuery } from '@apollo/client';
 import { 
   GET_TRENDING_VIDEOS, 
@@ -37,11 +37,15 @@ const optimizeVideoQuality = async (videos, connectionSpeed = 5000000) => {
 
 export const useTrendingVideos = () => {
   const { data, loading, error } = useQuery(GET_TRENDING_VIDEOS);
+  const [optimizedVideos, setOptimizedVideos] = useState([]);
   
   // Use WebAssembly to optimize video quality if available
-  const optimizedVideos = useMemo(async () => {
-    if (!data?.trendingVideos) return [];
-    return await optimizeVideoQuality(data.trendingVideos);
+  useEffect(() => {
+    if (data?.trendingVideos) {
+      optimizeVideoQuality(data.trendingVideos)
+        .then(optimized => setOptimizedVideos(optimized))
+        .catch(err => console.error("Failed to optimize videos:", err));
+    }
   }, [data?.trendingVideos]);
   
   // Trigger predictive preloading
@@ -65,11 +69,15 @@ export const useTrendingVideos = () => {
 
 export const useRecentVideos = () => {
   const { data, loading, error } = useQuery(GET_RECENT_VIDEOS);
+  const [optimizedVideos, setOptimizedVideos] = useState([]);
   
   // Use WebAssembly to optimize video quality if available
-  const optimizedVideos = useMemo(async () => {
-    if (!data?.recentVideos) return [];
-    return await optimizeVideoQuality(data.recentVideos);
+  useEffect(() => {
+    if (data?.recentVideos) {
+      optimizeVideoQuality(data.recentVideos)
+        .then(optimized => setOptimizedVideos(optimized))
+        .catch(err => console.error("Failed to optimize videos:", err));
+    }
   }, [data?.recentVideos]);
   
   // Trigger predictive preloading
