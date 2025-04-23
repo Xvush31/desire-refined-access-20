@@ -8,7 +8,7 @@ import './index.css';
 // Instead, make sure React is properly imported where needed
 
 console.log("React version:", React.version);
-console.log("ReactDOM version:", ReactDOM.version);
+// Remove the ReactDOM.version reference as it's not available in the type definition
 
 // Initialize React only after DOM is fully loaded
 function initializeReact() {
