@@ -11,7 +11,9 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [
-    react(),
+    react({
+      jsxRuntime: 'automatic',
+    }),
     mode === 'development' && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
@@ -48,6 +50,9 @@ export default defineConfig(({ mode }) => ({
   optimizeDeps: {
     include: ['react', 'react-dom'],
     force: true,
+    esbuildOptions: {
+      jsx: 'automatic',
+    },
   },
   build: {
     commonjsOptions: {

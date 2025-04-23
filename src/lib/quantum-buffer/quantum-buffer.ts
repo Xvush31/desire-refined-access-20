@@ -1,17 +1,16 @@
 
 /**
- * Simplified stub buffer implementation
+ * Simplified stub buffer implementation with minimal dependencies
  */
 
 export const quantumBuffer = {
-  initialize: async () => {
+  initialize: () => {
     console.log("Simple Buffer initialized");
-    return true;
+    return Promise.resolve(true);
   },
   
-  setConfig: async (config: any) => {
+  setConfig: (config: any) => {
     console.log("Buffer configuration updated", config);
-    // Make sure we don't return undefined
-    return true;
+    return Promise.resolve(true);
   }
 };
