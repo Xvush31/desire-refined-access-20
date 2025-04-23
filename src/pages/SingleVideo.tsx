@@ -1,3 +1,4 @@
+
 import React from "react";
 import Header from "@/components/Header";
 import HLSVideoPlayer from "@/components/HLSVideoPlayer";
@@ -57,8 +58,10 @@ const freemiumVideos = [
 const SingleVideo = () => {
   const { videoId } = useParams();
   const video = freemiumVideos.find((v) => v.id === Number(videoId));
+  console.log("Looking for video with ID:", videoId, "Found:", video);
 
   if (!video) {
+    console.error("No video found with ID:", videoId);
     return <Navigate to="/" replace />;
   }
 
@@ -92,6 +95,7 @@ const SingleVideo = () => {
             {suggestedVideos.map((suggestedVideo) => (
               <VideoCard
                 key={suggestedVideo.id}
+                id={suggestedVideo.id} // Pass the ID directly
                 title={suggestedVideo.title}
                 thumbnail={suggestedVideo.thumbnail}
                 duration={suggestedVideo.duration}

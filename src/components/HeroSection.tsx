@@ -49,6 +49,7 @@ const HeroSection = () => {
           {freemiumVideos.map((video) => (
             <VideoCard
               key={video.id}
+              id={video.id} // Add ID to props
               title={video.title}
               thumbnail={video.thumbnail}
               duration={video.duration}
@@ -63,4 +64,3 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
-

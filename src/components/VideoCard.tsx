@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -9,6 +8,7 @@ interface VideoCardProps {
   views: string;
   performer: string;
   isPremium?: boolean;
+  id?: number; // Add optional ID parameter
 }
 
 const VideoCard: React.FC<VideoCardProps> = ({
@@ -18,13 +18,20 @@ const VideoCard: React.FC<VideoCardProps> = ({
   views,
   performer,
   isPremium = false,
+  id, // Accept the ID parameter
 }) => {
   const [isHovering, setIsHovering] = useState(false);
   const navigate = useNavigate();
   
-  // Extract video ID from thumbnail URL for demo purposes
+  // Extract video ID from thumbnail URL or use provided ID
   const getVideoId = () => {
-    const seed = thumbnail.split('/seed/')[1].split('/')[0];
+    // If we have an explicit ID, use it
+    if (id !== undefined) {
+      return id;
+    }
+    
+    // Otherwise try to extract from thumbnail
+    const seed = thumbnail.split('/seed/')[1]?.split('/')[0];
     switch(seed) {
       case 'paris': return 1;
       case 'night': return 2;
