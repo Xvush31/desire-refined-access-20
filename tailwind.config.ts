@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss"
 
 const config = {
@@ -8,7 +7,7 @@ const config = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
-	],
+  ],
   prefix: "",
   theme: {
     container: {
@@ -53,8 +52,8 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        "brand-red": "#e91e63",
-        "brand-accent": "#8B5CF6", // Couleur d'accent ajoutée
+        "brand-dark": "#1A1F2C",
+        "brand-accent": "#ea384c",
       },
       borderRadius: {
         lg: "var(--radius)",
