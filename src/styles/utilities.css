@@ -95,15 +95,23 @@
 
   /* Nouvelles classes pour le thème clair */
   .light-card {
-    @apply bg-white/90 shadow-sm border border-pink-100/50 rounded-xl transition-all duration-300;
+    @apply bg-white/90 shadow-sm border-primary/20 rounded-xl transition-all duration-300;
   }
 
   .light-glass {
-    @apply backdrop-blur-md bg-white/60 border border-pink-100/30 rounded-xl shadow-sm;
+    @apply backdrop-blur-md bg-white/60 border-primary/30 rounded-xl shadow-sm;
   }
 
   .brand-gradient {
-    @apply bg-gradient-to-r from-[#ff8ba7] to-[#ffc6c7];
+    background: var(--brand-gradient);
+  }
+
+  .text-readable-light {
+    @apply text-gray-900;
+  }
+
+  .text-readable-dark {
+    @apply text-white;
   }
 
   /* Animation du gradient */
