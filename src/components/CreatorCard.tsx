@@ -39,25 +39,29 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => (
     <div className="text-xs text-muted-foreground mb-2">{creator.category}</div>
     <p className="text-sm text-foreground/90 text-center mb-4 line-clamp-3">{creator.description}</p>
     <div className="flex flex-col gap-2 w-full mt-1">
-      <Button
-        asChild
-        variant="secondary"
-        className="w-full font-semibold"
+      <Link 
+        to={`/performer/${creator.id}`}
+        className="w-full"
       >
-        <Link to={`/performer/${creator.id}`}>
+        <Button
+          variant="secondary"
+          className="w-full font-semibold"
+        >
           Voir le profil
-        </Link>
-      </Button>
-      <Button
-        asChild
-        variant="default"
-        className="w-full bg-brand-accent hover:bg-brand-accent/90 text-white font-bold"
+        </Button>
+      </Link>
+      <Link 
+        to={`/subscription?creator=${creator.id}`}
+        className="w-full"
       >
-        <Link to={`/subscription?creator=${creator.id}`}>
+        <Button
+          variant="default"
+          className="w-full bg-brand-accent hover:bg-brand-accent/90 text-white font-bold"
+        >
           <Plus className="mr-2" size={18} />
           Abonnez-vous
-        </Link>
-      </Button>
+        </Button>
+      </Link>
     </div>
   </div>
 );
