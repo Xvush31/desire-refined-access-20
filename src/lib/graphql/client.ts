@@ -1,23 +1,6 @@
 
 import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
-import { quantumBuffer } from '../quantum-buffer/quantum-buffer';
-
-// Simplified Observable class for Apollo Client
-class SimpleObservable {
-  constructor(private subscribeFn: (observer: any) => any) {}
-  
-  subscribe(observer: any) {
-    const subscription = this.subscribeFn(observer);
-    return {
-      unsubscribe: () => {
-        if (subscription && typeof subscription.unsubscribe === 'function') {
-          subscription.unsubscribe();
-        }
-      }
-    };
-  }
-}
 
 // Error link
 const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -47,18 +30,3 @@ export const client = new ApolloClient({
     },
   },
 });
-
-// Initialize quantum buffer without circular dependencies
-export const initQuantumBuffer = async () => {
-  try {
-    console.log("Starting Quantum Buffer initialization");
-    await quantumBuffer.initialize();
-    return true;
-  } catch (error) {
-    console.error("Failed to initialize Quantum Buffer:", error);
-    return false;
-  }
-};
-
-// Export the Observable for use elsewhere if needed
-export const Observable = SimpleObservable;

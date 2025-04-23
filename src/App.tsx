@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ApolloProvider } from '@apollo/client';
-import { client, initQuantumBuffer } from './lib/graphql/client';
+import { client } from './lib/graphql/client';
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AgeVerification from "./components/AgeVerification";
@@ -50,9 +50,6 @@ const App = () => {
         // Initialize services sequentially to avoid race conditions
         await regulatoryFirewall.init();
         console.log("Regulatory firewall initialized");
-        
-        await initQuantumBuffer();
-        console.log("Quantum buffer initialized");
         
         if (isMounted) {
           setServicesInitialized(true);
