@@ -1,5 +1,5 @@
 
-import { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useQuery } from '@apollo/client';
 import { 
   GET_TRENDING_VIDEOS, 
@@ -41,11 +41,17 @@ export const useTrendingVideos = () => {
   
   // Use WebAssembly to optimize video quality if available
   useEffect(() => {
+    let isMounted = true;
     if (data?.trendingVideos) {
       optimizeVideoQuality(data.trendingVideos)
-        .then(optimized => setOptimizedVideos(optimized))
+        .then(optimized => {
+          if (isMounted) {
+            setOptimizedVideos(optimized);
+          }
+        })
         .catch(err => console.error("Failed to optimize videos:", err));
     }
+    return () => { isMounted = false; };
   }, [data?.trendingVideos]);
   
   // Trigger predictive preloading
@@ -73,11 +79,17 @@ export const useRecentVideos = () => {
   
   // Use WebAssembly to optimize video quality if available
   useEffect(() => {
+    let isMounted = true;
     if (data?.recentVideos) {
       optimizeVideoQuality(data.recentVideos)
-        .then(optimized => setOptimizedVideos(optimized))
+        .then(optimized => {
+          if (isMounted) {
+            setOptimizedVideos(optimized);
+          }
+        })
         .catch(err => console.error("Failed to optimize videos:", err));
     }
+    return () => { isMounted = false; };
   }, [data?.recentVideos]);
   
   // Trigger predictive preloading
