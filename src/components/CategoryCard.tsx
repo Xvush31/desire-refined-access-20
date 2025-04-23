@@ -13,7 +13,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   videoCount,
 }) => {
   return (
-    <div className="category-card group rounded-lg sm:rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full">
+    <div className="category-card group rounded-lg sm:rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full w-full">
       <div className="relative aspect-[4/3] sm:aspect-golden">
         <img
           src={image}
