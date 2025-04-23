@@ -60,7 +60,7 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => {
         }}
       >
         <div className="relative mb-3">
-          <Avatar className={`h-16 w-16 mx-auto ${!isMobile && isHovered ? 'ring-2 ring-brand-red' : ''}`}>
+          <Avatar className={`${isMobile ? 'h-20 w-20' : 'h-16 w-16'} mx-auto ${!isMobile && isHovered ? 'ring-2 ring-brand-red' : ''}`}>
             <AvatarImage src={creator.avatar} alt={creator.name} />
             <AvatarFallback>{creator.name.slice(0, 2).toUpperCase()}</AvatarFallback>
           </Avatar>
@@ -92,7 +92,7 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => {
         >
           <Button
             variant="default"
-            className={`w-full bg-brand-accent hover:bg-brand-accent/90 text-white font-bold ${!isMobile && isHovered ? 'scale-105' : ''}`}
+            className={`w-full bg-brand-accent hover:bg-brand-accent/90 text-white font-bold ${isMobile ? 'py-3 text-base' : ''} ${!isMobile && isHovered ? 'scale-105' : ''}`}
             type="button"
           >
             <Plus className="mr-2" size={18} />

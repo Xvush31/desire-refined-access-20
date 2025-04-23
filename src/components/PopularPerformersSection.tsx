@@ -22,7 +22,12 @@ const PopularPerformersSection = () => {
       <div className={`${isMobile ? 'flex flex-col gap-golden-md' : 'golden-grid'}`}>
         <div className="flex flex-wrap justify-center gap-golden-md">
           {popularPerformers.map((performer) => (
-            <div key={performer.id} className="text-center group">
+            <Link
+              key={performer.id}
+              to={`/performers/${performer.id}`}
+              className="text-center group block"
+              aria-label={`Voir le profil de ${performer.name}`}
+            >
               <div className="w-32 h-32 mx-auto mb-golden-sm overflow-hidden rounded-full border-2 border-transparent group-hover:border-brand-accent transition-colors">
                 <img
                   src={performer.image}
@@ -30,10 +35,10 @@ const PopularPerformersSection = () => {
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
-              <h3 className="font-medium group-hover:text-brand-accent transition-colors">{performer.name}</h3>
+              <h3 className="font-medium text-base group-hover:text-brand-accent transition-colors">{performer.name}</h3>
               <p className="text-sm text-muted-foreground">{performer.videos} {t("home.videos")}</p>
               <p className="text-xs text-brand-accent">{performer.subscribers} {t("home.subscribers")}</p>
-            </div>
+            </Link>
           ))}
         </div>
         <div className="flex flex-col justify-center items-start space-y-golden-md px-golden-md">

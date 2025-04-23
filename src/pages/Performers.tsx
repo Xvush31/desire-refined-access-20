@@ -5,6 +5,7 @@ import ContentSection from "@/components/ContentSection";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface PerformerData {
   id: number;
@@ -32,22 +33,28 @@ const performers: PerformerData[] = [
 ];
 
 const Performers: React.FC = () => {
+  const isMobile = useIsMobile();
+  
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
-      <main className="py-12">
+      <main className="py-8">
         <ContentSection title="Performeurs Populaires">
-          <p className="text-muted-foreground mb-8 max-w-3xl">
+          <p className="text-muted-foreground mb-6 max-w-3xl">
             Découvrez nos performeurs les plus populaires et leurs contenus exclusifs. Abonnez-vous à leurs profils pour accéder à du contenu premium et personnalisé.
           </p>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
+          <div className={`grid grid-cols-1 ${isMobile ? 'sm:grid-cols-2' : 'sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'} gap-x-4 gap-y-8`}>
             {performers.map((performer) => (
               <div key={performer.id} className="flex flex-col items-center text-center group">
-                <Link to={`/performers/${performer.id}`} className="block">
-                  <div className="mb-3 relative">
-                    <Avatar className="h-28 w-28 transition-all duration-300 group-hover:scale-105">
+                <Link 
+                  to={`/performers/${performer.id}`} 
+                  className="block w-full"
+                  aria-label={`Voir le profil de ${performer.name}`}
+                >
+                  <div className="mb-3 relative flex justify-center">
+                    <Avatar className={`${isMobile ? 'h-24 w-24' : 'h-28 w-28'} transition-all duration-300 group-hover:scale-105`}>
                       <AvatarImage src={performer.image} alt={performer.name} />
                       <AvatarFallback>{performer.name.slice(0, 2).toUpperCase()}</AvatarFallback>
                     </Avatar>
@@ -57,12 +64,12 @@ const Performers: React.FC = () => {
                   <p className="text-sm text-brand-accent mb-2">{performer.subscribers} abonnés</p>
                   
                   {performer.description && (
-                    <p className="text-sm text-foreground/90 line-clamp-2 mb-3 max-w-xs mx-auto">
+                    <p className={`text-sm text-foreground/90 line-clamp-2 mb-3 mx-auto ${isMobile ? 'max-w-[250px]' : 'max-w-xs'}`}>
                       {performer.description}
                     </p>
                   )}
                   
-                  {performer.tags && (
+                  {performer.tags && !isMobile && (
                     <div className="flex flex-wrap justify-center gap-2 mb-4">
                       {performer.tags.map((tag, index) => (
                         <span key={index} className="bg-secondary/50 px-2 py-1 rounded-full text-xs">
@@ -73,8 +80,15 @@ const Performers: React.FC = () => {
                   )}
                 </Link>
                 
-                <Link to={`/performers/${performer.id}`}>
-                  <Button variant="outline" size="sm" className="w-full max-w-[200px]">
+                <Link 
+                  to={`/performers/${performer.id}`}
+                  className={`w-full flex justify-center mt-2 ${isMobile ? 'px-4' : ''}`}
+                >
+                  <Button 
+                    variant="outline" 
+                    size={isMobile ? "default" : "sm"} 
+                    className={`w-full ${isMobile ? 'py-3 text-base' : 'max-w-[200px]'}`}
+                  >
                     Voir le profil
                   </Button>
                 </Link>
