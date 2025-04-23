@@ -7,10 +7,14 @@ const NowPaymentsSubscriptionButton: React.FC = () => {
   return (
     <>
       <button
-        className="w-full py-2 text-white bg-brand-accent rounded-lg font-semibold mt-4 shadow hover:bg-brand-accent/90 transition-colors"
+        className="w-full py-3 text-white font-semibold rounded-lg shadow-lg 
+        bg-gradient-to-r from-[#e91e63] to-[#ff9800] 
+        hover:from-[#d81557] hover:to-[#f57c00]
+        transform transition-all duration-200 hover:scale-[1.02]
+        focus:ring-2 focus:ring-[#e91e63] focus:ring-offset-2 focus:ring-offset-[#1A1F2C]"
         onClick={() => setOpen(true)}
       >
-        S'abonner avec NOWPayments
+        S'abonner maintenant avec NOWPayments
       </button>
       <NowPaymentsSubscriptionModal open={open} onOpenChange={setOpen} />
     </>
