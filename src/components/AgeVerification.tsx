@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Shield } from "lucide-react";
@@ -13,7 +12,6 @@ const AgeVerification: React.FC<AgeVerificationProps> = ({ onVerification }) => 
   const [verified, setVerified] = useState(false);
   const { toast } = useToast();
 
-  // Vérifier si l'utilisateur est déjà vérifié
   useEffect(() => {
     const isVerified = ghostMode.isEnabled() 
       ? ghostMode.get("age-verified") === "true"
@@ -30,7 +28,6 @@ const AgeVerification: React.FC<AgeVerificationProps> = ({ onVerification }) => 
       setVerified(true);
       onVerification(true);
       
-      // Stocker la vérification selon le mode de navigation
       if (ghostMode.isEnabled()) {
         ghostMode.set("age-verified", "true");
       } else {
@@ -48,13 +45,12 @@ const AgeVerification: React.FC<AgeVerificationProps> = ({ onVerification }) => 
         variant: "destructive",
       });
       
-      // Rediriger vers une page de sortie ou fermer l'application
       window.location.href = "https://www.google.com";
     }
   };
 
   if (verified) {
-    return null; // Ne pas afficher si déjà vérifié
+    return null;
   }
 
   return (
@@ -75,7 +71,7 @@ const AgeVerification: React.FC<AgeVerificationProps> = ({ onVerification }) => 
           <div className="flex flex-col space-y-4">
             <Button 
               variant="default" 
-              className="w-full bg-brand-accent hover:bg-brand-accent/90 text-white"
+              className="w-full bg-brand-accent hover:bg-brand-accent/90 text-white font-bold"
               onClick={() => handleAgeConfirmation(true)}
             >
               J'ai 18 ans ou plus - Entrer
@@ -83,7 +79,7 @@ const AgeVerification: React.FC<AgeVerificationProps> = ({ onVerification }) => 
             
             <Button 
               variant="destructive" 
-              className="w-full"
+              className="w-full text-white"
               onClick={() => handleAgeConfirmation(false)}
             >
               J'ai moins de 18 ans - Sortir
