@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Search, Menu, User } from "lucide-react";
 import MobileMenu from "./MobileMenu";
 import Logo from "./Logo";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Header = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const isMobile = useIsMobile();
   
   useEffect(() => {
     const handleScroll = () => {
@@ -24,8 +26,8 @@ const Header = () => {
     <header className={`sticky top-0 z-40 transition-all duration-300 ${scrolled ? 'glass-effect' : 'bg-transparent'}`}>
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          {/* Left section - empty */}
-          <div className="w-32"></div>
+          {/* Left section - empty for desktop */}
+          <div className="w-32 md:w-1/4 lg:w-1/3"></div>
 
           {/* Center section - Logo */}
           <div className="flex justify-center">
@@ -33,7 +35,7 @@ const Header = () => {
           </div>
 
           {/* Right section - Actions */}
-          <div className="flex items-center space-x-4 w-32 justify-end">
+          <div className="flex items-center space-x-4 w-32 md:w-1/4 lg:w-1/3 justify-end">
             <div className={`${showSearch ? 'w-64' : 'w-10'} transition-all duration-300 overflow-hidden flex items-center bg-secondary rounded-full`}>
               <button 
                 onClick={() => setShowSearch(!showSearch)}
