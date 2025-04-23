@@ -14,6 +14,8 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react({
       jsxImportSource: 'react',
+      // Ensure single React instance
+      exclude: [],
     }),
     mode === 'development' && componentTagger(),
     VitePWA({
@@ -44,21 +46,21 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      // Ensure React is resolved correctly
+      // Ensure React is resolved correctly to avoid duplicates
       "react": path.resolve(__dirname, "./node_modules/react"),
       "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
     },
   },
   optimizeDeps: {
     include: ['react', 'react-dom'],
-    exclude: [],
+    // Ensure no conflicts with React
+    force: true,
   },
   build: {
     commonjsOptions: {
       transformMixedEsModules: true,
     },
     rollupOptions: {
-      external: [],
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
