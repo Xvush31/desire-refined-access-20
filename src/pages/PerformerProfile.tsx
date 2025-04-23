@@ -1,7 +1,7 @@
+
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
-import ContentSection from "@/components/ContentSection";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +9,6 @@ import VideoCard from "@/components/VideoCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heart, MessageCircle, Star, Clock, Video, Users } from "lucide-react";
 import SendMessageDialog from "@/components/SendMessageDialog";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 interface PerformerData {
@@ -181,7 +180,7 @@ const PerformerProfile: React.FC = () => {
                 
                 <div className="flex flex-wrap justify-center md:justify-start gap-4">
                   <Button 
-                    className="animated-gradient-bg text-white" 
+                    className="animated-gradient-bg text-white min-w-[120px]" 
                     onClick={handleSubscribe}
                     type="button"
                   >
@@ -190,9 +189,11 @@ const PerformerProfile: React.FC = () => {
                   <Button 
                     variant="outline" 
                     type="button"
+                    className="min-w-[140px]"
                     onClick={() => setIsMessageDialogOpen(true)}
                   >
-                    <MessageCircle size={18} className="mr-2" /> Message privé
+                    <MessageCircle size={18} className="mr-2" /> 
+                    <span>Message privé</span>
                   </Button>
                   <SendMessageDialog 
                     performerName={performer.name} 

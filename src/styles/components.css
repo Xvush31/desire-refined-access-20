@@ -41,6 +41,16 @@
   @apply z-0 relative bg-background;
 }
 
+/* Styles pour les boutons dans les cartes de créateurs */
+.creator-card-button {
+  @apply w-full flex items-center justify-center gap-2 px-4 py-2 font-medium transition-colors;
+}
+
+/* Styles pour les boutons de profil */
+.profile-action-button {
+  @apply flex items-center gap-2 min-w-[120px] justify-center;
+}
+
 /* Styles spécifiques pour la vue mobile */
 @media (max-width: 640px) {
   .golden-grid,

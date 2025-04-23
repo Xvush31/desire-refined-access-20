@@ -47,8 +47,9 @@ const SendMessageDialog: React.FC<SendMessageDialogProps> = ({
     <Dialog open={open} onOpenChange={setOpen}>
       {!isOpen && (
         <DialogTrigger asChild>
-          <Button variant="outline">
-            <MessageCircle size={18} className="mr-2" /> Message privé
+          <Button variant="outline" type="button" className="flex items-center gap-2">
+            <MessageCircle size={18} /> 
+            <span>Message privé</span>
           </Button>
         </DialogTrigger>
       )}
@@ -64,9 +65,9 @@ const SendMessageDialog: React.FC<SendMessageDialogProps> = ({
             onChange={(e) => setMessage(e.target.value)}
           />
           <div className="flex justify-end">
-            <Button type="submit">
-              <MessageCircle className="mr-2 h-4 w-4" />
-              Envoyer
+            <Button type="submit" className="flex items-center gap-2">
+              <MessageCircle className="h-4 w-4" />
+              <span>Envoyer</span>
             </Button>
           </div>
         </form>
