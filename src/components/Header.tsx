@@ -6,11 +6,14 @@ import MobileMenu from "./MobileMenu";
 import Logo from "./Logo";
 import SearchBar from "./SearchBar";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useTheme } from "@/hooks/use-theme";
 
 const Header = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const isMobile = useIsMobile();
+  const { theme } = useTheme();
+  const isLight = theme === "light";
   
   useEffect(() => {
     const handleScroll = () => {
@@ -26,7 +29,7 @@ const Header = () => {
     <header 
       className={`sticky top-0 z-40 transition-all duration-300 ${
         scrolled 
-          ? 'glass-effect dark:glass-effect light:glass-light' 
+          ? isLight ? 'sexy-glass' : 'glass-effect dark:glass-effect' 
           : 'bg-transparent'
       }`}
     >
@@ -44,14 +47,14 @@ const Header = () => {
             <div className="flex items-center space-x-4 flex-shrink-0">
               <Button 
                 variant="ghost" 
-                className="hover:bg-muted rounded-full p-2 transition-colors"
+                className={`hover:bg-muted rounded-full p-2 transition-colors ${isLight ? 'text-gray-800' : ''}`}
               >
                 <User size={20} />
               </Button>
               
               <Button 
                 variant="ghost" 
-                className="hover:bg-muted rounded-full p-2 transition-colors"
+                className={`hover:bg-muted rounded-full p-2 transition-colors ${isLight ? 'text-gray-800' : ''}`}
                 onClick={() => setShowMobileMenu(true)}
               >
                 <Menu size={20} />
@@ -60,7 +63,9 @@ const Header = () => {
           </div>
         </div>
 
-        <div className="w-full h-[125px] bg-secondary/30 flex items-center justify-center text-muted-foreground rounded-lg mb-4 light-glass dark:bg-gray-200">
+        <div className={`w-full h-[125px] flex items-center justify-center text-muted-foreground rounded-lg mb-4 ${
+          isLight ? 'sexy-glass' : 'bg-secondary/30 dark:bg-gray-200'
+        }`}>
           Espace publicitaire
         </div>
       </div>

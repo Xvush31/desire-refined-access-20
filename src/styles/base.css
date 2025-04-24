@@ -26,6 +26,7 @@
   }
 
   :root[data-theme="light"] {
+    /* Sexy gradient background colors inspired by Lovable logo */
     --background: 346 77% 98%; /* Soft pink background */
     --foreground: 240 10% 3.9%;
     --card: 346 77% 100%;
@@ -47,8 +48,10 @@
     --ring: 346 77% 49%;
     --radius: 0.5rem;
 
-    /* Nouvelles variables pour le thème clair */
+    /* Gradient variables for the light theme */
     --brand-gradient: linear-gradient(to right, #ff8ba7 0%, #ffc6c7 100%);
+    --sexy-gradient: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+    --lovable-gradient: linear-gradient(120deg, #9b87f5 0%, #d946ef 50%, #ff8ba7 100%);
     --soft-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   }
 
@@ -66,6 +69,15 @@ html, body, #root {
   width: 100%;
   height: 100%;
   overflow-x: hidden;
+}
+
+/* Apply the background gradient for light theme */
+html[data-theme="light"] body {
+  background: var(--sexy-gradient);
+  background-attachment: fixed;
+}
+
+html[data-theme="dark"] body {
   background-color: hsl(var(--background));
 }
 
@@ -107,3 +119,23 @@ p {
 .hover-lift {
   @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-md;
 }
+
+/* New sexy gradient backgrounds for light theme elements */
+.sexy-gradient-bg {
+  background: var(--sexy-gradient);
+  background-attachment: fixed;
+}
+
+.lovable-gradient-bg {
+  background: var(--lovable-gradient);
+  background-attachment: fixed;
+}
+
+/* Enhanced card styles for light theme */
+.card-light {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+}
+
