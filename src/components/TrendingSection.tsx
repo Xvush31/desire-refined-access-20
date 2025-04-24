@@ -53,7 +53,9 @@ const TrendingSection = () => {
         <div className="space-y-golden-sm">
           <h3 className="text-golden-lg font-medium">{t("home.popular_videos")}</h3>
           <p className="text-muted-foreground">
-            {t("home.trending_desc") || "Découvrez les vidéos tendances les plus regardées cette semaine"}
+            {t("home.trending_desc") === "home.trending_desc" 
+              ? "Découvrez les vidéos tendances les plus regardées cette semaine" 
+              : t("home.trending_desc")}
           </p>
           <Button className="animated-gradient-bg text-white mt-golden-md w-full sm:w-auto">
             {t("home.explore_trends")}
