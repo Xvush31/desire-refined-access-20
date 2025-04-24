@@ -5,6 +5,7 @@ import VideoCard from "@/components/VideoCard";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocale } from "@/contexts/LocaleContext";
+import { useNavigate } from "react-router-dom";
 
 const trendingVideos = [
   {
@@ -46,6 +47,11 @@ const trendingVideos = [
 const TrendingSection = () => {
   const isMobile = useIsMobile();
   const { t } = useLocale();
+  const navigate = useNavigate();
+
+  const handleExploreClick = () => {
+    navigate("/trending");
+  };
 
   return (
     <ContentSection title={t("home.trending")} viewAllLink="/trending">
@@ -57,7 +63,10 @@ const TrendingSection = () => {
               ? "Découvrez les vidéos tendances les plus regardées cette semaine" 
               : t("home.trending_desc")}
           </p>
-          <Button className="animated-gradient-bg text-white mt-golden-md w-full sm:w-auto">
+          <Button 
+            className="animated-gradient-bg text-white mt-golden-md w-full sm:w-auto"
+            onClick={handleExploreClick}
+          >
             {t("home.explore_trends")}
           </Button>
         </div>
@@ -71,6 +80,8 @@ const TrendingSection = () => {
               views={video.views}
               performer={video.performer}
               isPremium={video.isPremium}
+              id={video.id}
+              navigateTo="/trending"
             />
           ))}
         </div>
@@ -86,6 +97,8 @@ const TrendingSection = () => {
             views={video.views}
             performer={video.performer}
             isPremium={video.isPremium}
+            id={video.id}
+            navigateTo="/trending"
           />
         ))}
       </div>

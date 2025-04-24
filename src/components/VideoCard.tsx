@@ -8,7 +8,8 @@ interface VideoCardProps {
   views: string;
   performer: string;
   isPremium?: boolean;
-  id?: number; // Add optional ID parameter
+  id?: number;
+  navigateTo?: string;
 }
 
 const VideoCard: React.FC<VideoCardProps> = ({
@@ -18,19 +19,17 @@ const VideoCard: React.FC<VideoCardProps> = ({
   views,
   performer,
   isPremium = false,
-  id, // Accept the ID parameter
+  id,
+  navigateTo,
 }) => {
   const [isHovering, setIsHovering] = useState(false);
   const navigate = useNavigate();
   
-  // Extract video ID from thumbnail URL or use provided ID
   const getVideoId = () => {
-    // If we have an explicit ID, use it
     if (id !== undefined) {
       return id;
     }
     
-    // Otherwise try to extract from thumbnail
     const seed = thumbnail.split('/seed/')[1]?.split('/')[0];
     switch(seed) {
       case 'paris': return 1;
@@ -40,13 +39,21 @@ const VideoCard: React.FC<VideoCardProps> = ({
       default: return 1;
     }
   };
+
+  const handleClick = () => {
+    if (navigateTo) {
+      navigate(navigateTo);
+    } else {
+      navigate(`/video/${getVideoId()}`);
+    }
+  };
   
   return (
     <div 
       className="video-card group transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg w-full cursor-pointer"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
-      onClick={() => navigate(`/video/${getVideoId()}`)}
+      onClick={handleClick}
     >
       <div className="relative overflow-hidden aspect-golden-inverse sm:aspect-golden">
         <img
