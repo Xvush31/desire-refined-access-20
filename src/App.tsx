@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -37,6 +38,7 @@ import Upload from "./pages/Upload";
 import Login from "./pages/Login";
 import SingleVideo from "./pages/SingleVideo";
 import PWAInstallPrompt from './components/PWAInstallPrompt';
+import { useTheme } from "./hooks/use-theme";
 
 const queryClient = new QueryClient();
 
@@ -76,7 +78,7 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <LocaleProvider>
           <TooltipProvider>
-            <div className="min-h-screen bg-background overflow-x-hidden">
+            <div className="min-h-screen overflow-x-hidden">
               <Toaster />
               <Sonner />
               {!ageVerified && <AgeVerification onVerification={handleAgeVerification} />}

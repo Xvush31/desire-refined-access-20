@@ -75,6 +75,7 @@ html, body, #root {
 html[data-theme="light"] body {
   background: var(--sexy-gradient);
   background-attachment: fixed;
+  background-size: cover;
 }
 
 html[data-theme="dark"] body {
@@ -138,4 +139,3 @@ p {
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
 }
-
