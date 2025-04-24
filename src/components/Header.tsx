@@ -5,6 +5,7 @@ import { Menu, User } from "lucide-react";
 import MobileMenu from "./MobileMenu";
 import Logo from "./Logo";
 import SearchBar from "./SearchBar";
+import ThemeToggle from "./ThemeToggle";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTheme } from "@/hooks/use-theme";
 
@@ -45,6 +46,7 @@ const Header = () => {
             </div>
 
             <div className="flex items-center space-x-4 flex-shrink-0">
+              <ThemeToggle />
               <Button 
                 variant="ghost" 
                 className={`hover:bg-muted rounded-full p-2 transition-colors ${isLight ? 'text-gray-800' : ''}`}
