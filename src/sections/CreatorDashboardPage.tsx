@@ -8,10 +8,13 @@ import { useIsMobile } from '../hooks/use-mobile';
 import { toast } from "sonner";
 import { regulatoryFirewall } from '../services/regulatoryFirewall';
 import { useLocale } from "@/contexts/LocaleContext";
+import { useTheme } from '@/hooks/use-theme';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const CreatorDashboardPage: React.FC = () => {
   const isMobile = useIsMobile();
   const { lang } = useLocale();
+  const { theme } = useTheme();
 
   // Effet pour vérifier la conformité réglementaire
   useEffect(() => {
@@ -49,8 +52,11 @@ const CreatorDashboardPage: React.FC = () => {
   }, [lang]);
 
   return (
-    <div className="bg-black min-h-screen">
+    <div className={theme === 'light' ? 'sexy-gradient-bg min-h-screen' : 'bg-black min-h-screen'}>
       <div className="container mx-auto px-4 py-4 md:py-8">
+        <div className="flex justify-end mb-4">
+          <ThemeToggle />
+        </div>
         <CreatorDashboard />
         <div className="my-4 md:my-8 border-t border-border opacity-30" />
         <ContentManagementSection />

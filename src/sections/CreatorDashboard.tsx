@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useEngagementSequences } from '../hooks/useEngagementSequences';
 import { useIsMobile } from '../hooks/use-mobile';
@@ -15,14 +16,14 @@ import LanguageSelector from '@/components/dashboard/LanguageSelector';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useTheme } from '@/hooks/use-theme';
 
-// Simulé : affichage revenus par devise (EUR, USD, GBP, USDT)
+// Simulé : affichage revenus par devise (EUR, USD, GBP, USDT)
 const getRevenue = (currency: string) => {
   switch (currency) {
-    case "EUR": return "7 245€";
+    case "EUR": return "7 245€";
     case "USD": return "$7,765";
     case "GBP": return "£6,210";
     case "USDT": return "7,765₮";
-    default: return "7 245€";
+    default: return "7 245€";
   }
 };
 
@@ -35,7 +36,7 @@ const CreatorDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      <div className={`p-6 rounded-lg backdrop-blur-sm ${theme === 'light' ? 'bg-white/20' : 'bg-black'}`}>
+      <div className={`p-6 rounded-lg backdrop-blur-sm ${theme === 'light' ? 'sexy-glass' : 'bg-black'}`}>
         <div className="flex flex-row gap-2 justify-start items-center mb-4">
           <LanguageSelector />
           <CurrencySelector currency={currency} onChange={setCurrency} />
