@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -39,11 +38,8 @@ const XTeaseVideoCard: React.FC<XTeaseVideoCardProps> = ({
   onVideoComplete,
   aiSuggestions,
 }) => {
-  // Responsive: Titles always under video
-  
   return (
     <div className="relative w-full h-full max-w-md mx-auto flex flex-col">
-      {/* Bannière promotion abonnement */}
       {video.isPremium && !isPlayerActive && (
         <SubscriptionPromoBanner tier="premium" />
       )}
@@ -65,9 +61,7 @@ const XTeaseVideoCard: React.FC<XTeaseVideoCardProps> = ({
                 alt={video.title}
                 className="h-full w-full object-cover"
               />
-              {/* Overlay gradient */}
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70" />
-              {/* Play button */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <Button
                   onClick={onPlay}
@@ -76,7 +70,6 @@ const XTeaseVideoCard: React.FC<XTeaseVideoCardProps> = ({
                   <Play size={32} className="text-white" />
                 </Button>
               </div>
-              {/* Badge premium */}
               {video.isPremium && (
                 <div className="absolute top-3 right-3 badge badge-premium px-3 py-1 text-sm font-medium">
                   Premium
@@ -87,21 +80,22 @@ const XTeaseVideoCard: React.FC<XTeaseVideoCardProps> = ({
         </div>
       </div>
 
-      {/* Titres SOUS la vidéo (tjrs visible et jamais sous btn/overlay) */}
-      <div className="w-full mt-4 px-2">
-        <h3 className="text-lg font-bold text-white break-words">{video.title}</h3>
+      <div className="w-full mt-4 px-4 py-3 bg-white/10 backdrop-blur-md rounded-lg">
+        <h3 className="text-lg font-bold text-white drop-shadow-lg break-words">{video.title}</h3>
         <div className="flex justify-between items-center mt-2 flex-wrap gap-x-2">
-          <p className="text-sm text-gray-200 truncate">{video.performer}</p>
-          <p className="text-sm text-gray-200 truncate">{video.views}</p>
+          <p className="text-sm font-medium text-white/90 drop-shadow-lg truncate">
+            {video.performer}
+          </p>
+          <p className="text-sm font-medium text-white/90 drop-shadow-lg truncate">
+            {video.views}
+          </p>
         </div>
       </div>
 
-      {/* Suggestions de l'IA */}
       {currentVideoIndex === index && isPlayerActive && (
         <AIContentSuggestions suggestions={aiSuggestions} />
       )}
 
-      {/* CTA pour previews */}
       {video.isPreview && (
         <div className="mt-4">
           <Link

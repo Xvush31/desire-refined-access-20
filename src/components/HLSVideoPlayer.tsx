@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from "react";
-import { Lock, Play } from "lucide-react";
+import { Lock, Play, Volume2, VolumeX } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useHLSPlayer } from "@/hooks/useHLSPlayer";
 import { useVideoControls } from "@/hooks/useVideoControls";
@@ -32,9 +31,13 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
     buffering,
     loaded,
     qualityLevels,
-    currentQuality,
-    setCurrentQuality
-  } = useHLSPlayer({ src, autoPlay, onVideoComplete });
+    currentQuality
+  } = useHLSPlayer({ 
+    src, 
+    autoPlay,
+    onVideoComplete,
+    startMuted: true
+  });
 
   const {
     containerRef,
@@ -53,7 +56,6 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
   const [isWatermarkVisible, setIsWatermarkVisible] = useState(false);
   const [showSubscriptionPrompt, setShowSubscriptionPrompt] = useState(false);
 
-  // Handle idle state for controls visibility
   useEffect(() => {
     const idleTimer = setTimeout(() => {
       if (isPlaying) {
@@ -65,14 +67,12 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
     return () => clearTimeout(idleTimer);
   }, [isPlaying]);
 
-  // Handle subscription prompt
   useEffect(() => {
     if (isPreview && currentTime > duration * 0.8 && !showSubscriptionPrompt) {
       setShowSubscriptionPrompt(true);
     }
   }, [currentTime, duration, isPreview, showSubscriptionPrompt]);
 
-  // Security features: Capture detection
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (
@@ -98,7 +98,7 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
   return (
     <div 
       ref={containerRef}
-      className="video-container relative bg-black rounded-2xl overflow-hidden w-full aspect-video"
+      className="video-container relative bg-black rounded-2xl overflow-hidden w-full aspect-[9/16]"
       onMouseMove={() => {
         setIsControlsVisible(true);
         setIsIdle(false);
@@ -111,16 +111,15 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
         onClick={togglePlay}
         poster={poster}
         playsInline
+        muted
       />
       
-      {/* Loading indicator */}
       {(buffering || !loaded) && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/40">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
         </div>
       )}
       
-      {/* Watermark overlay */}
       {isWatermarkVisible && (
         <div className="absolute inset-0 z-50 pointer-events-none grid grid-cols-3 grid-rows-3 gap-4">
           {Array.from({ length: 9 }).map((_, i) => (
@@ -134,7 +133,6 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
         </div>
       )}
 
-      {/* Center play/pause button */}
       {!isPlaying && !buffering && loaded && (
         <div 
           className="absolute inset-0 flex items-center justify-center bg-black/20"
@@ -149,14 +147,19 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
         </div>
       )}
 
-      {/* Title overlay */}
       {title && isControlsVisible && (
-        <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/60 to-transparent animate-fade-controls">
-          <h2 className="text-white text-lg font-medium">{title}</h2>
+        <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/60 to-transparent">
+          <h2 className="text-white text-lg font-medium drop-shadow-lg">{title}</h2>
         </div>
       )}
 
-      {/* Video controls */}
+      <button 
+        className="absolute top-4 right-4 z-50 bg-black/40 p-2 rounded-full text-white hover:bg-black/60 transition-colors"
+        onClick={toggleMute}
+      >
+        {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+      </button>
+
       <VideoControls
         isPlaying={isPlaying}
         currentTime={currentTime}
@@ -174,7 +177,6 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
         onToggleFullscreen={toggleFullScreen}
       />
 
-      {/* Subscription prompt overlay */}
       {showSubscriptionPrompt && isPreview && (
         <div className="absolute bottom-16 left-4 right-4 p-4 bg-black/80 border border-brand-red rounded-lg animate-fade-in">
           <h3 className="font-bold text-lg mb-2 animated-gradient">Découvrez la suite en VIP !</h3>

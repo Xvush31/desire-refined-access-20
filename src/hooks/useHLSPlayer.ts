@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
 
@@ -6,9 +5,15 @@ interface UseHLSPlayerProps {
   src: string;
   autoPlay?: boolean;
   onVideoComplete?: () => void;
+  startMuted?: boolean;
 }
 
-export const useHLSPlayer = ({ src, autoPlay = false, onVideoComplete }: UseHLSPlayerProps) => {
+export const useHLSPlayer = ({ 
+  src, 
+  autoPlay = false, 
+  onVideoComplete,
+  startMuted = false 
+}: UseHLSPlayerProps) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const hlsRef = useRef<Hls | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -42,6 +47,7 @@ export const useHLSPlayer = ({ src, autoPlay = false, onVideoComplete }: UseHLSP
           setQualityLevels(data.levels);
           setLoaded(true);
           if (autoPlay) {
+            video.muted = startMuted;
             video.play().catch(() => {
               console.log("Autoplay prevented by browser");
             });
@@ -90,7 +96,7 @@ export const useHLSPlayer = ({ src, autoPlay = false, onVideoComplete }: UseHLSP
         hlsRef.current = null;
       }
     };
-  }, [src, autoPlay]);
+  }, [src, autoPlay, startMuted]);
 
   useEffect(() => {
     const video = videoRef.current;
