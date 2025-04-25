@@ -36,7 +36,7 @@ const CreatorDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      <div className={`p-6 rounded-lg backdrop-blur-sm ${theme === 'light' ? 'sexy-glass' : 'bg-black'}`}>
+      <div className={`p-6 rounded-lg backdrop-blur-sm ${theme === 'light' ? 'sexy-glass' : 'bg-black/90'}`}>
         <div className="flex flex-row gap-2 justify-start items-center mb-4">
           <LanguageSelector />
           <CurrencySelector currency={currency} onChange={setCurrency} />
@@ -47,7 +47,9 @@ const CreatorDashboard: React.FC = () => {
             <div className={`text-lg md:text-2xl font-bold mb-1 ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>
               {t("dashboard.revenue")} ({currency}):
             </div>
-            <div className="text-2xl md:text-3xl text-brand-red font-extrabold">{getRevenue(currency)}</div>
+            <div className={`text-2xl md:text-3xl font-extrabold ${theme === 'light' ? 'text-brand-red' : 'text-pink-500'}`}>
+              {getRevenue(currency)}
+            </div>
           </div>
           <div className="mt-4 md:mt-0 md:ml-auto flex items-center">
             <WithdrawRequest />

@@ -1,7 +1,8 @@
-
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import XTeaseVideoCard from "./XTeaseVideoCard";
 import XTeaseSecurityIncidentBanner from "./XTeaseSecurityIncidentBanner";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { Loader } from "lucide-react";
 
 interface VideoData {
   id: number;
@@ -38,8 +39,23 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
   handleVideoComplete,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [displayedVideos, setDisplayedVideos] = useState(videos.slice(0, 3));
+  const [hasMore, setHasMore] = useState(true);
 
-  // Scroll behavior for index
+  const fetchMoreData = () => {
+    const currentLength = displayedVideos.length;
+    const moreVideos = videos.slice(currentLength, currentLength + 2);
+    
+    if (displayedVideos.length >= videos.length) {
+      setHasMore(false);
+      return;
+    }
+    
+    setTimeout(() => {
+      setDisplayedVideos([...displayedVideos, ...moreVideos]);
+    }, 1000);
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       if (!containerRef.current) return;
@@ -49,57 +65,65 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
       if (
         index !== currentVideoIndex &&
         index >= 0 &&
-        index < videos.length
+        index < displayedVideos.length
       ) {
         setCurrentVideoIndex(index);
-        setIsPlayerActive(false); // Reset si changement vidéo
+        setIsPlayerActive(false);
       }
     };
 
     const container = containerRef.current;
     if (container) {
       container.addEventListener("scroll", handleScroll);
-      return () =>
-        container.removeEventListener("scroll", handleScroll);
+      return () => container.removeEventListener("scroll", handleScroll);
     }
-  }, [currentVideoIndex, setCurrentVideoIndex, videos.length, setIsPlayerActive]);
-  
-  // Optimize layout: all videos fit properly, no overlap
+  }, [currentVideoIndex, setCurrentVideoIndex, displayedVideos.length, setIsPlayerActive]);
 
   return (
     <div
       ref={containerRef}
+      id="scrollableDiv"
       className="h-[calc(100vh-80px)] overflow-y-auto snap-y snap-mandatory"
     >
-      {videos.map((video, index) => (
-        <div
-          key={video.id}
-          className="min-h-full w-full snap-start snap-always flex items-center justify-center p-2 sm:p-4"
-          style={{ minHeight: 'calc(100vh - 80px)' }}
-        >
-          <XTeaseVideoCard
-            video={video}
-            index={index}
-            currentVideoIndex={currentVideoIndex}
-            isPlayerActive={isPlayerActive}
-            showSecurityIncident={showSecurityIncident}
-            onPlay={() => {
-              setIsPlayerActive(true);
-              // Simulate security incident detection on 30% of play actions
-              if (Math.random() < 0.3 && !showSecurityIncident) {
-                setTimeout(() => {
-                  setShowSecurityIncident(true);
-                  setTimeout(() => setShowSecurityIncident(false), 5000);
-                }, 3000);
-              }
-            }}
-            onVideoComplete={handleVideoComplete}
-            aiSuggestions={aiSuggestions}
-          />
-        </div>
-      ))}
+      <InfiniteScroll
+        dataLength={displayedVideos.length}
+        next={fetchMoreData}
+        hasMore={hasMore}
+        loader={
+          <div className="flex justify-center items-center py-4">
+            <Loader className="animate-spin w-6 h-6 text-pink-500" />
+          </div>
+        }
+        scrollableTarget="scrollableDiv"
+      >
+        {displayedVideos.map((video, index) => (
+          <div
+            key={video.id}
+            className="min-h-full w-full snap-start snap-always flex items-center justify-center p-2 sm:p-4"
+            style={{ minHeight: 'calc(100vh - 80px)' }}
+          >
+            <XTeaseVideoCard
+              video={video}
+              index={index}
+              currentVideoIndex={currentVideoIndex}
+              isPlayerActive={isPlayerActive}
+              showSecurityIncident={showSecurityIncident}
+              onPlay={() => {
+                setIsPlayerActive(true);
+                if (Math.random() < 0.3 && !showSecurityIncident) {
+                  setTimeout(() => {
+                    setShowSecurityIncident(true);
+                    setTimeout(() => setShowSecurityIncident(false), 5000);
+                  }, 3000);
+                }
+              }}
+              onVideoComplete={handleVideoComplete}
+              aiSuggestions={aiSuggestions}
+            />
+          </div>
+        ))}
+      </InfiniteScroll>
 
-      {/* Security Banner should be global, only one instance outside video map */}
       <XTeaseSecurityIncidentBanner show={showSecurityIncident} />
     </div>
   );
