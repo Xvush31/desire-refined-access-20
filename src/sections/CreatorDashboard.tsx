@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useEngagementSequences } from '../hooks/useEngagementSequences';
 import { useIsMobile } from '../hooks/use-mobile';
@@ -14,6 +13,7 @@ import CurrencySelector from '@/components/dashboard/CurrencySelector';
 import WithdrawRequest from '@/components/dashboard/WithdrawRequest';
 import LanguageSelector from '@/components/dashboard/LanguageSelector';
 import { useLocale } from '@/contexts/LocaleContext';
+import { useTheme } from '@/hooks/use-theme';
 
 // Simulé : affichage revenus par devise (EUR, USD, GBP, USDT)
 const getRevenue = (currency: string) => {
@@ -31,37 +31,39 @@ const CreatorDashboard: React.FC = () => {
   const isMobile = useIsMobile();
   const [currency, setCurrency] = useState("EUR");
   const { t } = useLocale();
+  const { theme } = useTheme();
 
   return (
-    <div className="bg-black min-h-screen text-white p-6">
-      <div className="flex flex-row gap-2 justify-start items-center mb-4">
-        <LanguageSelector />
-        <CurrencySelector currency={currency} onChange={setCurrency} />
-      </div>
+    <div className="min-h-screen">
+      <div className={`p-6 rounded-lg backdrop-blur-sm ${theme === 'light' ? 'bg-white/20' : 'bg-black'}`}>
+        <div className="flex flex-row gap-2 justify-start items-center mb-4">
+          <LanguageSelector />
+          <CurrencySelector currency={currency} onChange={setCurrency} />
+        </div>
 
-      <div className="mb-6 md:flex md:items-center md:gap-12">
-        <div>
-          <div className="text-lg md:text-2xl font-bold mb-1">
-            {t("dashboard.revenue")} ({currency}):
+        <div className="mb-6 md:flex md:items-center md:gap-12">
+          <div>
+            <div className={`text-lg md:text-2xl font-bold mb-1 ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>
+              {t("dashboard.revenue")} ({currency}):
+            </div>
+            <div className="text-2xl md:text-3xl text-brand-red font-extrabold">{getRevenue(currency)}</div>
           </div>
-          <div className="text-2xl md:text-3xl text-brand-red font-extrabold">{getRevenue(currency)}</div>
+          <div className="mt-4 md:mt-0 md:ml-auto flex items-center">
+            <WithdrawRequest />
+          </div>
         </div>
-        <div className="mt-4 md:mt-0 md:ml-auto flex items-center">
-          <WithdrawRequest />
-        </div>
-      </div>
 
-      <DashboardHeader />
-      {isMobile && <MobileEditorActions />}
-      <MetricsSection />
-      <InsightsSection />
-      <CommunicationSection />
-      <CommunityBadges />
-      <SecuritySection />
-      <CreatorSupport />
+        <DashboardHeader />
+        {isMobile && <MobileEditorActions />}
+        <MetricsSection />
+        <InsightsSection />
+        <CommunicationSection />
+        <CommunityBadges />
+        <SecuritySection />
+        <CreatorSupport />
+      </div>
     </div>
   );
 };
 
 export default CreatorDashboard;
-

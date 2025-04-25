@@ -1,4 +1,3 @@
-
 @tailwind base;
 
 @layer base {
@@ -27,7 +26,7 @@
 
   :root[data-theme="light"] {
     /* Sexy gradient background colors inspired by Lovable logo */
-    --background: 346 77% 98%; /* Soft pink background */
+    --background: 346 77% 98%;
     --foreground: 240 10% 3.9%;
     --card: 346 77% 100%;
     --card-foreground: 240 10% 3.9%;
@@ -38,7 +37,7 @@
     --secondary: 346 77% 95%;
     --secondary-foreground: 346 77% 49%;
     --muted: 346 77% 95%;
-    --muted-foreground: 346 77% 49%;
+    --muted-foreground: 240 25% 25%;
     --accent: 346 77% 95%;
     --accent-foreground: 346 77% 49%;
     --destructive: 0 84.2% 60.2%;

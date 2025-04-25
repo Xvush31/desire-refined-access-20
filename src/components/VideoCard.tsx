@@ -70,20 +70,20 @@ const VideoCard: React.FC<VideoCardProps> = ({
         </div>
         {isPremium && (
           <div className="absolute top-2 left-2">
-            <div className="bg-gradient-to-r from-[#ff8ba7] to-[#ffc6c7] text-white px-3 py-1 rounded-full text-xs font-semibold">
+            <div className="bg-gradient-to-r from-[#ff8ba7] to-[#ffc6c7] text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
               Premium
             </div>
           </div>
         )}
       </div>
       
-      <div className="p-4">
-        <h3 className="text-base font-medium line-clamp-2 mb-2 group-hover:text-[#ff8ba7] transition-colors duration-200">
+      <div className="p-4 bg-white/10 backdrop-blur-md">
+        <h3 className="text-base font-medium line-clamp-2 mb-2 text-gray-800 dark:text-white group-hover:text-[#ff8ba7] transition-colors duration-200">
           {title}
         </h3>
         <div className="flex items-center justify-between">
-          <span className="text-sm text-rose-300/80">{performer}</span>
-          <span className="text-sm text-rose-300/80">{views} vues</span>
+          <span className="text-sm text-gray-600 dark:text-rose-300/80">{performer}</span>
+          <span className="text-sm text-gray-600 dark:text-rose-300/80">{views} vues</span>
         </div>
       </div>
     </div>
