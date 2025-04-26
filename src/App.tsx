@@ -1,10 +1,9 @@
-
 import React, { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AgeVerification from "./components/AgeVerification";
@@ -37,10 +36,20 @@ import History from "./pages/History";
 import Upload from "./pages/Upload";
 import Login from "./pages/Login";
 import SingleVideo from "./pages/SingleVideo";
-import PWAInstallPrompt from './components/PWAInstallPrompt';
+import VideoList from "./components/VideoList"; // Ajout de l'importation de VideoList
+import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import { useTheme } from "./hooks/use-theme";
+import { useAuth } from "./contexts/AuthContext"; // Ajout de l'importation de useAuth
 
 const queryClient = new QueryClient();
+
+// Composant PrivateRoute pour protéger les routes
+const PrivateRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
+  const { currentUser, loading } = useAuth();
+
+  if (loading) return <div>Chargement...</div>;
+  return currentUser ? children : <Navigate to="/login" />;
+};
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -49,11 +58,11 @@ const App = () => {
   useEffect(() => {
     const initServices = async () => {
       await regulatoryFirewall.init();
-      
-      const isVerified = ghostMode.isEnabled() 
+
+      const isVerified = ghostMode.isEnabled()
         ? ghostMode.get("age-verified") === "true"
         : localStorage.getItem("age-verified") === "true";
-      
+
       setAgeVerified(isVerified);
       setLoading(false);
     };
@@ -81,7 +90,9 @@ const App = () => {
             <div className="min-h-screen overflow-x-hidden">
               <Toaster />
               <Sonner />
-              {!ageVerified && <AgeVerification onVerification={handleAgeVerification} />}
+              {!ageVerified && (
+                <AgeVerification onVerification={handleAgeVerification} />
+              )}
               <CookieConsentBanner />
               <PWAInstallPrompt />
               <BrowserRouter>
@@ -91,23 +102,53 @@ const App = () => {
                   <Route path="/community" element={<Community />} />
                   <Route path="/invite/:code" element={<Invite />} />
                   <Route path="/xtease" element={<XTease />} />
-                  <Route path="/creator-dashboard" element={<CreatorDashboardPage />} />
-                  <Route path="/creator-dashboard/xtease-security" element={<XTeaseSecurity />} />
-                  <Route path="/subscription" element={<React.Suspense fallback={null}><Subscription /></React.Suspense>} />
-                  <Route path="/subscription-confirmation" element={<SubscriptionConfirmationPage />} />
+                  <Route
+                    path="/creator-dashboard"
+                    element={
+                      <PrivateRoute>
+                        <CreatorDashboardPage />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/creator-dashboard/xtease-security"
+                    element={
+                      <PrivateRoute>
+                        <XTeaseSecurity />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/subscription"
+                    element={
+                      <React.Suspense fallback={null}>
+                        <Subscription />
+                      </React.Suspense>
+                    }
+                  />
+                  <Route
+                    path="/subscription-confirmation"
+                    element={<SubscriptionConfirmationPage />}
+                  />
                   <Route path="/creators" element={<Creators />} />
-                  
-                  <Route path="/creators/popular" element={<CreatorsPopular />} />
+                  <Route
+                    path="/creators/popular"
+                    element={<CreatorsPopular />}
+                  />
                   <Route path="/creators/recent" element={<CreatorsRecent />} />
-                  
                   <Route path="/categories" element={<Categories />} />
-                  <Route path="/categories/:categoryId" element={<CategoryPage />} />
+                  <Route
+                    path="/categories/:categoryId"
+                    element={<CategoryPage />}
+                  />
                   <Route path="/trending" element={<Trending />} />
                   <Route path="/performers" element={<Performers />} />
-                  <Route path="/performers/:performerId" element={<PerformerProfile />} />
+                  <Route
+                    path="/performers/:performerId"
+                    element={<PerformerProfile />}
+                  />
                   <Route path="/recent" element={<Recent />} />
                   <Route path="/favorites" element={<Favorites />} />
-                  
                   <Route path="/about" element={<About />} />
                   <Route path="/terms" element={<Terms />} />
                   <Route path="/privacy" element={<Privacy />} />
@@ -115,7 +156,8 @@ const App = () => {
                   <Route path="/history" element={<History />} />
                   <Route path="/upload" element={<Upload />} />
                   <Route path="/login" element={<Login />} />
-                  
+                  <Route path="/videos" element={<VideoList />} />{" "}
+                  {/* Nouvelle route pour VideoList */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>

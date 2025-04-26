@@ -9,16 +9,17 @@ import { regulatoryFirewall } from "../services/regulatoryFirewall";
 import { useLocale } from "@/contexts/LocaleContext";
 import { useTheme } from "@/hooks/use-theme";
 import ThemeToggle from "@/components/ThemeToggle";
+import { useAuth } from "@/contexts/AuthContext";
+import { Link } from "react-router-dom";
 
 const CreatorDashboardPage: React.FC = () => {
   const isMobile = useIsMobile();
   const { lang } = useLocale();
   const { theme } = useTheme();
+  const { currentUser } = useAuth();
 
-  // Définit un creatorId (à remplacer par une valeur dynamique via authentification)
-  const creatorId = "creator5"; // Remplace par l’ID de l’utilisateur connecté
+  const creatorId = currentUser?.uid || "creator5";
 
-  // Effet pour vérifier la conformité réglementaire
   useEffect(() => {
     const regulations = regulatoryFirewall.getRegulations();
 
@@ -66,11 +67,13 @@ const CreatorDashboardPage: React.FC = () => {
       }
     >
       <div className="container mx-auto px-4 py-4 md:py-8">
-        <div className="flex justify-end mb-4">
+        <div className="flex justify-between items-center mb-4">
+          <Link to="/videos" className="text-brand-red font-bold">
+            Voir les Vidéos
+          </Link>
           <ThemeToggle />
         </div>
-        <CreatorDashboard creatorId={creatorId} />{" "}
-        {/* Passe creatorId à CreatorDashboard */}
+        <CreatorDashboard creatorId={creatorId} />
         <div className="my-4 md:my-8 border-t border-border opacity-30" />
         <ContentManagementSection />
         <div className="my-4 md:my-8 border-t border-border opacity-30" />
