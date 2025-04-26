@@ -1,22 +1,25 @@
 
-import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import Header from "@/components/Header";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import VideoCard from "@/components/VideoCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Heart, MessageCircle, Star, Clock, Video, Users } from "lucide-react";
-import SendMessageDialog from "@/components/SendMessageDialog";
+import { ArrowLeft, Bell, MessageCircle, MoreVertical, Grid, Play, User, Home, Search, Plus, Video } from "lucide-react";
 import { toast } from "sonner";
+import SendMessageDialog from "@/components/SendMessageDialog";
+import PerformerHighlights from "@/components/performer/PerformerHighlights";
+import PerformerGrid from "@/components/performer/PerformerGrid";
+import { useTheme } from "@/hooks/use-theme";
 
 interface PerformerData {
   id: number;
-  name: string;
+  username: string;
+  displayName: string;
   image: string;
   videos: number;
-  subscribers: string;
+  followers: string;
+  following: number;
   description: string;
   joinDate: string;
   tags: string[];
@@ -30,11 +33,13 @@ interface PerformerData {
 const performerDetails: Record<string, PerformerData> = {
   "1": {
     id: 1,
-    name: "JulieSky",
+    username: "juliesky",
+    displayName: "Julie Sky",
     image: "https://picsum.photos/seed/perf1/150/150",
-    videos: 58,
-    subscribers: "1.2M",
-    description: "Passionnée et créative, Julie aime partager des moments intimes et authentiques. Elle se spécialise dans les vidéos solo et les danses sensuelles. Abonnez-vous pour découvrir son univers unique et personnel.",
+    videos: 63,
+    followers: "64,4K",
+    following: 68,
+    description: "Passionnée et créative, Julie aime partager des moments intimes et authentiques. Elle se spécialise dans les vidéos solo et les danses sensuelles.",
     joinDate: "Jan 2022",
     tags: ["Amateur", "Solo", "Danse", "Lingerie", "Jeux de rôle"],
     stats: {
@@ -45,11 +50,13 @@ const performerDetails: Record<string, PerformerData> = {
   },
   "2": {
     id: 2,
-    name: "MaxPower",
+    username: "maxpower",
+    displayName: "Max Power",
     image: "https://picsum.photos/seed/perf2/150/150",
     videos: 42,
-    subscribers: "850K",
-    description: "Max propose des vidéos énergiques et passionnées avec différentes partenaires. Il se démarque par son énergie et sa créativité. Son contenu est varié et toujours de grande qualité.",
+    followers: "850K",
+    following: 123,
+    description: "Max propose des vidéos énergiques et passionnées avec différentes partenaires. Il se démarque par son énergie et sa créativité.",
     joinDate: "Mar 2021",
     tags: ["Couple", "Fitness", "POV", "Extérieur", "Sportif"],
     stats: {
@@ -60,11 +67,13 @@ const performerDetails: Record<string, PerformerData> = {
   },
   "3": {
     id: 3,
-    name: "LexiLove",
+    username: "lexilove",
+    displayName: "Lexi Love",
     image: "https://picsum.photos/seed/perf3/150/150",
     videos: 63,
-    subscribers: "1.5M",
-    description: "Lexi est connue pour son charisme et sa douceur dans des scènes sensuelles. Elle aime explorer différents univers et fantasmes. Ses vidéos sont toujours élégantes et de grande qualité.",
+    followers: "1.5M",
+    following: 42,
+    description: "Lexi est connue pour son charisme et sa douceur dans des scènes sensuelles. Elle aime explorer différents univers et fantasmes.",
     joinDate: "Nov 2020",
     tags: ["Glamour", "Lingerie", "Roleplay", "Romance", "ASMR"],
     stats: {
@@ -75,241 +84,204 @@ const performerDetails: Record<string, PerformerData> = {
   },
 };
 
-const performerVideos = [
-  {
-    id: 1,
-    title: "Ma routine matinale sensuelle",
-    thumbnail: "https://picsum.photos/seed/vid1/640/360",
-    duration: "12:34",
-    views: "1.2M",
-    performer: "JulieSky",
-    isPremium: true
-  },
-  {
-    id: 2,
-    title: "Séance en lingerie exclusive",
-    thumbnail: "https://picsum.photos/seed/vid2/640/360",
-    duration: "18:22",
-    views: "843K",
-    performer: "JulieSky"
-  },
-  {
-    id: 3,
-    title: "Danse sensuelle en privé",
-    thumbnail: "https://picsum.photos/seed/vid3/640/360",
-    duration: "22:15",
-    views: "1.5M",
-    performer: "JulieSky",
-    isPremium: true
-  },
-  {
-    id: 4,
-    title: "Moment de détente dans mon bain",
-    thumbnail: "https://picsum.photos/seed/vid4/640/360",
-    duration: "14:08",
-    views: "950K",
-    performer: "JulieSky"
-  }
-];
-
 const PerformerProfile: React.FC = () => {
   const { performerId } = useParams<{ performerId: string }>();
   const performer = performerDetails[performerId || "1"] || performerDetails["1"];
   const navigate = useNavigate();
   const [isMessageDialogOpen, setIsMessageDialogOpen] = useState(false);
-
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [currentTab, setCurrentTab] = useState("posts");
+  const { theme } = useTheme();
+  
   const handleSubscribe = () => {
     navigate(`/subscription?creator=${performer.id}`);
     toast.success("Redirection vers l'abonnement");
   };
+
+  const handleFollowToggle = () => {
+    setIsFollowing(!isFollowing);
+    toast.success(isFollowing ? 
+      `Vous ne suivez plus ${performer.displayName}` : 
+      `Vous suivez maintenant ${performer.displayName}`
+    );
+  };
+  
+  const bgClass = theme === 'light' ? 'bg-gray-100' : 'bg-black';
+  const textClass = theme === 'light' ? 'text-black' : 'text-white';
+  const secondaryBgClass = theme === 'light' ? 'bg-white' : 'bg-zinc-900';
   
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <div className={`min-h-screen ${bgClass}`}>
+      {/* Header */}
+      <header className={`sticky top-0 z-10 ${secondaryBgClass} p-4 flex items-center justify-between border-b border-gray-800`}>
+        <div className="flex items-center">
+          <Link to="/" className="mr-4">
+            <ArrowLeft size={24} className={textClass} />
+          </Link>
+          <h1 className={`text-xl font-bold ${textClass}`}>{performer.username}</h1>
+        </div>
+        <div className="flex gap-4">
+          <button aria-label="Notifications">
+            <Bell size={24} className={textClass} />
+          </button>
+          <button aria-label="More options">
+            <MoreVertical size={24} className={textClass} />
+          </button>
+        </div>
+      </header>
       
       <main>
-        {/* Hero section with performer info */}
-        <section className="py-10 bg-gradient-to-b from-secondary/50 to-background">
-          <div className="container px-4 mx-auto">
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-              <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-background shadow-lg">
-                <Avatar className="w-full h-full">
-                  <AvatarImage src={performer.image} alt={performer.name} className="object-cover" />
-                  <AvatarFallback>{performer.name.slice(0, 2).toUpperCase()}</AvatarFallback>
-                </Avatar>
-              </div>
-              
-              <div className="text-center md:text-left flex-1">
-                <h1 className="text-3xl md:text-4xl font-bold mb-2">{performer.name}</h1>
-                <p className="text-muted-foreground mb-4">Membre depuis {performer.joinDate} • {performer.videos} vidéos</p>
-                
-                <p className="text-foreground/90 max-w-2xl mb-6">{performer.description}</p>
-                
-                <div className="flex flex-wrap justify-center md:justify-start gap-3 mb-6">
-                  {performer.tags.map((tag, index) => (
-                    <Badge key={index} variant="secondary" className="px-3 py-1">
-                      {tag}
-                    </Badge>
-                  ))}
+        {/* Profile Info Section */}
+        <section className={`${secondaryBgClass} px-4 pt-6 pb-2`}>
+          <div className="flex items-start">
+            {/* Profile Image */}
+            <div className="mr-8">
+              <Avatar className="w-20 h-20 md:w-24 md:h-24 border-2 border-pink-500">
+                <AvatarImage src={performer.image} alt={performer.displayName} className="object-cover" />
+                <AvatarFallback className="bg-gradient-to-br from-pink-500 to-purple-500 text-white">
+                  {performer.displayName.substring(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+            
+            {/* Profile Stats */}
+            <div className="flex-grow">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex flex-col items-center">
+                  <span className={`font-bold text-xl ${textClass}`}>{performer.videos}</span>
+                  <span className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>publications</span>
                 </div>
-                
-                <div className="flex flex-wrap justify-center md:justify-start gap-6 mb-6">
-                  <div className="flex items-center gap-2 bg-secondary/40 px-3 py-2 rounded-md">
-                    <Heart size={18} className="text-brand-red" />
-                    <span className="text-white">{performer.stats.likes} likes</span>
-                  </div>
-                  <div className="flex items-center gap-2 bg-secondary/40 px-3 py-2 rounded-md">
-                    <Video size={18} className="text-foreground/70" />
-                    <span className="text-white">{performer.stats.views} vues</span>
-                  </div>
-                  <div className="flex items-center gap-2 bg-secondary/40 px-3 py-2 rounded-md">
-                    <Users size={18} className="text-foreground/70" />
-                    <span className="text-white">{performer.subscribers} abonnés</span>
-                  </div>
-                  <div className="flex items-center gap-1 bg-secondary/40 px-3 py-2 rounded-md">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star 
-                        key={i} 
-                        size={16} 
-                        className={i < Math.floor(performer.stats.rating) ? "fill-yellow-400 text-yellow-400" : "text-muted"}
-                      />
-                    ))}
-                    <span className="text-white ml-1">{performer.stats.rating.toFixed(1)}</span>
-                  </div>
+                <div className="flex flex-col items-center">
+                  <span className={`font-bold text-xl ${textClass}`}>{performer.followers}</span>
+                  <span className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>followers</span>
                 </div>
-                
-                <div className="flex flex-wrap justify-center md:justify-start gap-4">
-                  <Button 
-                    className="animated-gradient-bg text-white min-w-[120px]" 
-                    onClick={handleSubscribe}
-                    type="button"
-                  >
-                    S'abonner
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    type="button"
-                    className="min-w-[140px] bg-secondary/40 text-white hover:text-white hover:bg-secondary/60"
-                    onClick={() => setIsMessageDialogOpen(true)}
-                  >
-                    <MessageCircle size={18} className="mr-2" /> 
-                    <span>Message privé</span>
-                  </Button>
-                  <SendMessageDialog 
-                    performerName={performer.name} 
-                    performerId={performer.id}
-                    isOpen={isMessageDialogOpen}
-                    onOpenChange={setIsMessageDialogOpen}
-                  />
+                <div className="flex flex-col items-center">
+                  <span className={`font-bold text-xl ${textClass}`}>{performer.following}</span>
+                  <span className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>suivi(e)s</span>
                 </div>
               </div>
             </div>
           </div>
-        </section>
-        
-        {/* Content tabs */}
-        <section className="py-8">
-          <div className="container px-4 mx-auto">
-            <Tabs defaultValue="videos" className="w-full">
-              <TabsList className="mb-8 w-full md:w-auto flex justify-start overflow-x-auto">
-                <TabsTrigger value="videos" className="px-6">Vidéos</TabsTrigger>
-                <TabsTrigger value="photos" className="px-6">Photos</TabsTrigger>
-                <TabsTrigger value="exclusif" className="px-6">Contenu Exclusif</TabsTrigger>
-                <TabsTrigger value="about" className="px-6">À Propos</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="videos">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                  {performerVideos.map((video) => (
-                    <VideoCard
-                      key={video.id}
-                      title={video.title}
-                      thumbnail={video.thumbnail}
-                      duration={video.duration}
-                      views={video.views}
-                      performer={video.performer}
-                      isPremium={video.isPremium}
-                    />
-                  ))}
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="photos">
-                <div className="text-center py-12">
-                  <Clock size={48} className="mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-xl font-medium mb-2">Contenu disponible avec un abonnement</h3>
-                  <p className="text-muted-foreground mb-6">Abonnez-vous pour accéder aux albums photos exclusifs de {performer.name}</p>
-                  <Button className="animated-gradient-bg text-white">
-                    S'abonner maintenant
-                  </Button>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="exclusif">
-                <div className="text-center py-12">
-                  <Clock size={48} className="mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-xl font-medium mb-2">Contenu premium réservé aux abonnés</h3>
-                  <p className="text-muted-foreground mb-6">Débloquez du contenu exclusif en vous abonnant au profil de {performer.name}</p>
-                  <Button className="animated-gradient-bg text-white">
-                    Débloquer le contenu exclusif
-                  </Button>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="about">
-                <div className="max-w-2xl mx-auto">
-                  <h3 className="text-xl font-medium mb-4">À propos de {performer.name}</h3>
-                  <p className="text-foreground/90 mb-6">{performer.description}</p>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-                    <div className="bg-secondary/30 rounded-lg p-5">
-                      <h4 className="font-medium mb-3">Informations</h4>
-                      <ul className="space-y-2 text-sm">
-                        <li className="flex justify-between">
-                          <span className="text-muted-foreground">Membre depuis:</span>
-                          <span>{performer.joinDate}</span>
-                        </li>
-                        <li className="flex justify-between">
-                          <span className="text-muted-foreground">Vidéos:</span>
-                          <span>{performer.videos}</span>
-                        </li>
-                        <li className="flex justify-between">
-                          <span className="text-muted-foreground">Abonnés:</span>
-                          <span>{performer.subscribers}</span>
-                        </li>
-                        <li className="flex justify-between">
-                          <span className="text-muted-foreground">Évaluation:</span>
-                          <div className="flex items-center">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                              <Star 
-                                key={i} 
-                                size={14} 
-                                className={i < Math.floor(performer.stats.rating) ? "fill-yellow-400 text-yellow-400" : "text-muted"}
-                              />
-                            ))}
-                            <span className="ml-1">{performer.stats.rating.toFixed(1)}</span>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                    
-                    <div className="bg-secondary/30 rounded-lg p-5">
-                      <h4 className="font-medium mb-3">Tags</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {performer.tags.map((tag, index) => (
-                          <Badge key={index} variant="secondary" className="px-3 py-1">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </TabsContent>
-            </Tabs>
+          
+          {/* Profile Bio */}
+          <div className="mt-3">
+            <h2 className={`font-bold ${textClass}`}>{performer.displayName}</h2>
+            <p className={`text-sm my-1 ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>{performer.description}</p>
+          </div>
+          
+          {/* Action Buttons */}
+          <div className="flex gap-2 mt-4">
+            <Button 
+              onClick={handleFollowToggle}
+              className={`flex-1 ${isFollowing ? 
+                'bg-gray-200 hover:bg-gray-300 text-black' : 
+                'animated-gradient-bg text-white'}`}
+              size="sm"
+            >
+              {isFollowing ? 'Suivi(e)' : 'Suivre'}
+            </Button>
+            <Button 
+              onClick={handleSubscribe}
+              className="flex-1 animated-gradient-bg text-white"
+              size="sm"
+            >
+              S'abonner
+            </Button>
+            <Button 
+              onClick={() => setIsMessageDialogOpen(true)}
+              className={`${theme === 'light' ? 'bg-gray-200 hover:bg-gray-300 text-black' : 'bg-zinc-800 hover:bg-zinc-700 text-white'}`}
+              size="sm"
+            >
+              <MessageCircle size={18} />
+            </Button>
           </div>
         </section>
+        
+        {/* Profile Highlights */}
+        <PerformerHighlights performer={performer} />
+        
+        {/* Content Tabs */}
+        <Tabs 
+          value={currentTab} 
+          onValueChange={setCurrentTab} 
+          className="w-full mt-2"
+        >
+          <TabsList className={`w-full grid grid-cols-3 ${secondaryBgClass} border-y ${theme === 'light' ? 'border-gray-200' : 'border-gray-800'}`}>
+            <TabsTrigger 
+              value="posts" 
+              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-red py-3"
+            >
+              <Grid size={20} className={textClass} />
+            </TabsTrigger>
+            <TabsTrigger 
+              value="videos" 
+              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-red py-3"
+            >
+              <Play size={20} className={textClass} />
+            </TabsTrigger>
+            <TabsTrigger 
+              value="premium" 
+              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-red py-3"
+            >
+              <Badge variant="outline" className="animated-gradient-bg text-white">VIP</Badge>
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="posts" className="mt-0">
+            <PerformerGrid type="photos" performerId={performer.id} />
+          </TabsContent>
+          
+          <TabsContent value="videos" className="mt-0">
+            <PerformerGrid type="videos" performerId={performer.id} />
+          </TabsContent>
+          
+          <TabsContent value="premium" className="mt-0">
+            <div className={`flex flex-col items-center justify-center h-60 ${secondaryBgClass} p-4`}>
+              <Badge variant="outline" className="animated-gradient-bg text-white mb-4 px-4 py-2">Premium</Badge>
+              <h3 className={`text-lg font-bold mb-2 ${textClass}`}>Contenu exclusif réservé aux abonnés</h3>
+              <p className={`text-sm text-center mb-4 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+                Abonnez-vous à {performer.displayName} pour découvrir son contenu exclusif
+              </p>
+              <Button onClick={handleSubscribe} className="animated-gradient-bg text-white">
+                S'abonner maintenant
+              </Button>
+            </div>
+          </TabsContent>
+        </Tabs>
       </main>
+      
+      {/* Bottom Nav */}
+      <nav className={`fixed bottom-0 w-full flex justify-around py-3 ${secondaryBgClass} border-t ${theme === 'light' ? 'border-gray-200' : 'border-gray-800'}`}>
+        <Link to="/" className={textClass}>
+          <Home size={24} />
+        </Link>
+        <Link to="/search" className={textClass}>
+          <Search size={24} />
+        </Link>
+        <Link to="/upload" className={textClass}>
+          <Plus size={24} className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 rounded-lg p-1" />
+        </Link>
+        <Link to="/xtease" className={textClass}>
+          <Video size={24} />
+        </Link>
+        <Link to={`/performer/${performer.id}`} className={textClass}>
+          <div className="relative">
+            <Avatar className="w-6 h-6 border border-pink-500">
+              <AvatarImage src={performer.image} />
+              <AvatarFallback className="bg-pink-500 text-white text-xs">
+                {performer.displayName.substring(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+        </Link>
+      </nav>
+      
+      <SendMessageDialog 
+        performerName={performer.displayName} 
+        performerId={performer.id}
+        isOpen={isMessageDialogOpen}
+        onOpenChange={setIsMessageDialogOpen}
+      />
     </div>
   );
 };
