@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Image, Send, Gift, Paperclip } from 'lucide-react';
+import { Image, Send, DollarSign, Paperclip } from 'lucide-react';
 import { useTheme } from '@/hooks/use-theme';
 import { toast } from 'sonner';
 
@@ -62,7 +62,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, onSendMedia,
           onClick={onSendTip}
           className="p-2 hover:opacity-75"
         >
-          <Gift size={24} className={textClass} />
+          <DollarSign size={24} className={textClass} />
         </button>
         
         <button 
