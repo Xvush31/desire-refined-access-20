@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 interface Notification {
   id: string;
@@ -7,34 +7,22 @@ interface Notification {
   read: boolean;
 }
 
-export const fetchNotifications = async (
-  creatorId: string
-): Promise<Notification[]> => {
+export const fetchNotifications = async (creatorId: string): Promise<Notification[]> => {
   try {
-    const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/creators/${creatorId}/notifications`
-    );
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/creators/${creatorId}/notifications`);
     return response.data;
   } catch (error) {
-    console.error("Erreur lors de la récupération des notifications:", error);
+    console.error('Erreur lors de la récupération des notifications:', error);
     return [];
   }
 };
 
-export const markNotificationAsRead = async (
-  creatorId: string,
-  notificationId: string
-): Promise<void> => {
+export const markNotificationAsRead = async (creatorId: string, notificationId: string): Promise<void> => {
   try {
-    await axios.patch(
-      `${
-        import.meta.env.VITE_API_URL
-      }/creators/${creatorId}/notifications/${notificationId}`,
-      {
-        read: true,
-      }
-    );
+    await axios.patch(`${import.meta.env.VITE_API_URL}/creators/${creatorId}/notifications/${notificationId}`, {
+      read: true,
+    });
   } catch (error) {
-    console.error("Erreur lors de la mise à jour de la notification:", error);
+    console.error('Erreur lors de la mise à jour de la notification:', error);
   }
 };
