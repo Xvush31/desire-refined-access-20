@@ -1,11 +1,13 @@
 
 import React, { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import ChatHeader from "./messaging/ChatHeader";
 import MessageInput from "./messaging/MessageInput";
 import TipDialog from "./messaging/TipDialog";
 import { toast } from "sonner";
 import { useTheme } from "@/hooks/use-theme";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SendMessageDialogProps {
   performerName: string;
@@ -26,6 +28,7 @@ const SendMessageDialog: React.FC<SendMessageDialogProps> = ({
   const setOpen = onOpenChange || setInternalOpen;
   const { theme } = useTheme();
   const bgClass = theme === 'light' ? 'bg-white' : 'bg-black';
+  const isMobile = useIsMobile();
 
   const handleSendMessage = (message: string) => {
     // TODO: Intégrer avec le backend
@@ -44,10 +47,41 @@ const SendMessageDialog: React.FC<SendMessageDialogProps> = ({
     image: `https://picsum.photos/seed/${performerId}/150/150`
   };
 
+  if (isMobile) {
+    return (
+      <>
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetContent side="bottom" className={`p-0 ${bgClass} h-full max-h-full`}>
+            <ChatHeader performer={mockPerformer} />
+            
+            <div className="overflow-y-auto flex-1 p-4 mt-16 mb-20">
+              {/* Messages will be displayed here */}
+              <div className="text-center text-sm text-gray-500 my-4">
+                Début de votre conversation avec {performerName}
+              </div>
+            </div>
+
+            <MessageInput
+              onSendMessage={handleSendMessage}
+              onSendMedia={handleSendMedia}
+              onSendTip={() => setIsTipDialogOpen(true)}
+            />
+          </SheetContent>
+        </Sheet>
+
+        <TipDialog
+          isOpen={isTipDialogOpen}
+          onClose={() => setIsTipDialogOpen(false)}
+          performerName={performerName}
+        />
+      </>
+    );
+  }
+
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className={`sm:max-w-md h-[80vh] p-0 ${bgClass}`}>
+        <DialogContent className={`sm:max-w-md h-[90vh] p-0 ${bgClass}`}>
           <ChatHeader performer={mockPerformer} />
           
           <div className="overflow-y-auto flex-1 p-4 mt-16 mb-20">

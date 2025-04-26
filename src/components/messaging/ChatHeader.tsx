@@ -22,7 +22,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ performer }) => {
   return (
     <div className={`${bgClass} p-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-800 fixed top-0 left-0 right-0 z-10`}>
       <div className="flex items-center gap-3">
-        <Link to={`/performer/${performer.id}`} className={textClass}>
+        <Link to={`/performer/${performer.id}`} className={`${textClass} hover:opacity-75`}>
           <ArrowLeft size={24} />
         </Link>
         <Link to={`/performer/${performer.id}`} className="flex items-center gap-3">
@@ -38,10 +38,10 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ performer }) => {
       </div>
       <div className="flex items-center gap-4">
         <button className={`${textClass} hover:opacity-75`}>
-          <Phone size={24} />
+          <Phone size={20} />
         </button>
         <button className={`${textClass} hover:opacity-75`}>
-          <Video size={24} />
+          <Video size={20} />
         </button>
       </div>
     </div>

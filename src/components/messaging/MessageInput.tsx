@@ -37,7 +37,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, onSendMedia,
   };
 
   return (
-    <form onSubmit={handleSubmit} className="fixed bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-800">
+    <form onSubmit={handleSubmit} className="fixed bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-800 bg-inherit">
       <div className={`flex items-center gap-2 ${bgClass} rounded-full p-2`}>
         <label className="cursor-pointer p-2 hover:opacity-75">
           <Image size={24} className={textClass} />
