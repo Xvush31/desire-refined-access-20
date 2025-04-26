@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Image, Send, DollarSign, Paperclip } from 'lucide-react';
 import { useTheme } from '@/hooks/use-theme';
@@ -63,13 +62,6 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, onSendMedia,
           className="p-2 hover:opacity-75"
         >
           <DollarSign size={24} className={textClass} />
-        </button>
-        
-        <button 
-          type="button" 
-          className="p-2 hover:opacity-75"
-        >
-          <Paperclip size={24} className={textClass} />
         </button>
         
         {message && (
