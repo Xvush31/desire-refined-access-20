@@ -1,19 +1,22 @@
+import React from "react";
+import { useLocale } from "@/contexts/LocaleContext";
+import NotificationCenter from "@/components/dashboard/NotificationCenter";
+import Logo from "@/components/Logo";
 
-import React from 'react';
-import { useLocale } from '@/contexts/LocaleContext';
-import NotificationCenter from '@/components/dashboard/NotificationCenter';
-import Logo from '@/components/Logo';
+interface DashboardHeaderProps {
+  creatorId: string; // Ajoute la prop creatorId
+}
 
-const DashboardHeader = () => {
+const DashboardHeader: React.FC<DashboardHeaderProps> = ({ creatorId }) => {
   const { t, lang } = useLocale();
-  
+
   return (
     <header className="mb-8 animate-fade-in">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-8">
           <Logo />
           <h1 className="text-3xl font-bold tracking-tight">
-            {lang === 'fr' ? (
+            {lang === "fr" ? (
               <>
                 Tableau de Bord <span className="text-brand-red">C</span>réateur
               </>
@@ -24,10 +27,13 @@ const DashboardHeader = () => {
             )}
           </h1>
         </div>
-        <NotificationCenter />
+        <NotificationCenter creatorId={creatorId} />{" "}
+        {/* Passe creatorId à NotificationCenter */}
       </div>
       <p className="text-muted-foreground">
-        {lang === 'fr' ? 'Bienvenue sur votre espace de gestion premium' : 'Welcome to your premium management space'}
+        {lang === "fr"
+          ? "Bienvenue sur votre espace de gestion premium"
+          : "Welcome to your premium management space"}
       </p>
     </header>
   );

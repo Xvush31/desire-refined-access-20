@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Popover,
   PopoverContent,
@@ -8,44 +7,69 @@ import {
 import { Button } from "@/components/ui/button";
 import { Bell } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getNotifications } from "./api"; // Importe la fonction API
 
 interface Notification {
   id: string;
-  title: string;
   message: string;
-  type: 'info' | 'success' | 'warning' | 'error';
-  timestamp: Date;
-  read: boolean;
+  sentAt: string;
 }
 
-const mockNotifications: Notification[] = [
-  {
-    id: '1',
-    title: 'Nouveau abonné',
-    message: 'John Doe vient de s\'abonner à votre profil',
-    type: 'success',
-    timestamp: new Date(),
-    read: false,
-  },
-  {
-    id: '2',
-    title: 'Mise à jour de sécurité',
-    message: 'Une nouvelle mise à jour de sécurité est disponible',
-    type: 'warning',
-    timestamp: new Date(Date.now() - 3600000),
-    read: true,
-  }
-];
+interface NotificationCenterProps {
+  creatorId: string; // Ajoute creatorId comme prop
+}
 
-const NotificationCenter = () => {
-  const [notifications, setNotifications] = React.useState<Notification[]>(mockNotifications);
-  const unreadCount = notifications.filter(n => !n.read).length;
+const NotificationCenter: React.FC<NotificationCenterProps> = ({
+  creatorId,
+}) => {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const data = await getNotifications(creatorId);
+        // Adapte les données reçues pour correspondre à l'interface Notification
+        const formattedNotifications = data.map((notification: any) => ({
+          id: notification.id.toString(),
+          message: notification.message,
+          sentAt: notification.sentAt,
+          read: false, // Par défaut, les notifications sont non lues
+        }));
+        setNotifications(formattedNotifications);
+        setLoading(false);
+      } catch (err) {
+        setError("Erreur lors de la récupération des notifications");
+        setLoading(false);
+      }
+    };
+
+    fetchNotifications();
+  }, [creatorId]);
 
   const markAsRead = (id: string) => {
-    setNotifications(prev => 
-      prev.map(n => n.id === id ? { ...n, read: true } : n)
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
     );
   };
+
+  if (loading) {
+    return (
+      <Button variant="outline" size="icon" disabled>
+        <Bell className="h-5 w-5" />
+      </Button>
+    );
+  }
+
+  if (error) {
+    return (
+      <Button variant="outline" size="icon" title={error}>
+        <Bell className="h-5 w-5 text-red-500" />
+      </Button>
+    );
+  }
 
   return (
     <Popover>
@@ -63,10 +87,14 @@ const NotificationCenter = () => {
         <div className="flex items-center justify-between p-4 border-b border-border">
           <h3 className="font-semibold">Notifications</h3>
           {unreadCount > 0 && (
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
-              onClick={() => setNotifications(prev => prev.map(n => ({ ...n, read: true })))}
+              onClick={() =>
+                setNotifications((prev) =>
+                  prev.map((n) => ({ ...n, read: true }))
+                )
+              }
             >
               Tout marquer comme lu
             </Button>
@@ -79,17 +107,16 @@ const NotificationCenter = () => {
                 <div
                   key={notification.id}
                   className={`p-4 cursor-pointer hover:bg-muted transition-colors ${
-                    !notification.read ? 'bg-muted/50' : ''
+                    !notification.read ? "bg-muted/50" : ""
                   }`}
                   onClick={() => markAsRead(notification.id)}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-medium">{notification.title}</span>
+                    <span className="font-medium">{notification.message}</span>
                     <span className="text-xs text-muted-foreground">
-                      {new Date(notification.timestamp).toLocaleTimeString()}
+                      {new Date(notification.sentAt).toLocaleTimeString()}
                     </span>
                   </div>
-                  <p className="text-sm text-muted-foreground">{notification.message}</p>
                 </div>
               ))}
             </div>
