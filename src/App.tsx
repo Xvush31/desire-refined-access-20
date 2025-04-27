@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { GoogleOAuthProvider } from "@react-oauth/google"; // Ajout du provider
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AgeVerification from "./components/AgeVerification";
@@ -39,6 +40,7 @@ import Signup from "./pages/Signup";
 import SingleVideo from "./pages/SingleVideo";
 import VideoList from "./components/VideoList";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
+import AccessDenied from "./pages/AccessDenied";
 import { useTheme } from "./hooks/use-theme";
 import { useAuth, AuthProvider } from "./contexts/AuthContext";
 
@@ -58,7 +60,7 @@ const PrivateRoute: React.FC<{
   }
 
   if (creatorOnly && currentUser.role !== "creator") {
-    return <Navigate to="/" />;
+    return <Navigate to="/access-denied" />;
   }
 
   return children;
@@ -70,16 +72,18 @@ const App = () => {
 
   useEffect(() => {
     const initServices = async () => {
-      await regulatoryFirewall.init();
-
-      const isVerified = ghostMode.isEnabled()
-        ? ghostMode.get("age-verified") === "true"
-        : localStorage.getItem("age-verified") === "true";
-
-      setAgeVerified(isVerified);
-      setLoading(false);
+      try {
+        await regulatoryFirewall.init();
+        const isVerified = ghostMode.isEnabled()
+          ? ghostMode.get("age-verified") === "true"
+          : localStorage.getItem("age-verified") === "true";
+        setAgeVerified(isVerified);
+      } catch (error) {
+        console.error("Erreur lors de l’initialisation des services:", error);
+      } finally {
+        setLoading(false);
+      }
     };
-
     initServices();
   }, []);
 
@@ -97,92 +101,95 @@ const App = () => {
 
   return (
     <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <LocaleProvider>
-          <AuthProvider>
-            <TooltipProvider>
-              <div className="min-h-screen overflow-x-hidden">
-                <Toaster />
-                <Sonner />
-                {!ageVerified && (
-                  <AgeVerification onVerification={handleAgeVerification} />
-                )}
-                <CookieConsentBanner />
-                <PWAInstallPrompt />
-                <BrowserRouter>
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/video/:videoId" element={<SingleVideo />} />
-                    <Route path="/community" element={<Community />} />
-                    <Route path="/invite/:code" element={<Invite />} />
-                    <Route path="/xtease" element={<XTease />} />
-                    <Route
-                      path="/creator-dashboard"
-                      element={
-                        <PrivateRoute creatorOnly={true}>
-                          <CreatorDashboardPage />
-                        </PrivateRoute>
-                      }
-                    />
-                    <Route
-                      path="/creator-dashboard/xtease-security"
-                      element={
-                        <PrivateRoute creatorOnly={true}>
-                          <XTeaseSecurity />
-                        </PrivateRoute>
-                      }
-                    />
-                    <Route
-                      path="/subscription"
-                      element={
-                        <React.Suspense fallback={null}>
-                          <Subscription />
-                        </React.Suspense>
-                      }
-                    />
-                    <Route
-                      path="/subscription-confirmation"
-                      element={<SubscriptionConfirmationPage />}
-                    />
-                    <Route path="/creators" element={<Creators />} />
-                    <Route
-                      path="/creators/popular"
-                      element={<CreatorsPopular />}
-                    />
-                    <Route
-                      path="/creators/recent"
-                      element={<CreatorsRecent />}
-                    />
-                    <Route path="/categories" element={<Categories />} />
-                    <Route
-                      path="/categories/:categoryId"
-                      element={<CategoryPage />}
-                    />
-                    <Route path="/trending" element={<Trending />} />
-                    <Route path="/performers" element={<Performers />} />
-                    <Route
-                      path="/performers/:performerId"
-                      element={<PerformerProfile />}
-                    />
-                    <Route path="/recent" element={<Recent />} />
-                    <Route path="/favorites" element={<Favorites />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/terms" element={<Terms />} />
-                    <Route path="/privacy" element={<Privacy />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route path="/history" element={<History />} />
-                    <Route path="/upload" element={<Upload />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/signup" element={<Signup />} />
-                    <Route path="/videos" element={<VideoList />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </BrowserRouter>
-              </div>
-            </TooltipProvider>
-          </AuthProvider>
-        </LocaleProvider>
-      </QueryClientProvider>
+      <GoogleOAuthProvider clientId="271258165744-b90qmo9lug92qvcqe00uaid1hjr2dt9a.apps.googleusercontent.com">
+        <QueryClientProvider client={queryClient}>
+          <LocaleProvider>
+            <AuthProvider>
+              <TooltipProvider>
+                <div className="min-h-screen overflow-x-hidden">
+                  <Toaster />
+                  <Sonner />
+                  {!ageVerified && (
+                    <AgeVerification onVerification={handleAgeVerification} />
+                  )}
+                  <CookieConsentBanner />
+                  <PWAInstallPrompt />
+                  <BrowserRouter>
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/video/:videoId" element={<SingleVideo />} />
+                      <Route path="/community" element={<Community />} />
+                      <Route path="/invite/:code" element={<Invite />} />
+                      <Route path="/xtease" element={<XTease />} />
+                      <Route
+                        path="/creator-dashboard"
+                        element={
+                          <PrivateRoute creatorOnly={true}>
+                            <CreatorDashboardPage />
+                          </PrivateRoute>
+                        }
+                      />
+                      <Route
+                        path="/creator-dashboard/xtease-security"
+                        element={
+                          <PrivateRoute creatorOnly={true}>
+                            <XTeaseSecurity />
+                          </PrivateRoute>
+                        }
+                      />
+                      <Route
+                        path="/subscription"
+                        element={
+                          <React.Suspense fallback={null}>
+                            <Subscription />
+                          </React.Suspense>
+                        }
+                      />
+                      <Route
+                        path="/subscription-confirmation"
+                        element={<SubscriptionConfirmationPage />}
+                      />
+                      <Route path="/creators" element={<Creators />} />
+                      <Route
+                        path="/creators/popular"
+                        element={<CreatorsPopular />}
+                      />
+                      <Route
+                        path="/creators/recent"
+                        element={<CreatorsRecent />}
+                      />
+                      <Route path="/categories" element={<Categories />} />
+                      <Route
+                        path="/categories/:categoryId"
+                        element={<CategoryPage />}
+                      />
+                      <Route path="/trending" element={<Trending />} />
+                      <Route path="/performers" element={<Performers />} />
+                      <Route
+                        path="/performers/:performerId"
+                        element={<PerformerProfile />}
+                      />
+                      <Route path="/recent" element={<Recent />} />
+                      <Route path="/favorites" element={<Favorites />} />
+                      <Route path="/about" element={<About />} />
+                      <Route path="/terms" element={<Terms />} />
+                      <Route path="/privacy" element={<Privacy />} />
+                      <Route path="/contact" element={<Contact />} />
+                      <Route path="/history" element={<History />} />
+                      <Route path="/upload" element={<Upload />} />
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/signup" element={<Signup />} />
+                      <Route path="/videos" element={<VideoList />} />
+                      <Route path="/access-denied" element={<AccessDenied />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </BrowserRouter>
+                </div>
+              </TooltipProvider>
+            </AuthProvider>
+          </LocaleProvider>
+        </QueryClientProvider>
+      </GoogleOAuthProvider>
     </React.StrictMode>
   );
 };
