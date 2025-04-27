@@ -35,20 +35,33 @@ import Contact from "./pages/Contact";
 import History from "./pages/History";
 import Upload from "./pages/Upload";
 import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import SingleVideo from "./pages/SingleVideo";
-import VideoList from "./components/VideoList"; // Ajout de l'importation de VideoList
+import VideoList from "./components/VideoList";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import { useTheme } from "./hooks/use-theme";
-import { useAuth } from "./contexts/AuthContext"; // Ajout de l'importation de useAuth
+import { useAuth, AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
 
-// Composant PrivateRoute pour protéger les routes
-const PrivateRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
+// Composant PrivateRoute pour protéger les routes et vérifier le rôle
+const PrivateRoute: React.FC<{
+  children: JSX.Element;
+  creatorOnly?: boolean;
+}> = ({ children, creatorOnly = false }) => {
   const { currentUser, loading } = useAuth();
 
   if (loading) return <div>Chargement...</div>;
-  return currentUser ? children : <Navigate to="/login" />;
+
+  if (!currentUser) {
+    return <Navigate to="/login" />;
+  }
+
+  if (creatorOnly && currentUser.role !== "creator") {
+    return <Navigate to="/" />;
+  }
+
+  return children;
 };
 
 const App = () => {
@@ -86,83 +99,88 @@ const App = () => {
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <LocaleProvider>
-          <TooltipProvider>
-            <div className="min-h-screen overflow-x-hidden">
-              <Toaster />
-              <Sonner />
-              {!ageVerified && (
-                <AgeVerification onVerification={handleAgeVerification} />
-              )}
-              <CookieConsentBanner />
-              <PWAInstallPrompt />
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/video/:videoId" element={<SingleVideo />} />
-                  <Route path="/community" element={<Community />} />
-                  <Route path="/invite/:code" element={<Invite />} />
-                  <Route path="/xtease" element={<XTease />} />
-                  <Route
-                    path="/creator-dashboard"
-                    element={
-                      <PrivateRoute>
-                        <CreatorDashboardPage />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    path="/creator-dashboard/xtease-security"
-                    element={
-                      <PrivateRoute>
-                        <XTeaseSecurity />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    path="/subscription"
-                    element={
-                      <React.Suspense fallback={null}>
-                        <Subscription />
-                      </React.Suspense>
-                    }
-                  />
-                  <Route
-                    path="/subscription-confirmation"
-                    element={<SubscriptionConfirmationPage />}
-                  />
-                  <Route path="/creators" element={<Creators />} />
-                  <Route
-                    path="/creators/popular"
-                    element={<CreatorsPopular />}
-                  />
-                  <Route path="/creators/recent" element={<CreatorsRecent />} />
-                  <Route path="/categories" element={<Categories />} />
-                  <Route
-                    path="/categories/:categoryId"
-                    element={<CategoryPage />}
-                  />
-                  <Route path="/trending" element={<Trending />} />
-                  <Route path="/performers" element={<Performers />} />
-                  <Route
-                    path="/performers/:performerId"
-                    element={<PerformerProfile />}
-                  />
-                  <Route path="/recent" element={<Recent />} />
-                  <Route path="/favorites" element={<Favorites />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/terms" element={<Terms />} />
-                  <Route path="/privacy" element={<Privacy />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/history" element={<History />} />
-                  <Route path="/upload" element={<Upload />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/videos" element={<VideoList />} />{" "}
-                  {/* Nouvelle route pour VideoList */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </BrowserRouter>
-            </div>
-          </TooltipProvider>
+          <AuthProvider>
+            <TooltipProvider>
+              <div className="min-h-screen overflow-x-hidden">
+                <Toaster />
+                <Sonner />
+                {!ageVerified && (
+                  <AgeVerification onVerification={handleAgeVerification} />
+                )}
+                <CookieConsentBanner />
+                <PWAInstallPrompt />
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/video/:videoId" element={<SingleVideo />} />
+                    <Route path="/community" element={<Community />} />
+                    <Route path="/invite/:code" element={<Invite />} />
+                    <Route path="/xtease" element={<XTease />} />
+                    <Route
+                      path="/creator-dashboard"
+                      element={
+                        <PrivateRoute creatorOnly={true}>
+                          <CreatorDashboardPage />
+                        </PrivateRoute>
+                      }
+                    />
+                    <Route
+                      path="/creator-dashboard/xtease-security"
+                      element={
+                        <PrivateRoute creatorOnly={true}>
+                          <XTeaseSecurity />
+                        </PrivateRoute>
+                      }
+                    />
+                    <Route
+                      path="/subscription"
+                      element={
+                        <React.Suspense fallback={null}>
+                          <Subscription />
+                        </React.Suspense>
+                      }
+                    />
+                    <Route
+                      path="/subscription-confirmation"
+                      element={<SubscriptionConfirmationPage />}
+                    />
+                    <Route path="/creators" element={<Creators />} />
+                    <Route
+                      path="/creators/popular"
+                      element={<CreatorsPopular />}
+                    />
+                    <Route
+                      path="/creators/recent"
+                      element={<CreatorsRecent />}
+                    />
+                    <Route path="/categories" element={<Categories />} />
+                    <Route
+                      path="/categories/:categoryId"
+                      element={<CategoryPage />}
+                    />
+                    <Route path="/trending" element={<Trending />} />
+                    <Route path="/performers" element={<Performers />} />
+                    <Route
+                      path="/performers/:performerId"
+                      element={<PerformerProfile />}
+                    />
+                    <Route path="/recent" element={<Recent />} />
+                    <Route path="/favorites" element={<Favorites />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/terms" element={<Terms />} />
+                    <Route path="/privacy" element={<Privacy />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/history" element={<History />} />
+                    <Route path="/upload" element={<Upload />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<Signup />} />
+                    <Route path="/videos" element={<VideoList />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </BrowserRouter>
+              </div>
+            </TooltipProvider>
+          </AuthProvider>
         </LocaleProvider>
       </QueryClientProvider>
     </React.StrictMode>
