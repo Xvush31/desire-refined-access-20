@@ -15,7 +15,7 @@ import Invite from "./pages/Invite";
 import XTease from "./pages/XTease";
 import CreatorDashboardPage from "./sections/CreatorDashboardPage";
 import XTeaseSecurity from "./sections/dashboard/XTeaseSecurity";
-import CookieConsentBanner from "@/components/CookieConsentBanner";
+import CookieConsentBanner from "@/components/CookieConsentBanner"; // Réactive l’import
 import Subscription from "./pages/Subscription";
 import SubscriptionConfirmationPage from "./pages/SubscriptionConfirmation";
 import { LocaleProvider } from "@/contexts/LocaleContext";
@@ -40,7 +40,7 @@ import Signup from "./pages/Signup";
 import SingleVideo from "./pages/SingleVideo";
 import VideoList from "./components/VideoList";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
-import AccessDenied from "./pages/AccessDenied"; // Vérifie que ce chemin est correct
+import AccessDenied from "./pages/AccessDenied";
 import { useTheme } from "./hooks/use-theme";
 import { useAuth, AuthProvider } from "./contexts/AuthContext";
 
@@ -112,7 +112,7 @@ const App = () => {
                   {!ageVerified && (
                     <AgeVerification onVerification={handleAgeVerification} />
                   )}
-                  <CookieConsentBanner />
+                  <CookieConsentBanner /> {/* Réactive le composant */}
                   <PWAInstallPrompt />
                   <BrowserRouter>
                     <Routes>

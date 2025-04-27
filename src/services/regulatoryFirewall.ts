@@ -1,4 +1,9 @@
 export const regulatoryFirewall = {
+  regulations: null as {
+    region: string;
+    restrictions: { ads: boolean; tracking: boolean };
+  } | null,
+
   async init() {
     try {
       // Commente la requête à ipapi.co pour éviter l’erreur CORS
@@ -20,6 +25,8 @@ export const regulatoryFirewall = {
       };
       console.log("Réglementations appliquées:", regulations);
 
+      // Stocke les réglementations
+      this.regulations = regulations;
       return regulations;
     } catch (error) {
       console.error("Erreur lors de la détection de région:", error);
@@ -34,7 +41,21 @@ export const regulatoryFirewall = {
         restrictions: { ads: false, tracking: false },
       };
       console.log("Réglementations appliquées:", regulations);
+
+      // Stocke les réglementations
+      this.regulations = regulations;
       return regulations;
     }
+  },
+
+  requiresCookieNotice() {
+    if (!this.regulations) {
+      console.warn(
+        "regulatoryFirewall n’est pas initialisé. Utilisation de la valeur par défaut (true)."
+      );
+      return true; // Par défaut, affiche la bannière si init n’a pas été appelé
+    }
+    // Affiche la bannière pour les utilisateurs en UE (RGPD)
+    return this.regulations.region === "EU";
   },
 };
