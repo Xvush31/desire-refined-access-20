@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { GoogleOAuthProvider } from "@react-oauth/google"; // Ajout du provider
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AgeVerification from "./components/AgeVerification";
@@ -40,7 +40,7 @@ import Signup from "./pages/Signup";
 import SingleVideo from "./pages/SingleVideo";
 import VideoList from "./components/VideoList";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
-import AccessDenied from "./pages/AccessDenied";
+import AccessDenied from "./pages/AccessDenied"; // Vérifie que ce chemin est correct
 import { useTheme } from "./hooks/use-theme";
 import { useAuth, AuthProvider } from "./contexts/AuthContext";
 
