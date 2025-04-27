@@ -1,177 +1,40 @@
-
-/**
- * Service de géo-segmentation dynamique (Regulatory Firewall)
- * Adapte automatiquement le contenu et les fonctionnalités aux réglementations locales
- */
-
-// Types pour les différentes réglementations
-export interface RegionRegulations {
-  minAge: number;
-  requiresExplicitConsent: boolean;
-  forbiddenCategories: string[];
-  dataRetentionDays: number;
-  cookieNoticeRequired: boolean;
-  requiresContentLabeling: boolean;
-  allowsExplicitContent: boolean;
-}
-
-// Base de données de réglementations par région
-const regulationsByRegion: Record<string, RegionRegulations> = {
-  'EU': {
-    minAge: 18,
-    requiresExplicitConsent: true,
-    forbiddenCategories: ['extremeExplicit', 'violence'],
-    dataRetentionDays: 30,
-    cookieNoticeRequired: true,
-    requiresContentLabeling: true,
-    allowsExplicitContent: true
-  },
-  'US': {
-    minAge: 18,
-    requiresExplicitConsent: true,
-    forbiddenCategories: ['illegal'],
-    dataRetentionDays: 90,
-    cookieNoticeRequired: true,
-    requiresContentLabeling: true,
-    allowsExplicitContent: true
-  },
-  'UK': {
-    minAge: 18,
-    requiresExplicitConsent: true,
-    forbiddenCategories: ['extremeExplicit'],
-    dataRetentionDays: 30,
-    cookieNoticeRequired: true,
-    requiresContentLabeling: true,
-    allowsExplicitContent: false
-  },
-  'DEFAULT': {
-    minAge: 21,
-    requiresExplicitConsent: true,
-    forbiddenCategories: ['extremeExplicit', 'violence'],
-    dataRetentionDays: 15,
-    cookieNoticeRequired: true,
-    requiresContentLabeling: true,
-    allowsExplicitContent: false
-  }
-};
-
-// Fonction pour détecter la région à partir de la langue du navigateur (solution de repli)
-const detectRegionFromLanguage = (): string => {
-  const userLang = navigator.language || 'en-US';
-  
-  // Détecter la région à partir du code de langue
-  if (userLang.startsWith('fr') || 
-      userLang.startsWith('de') || 
-      userLang.startsWith('it') || 
-      userLang.startsWith('es') || 
-      userLang.startsWith('pt')) {
-    return 'EU';
-  } else if (userLang.startsWith('en-US')) {
-    return 'US';
-  } else if (userLang.startsWith('en-GB')) {
-    return 'UK';
-  }
-  
-  return 'DEFAULT';
-};
-
-// Service de géo-segmentation
 export const regulatoryFirewall = {
-  // Région actuelle de l'utilisateur (détectée automatiquement)
-  currentRegion: 'DEFAULT',
-  
-  // Initialise le service de géo-segmentation
-  init: async (): Promise<void> => {
+  async init() {
     try {
-      // Dans une vraie implémentation, nous ferions une requête API
-      // pour déterminer la région de l'utilisateur en fonction de son IP
-      const response = await fetch('https://ipapi.co/json/', { 
-        signal: AbortSignal.timeout(3000) // Timeout après 3 secondes
-      });
-      
-      if (!response.ok) {
-        throw new Error(`API responded with status: ${response.status}`);
-      }
-      
+      // Commente la requête à ipapi.co pour éviter l’erreur CORS
+      /*
+      const response = await fetch('https://ipapi.co/json/');
       const data = await response.json();
-      
-      // Obtient le code de pays
-      const countryCode = data.country_code;
-      
-      // Mappe les codes de pays aux régions réglementaires
-      if (countryCode && typeof countryCode === 'string') {
-        if (['FR', 'DE', 'IT', 'ES', 'PT'].includes(countryCode)) {
-          regulatoryFirewall.currentRegion = 'EU';
-        } else if (['US'].includes(countryCode)) {
-          regulatoryFirewall.currentRegion = 'US';
-        } else if (['GB'].includes(countryCode)) {
-          regulatoryFirewall.currentRegion = 'UK';
-        } else {
-          regulatoryFirewall.currentRegion = 'DEFAULT';
-        }
-      }
+      const region = data.region || 'EU'; // Par défaut à 'EU' si région non détectée
+      */
+      const region = "EU"; // Région par défaut
+      console.log("Région définie:", region);
+
+      // Applique les réglementations basées sur la région
+      const regulations = {
+        region,
+        restrictions:
+          region === "EU"
+            ? { ads: false, tracking: false }
+            : { ads: true, tracking: true },
+      };
+      console.log("Réglementations appliquées:", regulations);
+
+      return regulations;
     } catch (error) {
       console.error("Erreur lors de la détection de région:", error);
-      
-      // En cas d'erreur, utiliser la langue du navigateur comme solution de repli
-      regulatoryFirewall.currentRegion = detectRegionFromLanguage();
-      console.log(`Utilisation de la langue comme repli. Région définie: ${regulatoryFirewall.currentRegion}`);
+      // Repli sur une région par défaut
+      const region = "EU";
+      console.log(
+        "Utilisation de la langue comme repli. Région définie:",
+        region
+      );
+      const regulations = {
+        region,
+        restrictions: { ads: false, tracking: false },
+      };
+      console.log("Réglementations appliquées:", regulations);
+      return regulations;
     }
-    
-    // Log de la région détectée pour débogage
-    console.log(`Région réglementaire active: ${regulatoryFirewall.currentRegion}`);
-    console.log(`Réglementations appliquées:`, regulatoryFirewall.getRegulations());
   },
-  
-  // Obtenir les réglementations pour la région actuelle
-  getRegulations: (): RegionRegulations => {
-    return regulationsByRegion[regulatoryFirewall.currentRegion] || regulationsByRegion['DEFAULT'];
-  },
-  
-  // Vérifie si une catégorie de contenu est autorisée dans la région actuelle
-  isContentAllowed: (category: string): boolean => {
-    const regulations = regulatoryFirewall.getRegulations();
-    return !regulations.forbiddenCategories.includes(category);
-  },
-  
-  // Vérifie si le contenu explicite est autorisé
-  isExplicitContentAllowed: (): boolean => {
-    return regulatoryFirewall.getRegulations().allowsExplicitContent;
-  },
-  
-  // Obtient l'âge minimum requis pour la région
-  getMinimumAge: (): number => {
-    return regulatoryFirewall.getRegulations().minAge;
-  },
-  
-  // Vérifie si un consentement explicite est nécessaire
-  requiresExplicitConsent: (): boolean => {
-    return regulatoryFirewall.getRegulations().requiresExplicitConsent;
-  },
-  
-  // Vérifie si l'avis de cookies est requis
-  requiresCookieNotice: (): boolean => {
-    return regulatoryFirewall.getRegulations().cookieNoticeRequired;
-  },
-  
-  // Filtrer un tableau de contenu selon les réglementations locales
-  filterContent: (content: any[]): any[] => {
-    const regulations = regulatoryFirewall.getRegulations();
-    
-    return content.filter(item => {
-      // Vérifie si la catégorie du contenu est autorisée
-      if (item.category && regulations.forbiddenCategories.includes(item.category)) {
-        return false;
-      }
-      
-      // Vérifie si le contenu explicite est autorisé
-      if (item.isExplicit && !regulations.allowsExplicitContent) {
-        return false;
-      }
-      
-      return true;
-    });
-  }
 };
-
-export default regulatoryFirewall;
