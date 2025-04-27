@@ -1,18 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import Logo from "@/components/Logo";
-import { GoogleLogin } from "@react-oauth/google";
-import AppleLogin from "react-apple-login";
 import { useAuth } from "../contexts/AuthContext";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -30,11 +23,7 @@ const Login: React.FC = () => {
       );
       const data = await response.json();
       if (response.ok) {
-        login(data.token, data.role); // Passe le rôle au contexte
-        if (rememberMe) {
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("role", data.role);
-        }
+        login(data.token, data.role);
         navigate(data.role === "creator" ? "/creator-dashboard" : "/");
       } else {
         setError(data.error || "Email ou mot de passe incorrect");
@@ -45,186 +34,120 @@ const Login: React.FC = () => {
     }
   };
 
-  const handleGoogleSuccess = async (response: any) => {
-    try {
-      const res = await fetch(
-        "https://backend-puce-rho-15.vercel.app/api/auth/google",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token: response.credential }),
-        }
-      );
-      const data = await res.json();
-      if (res.ok) {
-        login(data.token, data.role);
-        if (rememberMe) {
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("role", data.role);
-        }
-        navigate(data.role === "creator" ? "/creator-dashboard" : "/");
-      } else {
-        setError("Erreur lors de la connexion avec Google");
-      }
-    } catch (error) {
-      setError("Erreur réseau");
-      console.error("Erreur réseau:", error);
-    }
-  };
-
-  const handleGoogleFailure = () => {
-    setError("Échec de la connexion avec Google");
-  };
-
-  const handleAppleResponse = async (response: any) => {
-    try {
-      // Vérifie si une erreur est présente dans la réponse
-      if (response.error) {
-        setError("Échec de la connexion avec Apple");
-        return;
-      }
-
-      // Vérifie si des données d'utilisateur sont disponibles
-      const email = response.user?.email || response.authorization?.id_token;
-      if (!email) {
-        setError("Aucune donnée d’utilisateur reçue d’Apple");
-        return;
-      }
-
-      const res = await fetch(
-        "https://backend-puce-rho-15.vercel.app/api/auth/apple",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        }
-      );
-      const data = await res.json();
-      if (res.ok) {
-        login(data.token, data.role);
-        if (rememberMe) {
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("role", data.role);
-        }
-        navigate(data.role === "creator" ? "/creator-dashboard" : "/");
-      } else {
-        setError("Erreur lors de la connexion avec Apple");
-      }
-    } catch (error) {
-      setError("Erreur réseau");
-      console.error("Erreur réseau:", error);
-    }
-  };
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <div className="flex justify-center mb-4">
-            <Logo />
-          </div>
-          <h1 className="text-2xl font-bold">Connectez-vous à votre compte</h1>
-          <p className="text-muted-foreground mt-2">
-            Bienvenue. Veuillez vous connecter pour continuer.
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#f3f4f6",
+        padding: "16px",
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "400px",
+          padding: "32px",
+          backgroundColor: "white",
+          borderRadius: "8px",
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        <h1
+          style={{
+            fontSize: "1.5rem",
+            fontWeight: "bold",
+            textAlign: "center",
+            marginBottom: "16px",
+          }}
+        >
+          Connectez-vous
+        </h1>
+        {error && (
+          <p
+            style={{ color: "red", textAlign: "center", marginBottom: "16px" }}
+          >
+            {error}
           </p>
-        </div>
-
-        <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
-          {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-          <form className="space-y-6" onSubmit={handleLogin}>
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium">
-                Email
-              </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="votre@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label htmlFor="password" className="text-sm font-medium">
-                  Mot de passe
-                </label>
-                <Link
-                  to="/forgot-password"
-                  className="text-xs text-brand-accent hover:underline"
-                >
-                  Mot de passe oublié ?
-                </Link>
-              </div>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="flex items-center">
-              <Checkbox
-                id="remember"
-                checked={rememberMe}
-                onCheckedChange={(checked: boolean) => setRememberMe(checked)}
-              />
-              <label htmlFor="remember" className="ml-2 text-sm">
-                Se souvenir de moi
-              </label>
-            </div>
-
-            <Button type="submit" className="w-full">
-              Se connecter
-            </Button>
-          </form>
-
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-muted"></div>
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">ou</span>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={handleGoogleFailure}
-              width="100%"
-              text="signin_with"
-              redirect_uri="https://xvush.com/auth/google/callback"
-            />
-            <AppleLogin
-              clientId="com.xvush.signin"
-              redirectURI="https://xvush.com/auth/apple/callback"
-              responseType="code"
-              responseMode="query"
-              render={(renderProps: any) => (
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={renderProps.onClick}
-                >
-                  Continuer avec Apple
-                </Button>
-              )}
-              callback={handleAppleResponse}
+        )}
+        <form
+          onSubmit={handleLogin}
+          style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+        >
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <label
+              htmlFor="email"
+              style={{ fontSize: "0.875rem", fontWeight: "medium" }}
+            >
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              placeholder="votre@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              style={{
+                padding: "8px",
+                border: "1px solid #d1d5db",
+                borderRadius: "4px",
+                outline: "none",
+                fontSize: "1rem",
+              }}
             />
           </div>
-        </div>
-
-        <p className="text-center text-sm text-muted-foreground">
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <label
+              htmlFor="password"
+              style={{ fontSize: "0.875rem", fontWeight: "medium" }}
+            >
+              Mot de passe
+            </label>
+            <input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              style={{
+                padding: "8px",
+                border: "1px solid #d1d5db",
+                borderRadius: "4px",
+                outline: "none",
+                fontSize: "1rem",
+              }}
+            />
+          </div>
+          <button
+            type="submit"
+            style={{
+              padding: "8px",
+              backgroundColor: "#2563eb",
+              color: "white",
+              borderRadius: "4px",
+              border: "none",
+              fontSize: "1rem",
+              cursor: "pointer",
+            }}
+          >
+            Se connecter
+          </button>
+        </form>
+        <p
+          style={{
+            textAlign: "center",
+            fontSize: "0.875rem",
+            marginTop: "16px",
+          }}
+        >
           Pas encore de compte ?{" "}
           <Link
             to="/signup"
-            className="font-medium text-brand-accent hover:underline"
+            style={{ color: "#2563eb", textDecoration: "underline" }}
           >
             Inscrivez-vous
           </Link>
