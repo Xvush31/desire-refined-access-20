@@ -1,25 +1,24 @@
+import sharp from "sharp";
 
-import React from 'react';
-import ReactDOMServer from 'react-dom/server';
-import fs from 'fs';
-import path from 'path';
-import sharp from 'sharp';
-import Logo from '@/components/Logo';
+// Example logo string (replace with your actual logo data)
+const logoString = "data:image/png;base64,..."; // Base64-encoded image string
 
-const generateLogoPNG = async (size: number) => {
-  // Convertir le logo en SVG
-  const logoSVG = ReactDOMServer.renderToStaticMarkup(React.createElement(Logo));
-  
-  // Convertir SVG en PNG de la taille spécifiée
-  await sharp(Buffer.from(logoSVG))
-    .resize(size, size)
-    .png()
-    .toFile(path.resolve(`public/icons/icon-${size}.png`));
-};
+// Function to create icons of different sizes
+export async function createIcons() {
+  try {
+    // Convert the base64 string to a Buffer
+    const imageBuffer = Buffer.from(logoString, "base64");
 
-const createIcons = async () => {
-  await generateLogoPNG(192);
-  await generateLogoPNG(512);
-};
-
-createIcons().catch(console.error);
+    // Generate icons of different sizes
+    const sizes = [192, 512]; // Example sizes for icons
+    for (const size of sizes) {
+      await sharp(imageBuffer)
+        .resize(size, size)
+        .toFile(`public/icons/icon-${size}.png`);
+      console.log(`Generated icon-${size}.png`);
+    }
+  } catch (error) {
+    console.error("Error generating icons:", error);
+    throw error;
+  }
+}
