@@ -1,10 +1,15 @@
-export const regulatoryFirewall = {
-  regulations: null as {
-    region: string;
-    restrictions: { ads: boolean; tracking: boolean };
-  } | null,
+interface Regulation {
+  region: string;
+  restrictions: {
+    ads: boolean;
+    tracking: boolean;
+  };
+}
 
-  async init() {
+export const regulatoryFirewall = {
+  regulations: null as Regulation | null,
+
+  async init(): Promise<Regulation> {
     try {
       // Commente la requête à ipapi.co pour éviter l’erreur CORS
       /*
@@ -48,7 +53,21 @@ export const regulatoryFirewall = {
     }
   },
 
-  requiresCookieNotice() {
+  getRegulations(): Regulation {
+    if (!this.regulations) {
+      throw new Error("Regulations not initialized. Call init() first.");
+    }
+    return this.regulations;
+  },
+
+  get currentRegion(): string {
+    if (!this.regulations) {
+      throw new Error("Regulations not initialized. Call init() first.");
+    }
+    return this.regulations.region;
+  },
+
+  requiresCookieNotice(): boolean {
     if (!this.regulations) {
       console.warn(
         "regulatoryFirewall n’est pas initialisé. Utilisation de la valeur par défaut (true)."
