@@ -1,18 +1,19 @@
+// Import Firebase modules
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
-// Your web app's Firebase configuration
+// Firebase configuration using environment variables
 const firebaseConfig = {
-  apiKey: "AIzaSyCSwgFru3vvuT6HVhbTV-VUejHWCzJTy50",
-  authDomain: "xvush-3190c.firebaseapp.com",
-  projectId: "xvush-3190c",
-  storageBucket: "xvush-3190c.firebasestorage.app",
-  messagingSenderId: "271258165744",
-  appId: "1:271258165744:web:86aeb6fb0c6f1912af7d35",
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
+// Initialize Firebase app
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firebase Authentication and export it
+// Initialize and export Firebase Authentication
 export const auth = getAuth(app);
