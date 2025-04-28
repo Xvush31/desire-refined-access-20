@@ -41,7 +41,7 @@ import SingleVideo from "./pages/SingleVideo";
 import VideoList from "./components/VideoList";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import AccessDenied from "./pages/AccessDenied";
-import AuthCallback from "./pages/AuthCallback"; // Added import for AuthCallback
+import AuthCallback from "./pages/AuthCallback"; // Import is correct for .tsx
 import { useTheme } from "./hooks/use-theme";
 import { useAuth, AuthProvider } from "./contexts/AuthContext";
 
@@ -182,11 +182,7 @@ const App = () => {
                       <Route path="/signup" element={<Signup />} />
                       <Route path="/videos" element={<VideoList />} />
                       <Route path="/access-denied" element={<AccessDenied />} />
-                      <Route
-                        path="/auth/callback"
-                        element={<AuthCallback />}
-                      />{" "}
-                      {/* Added AuthCallback route */}
+                      <Route path="/auth/callback" element={<AuthCallback />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </BrowserRouter>

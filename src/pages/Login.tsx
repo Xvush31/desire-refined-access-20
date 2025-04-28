@@ -1,17 +1,52 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import { Button } from "@/components/ui/button";
+
+// Define the shape of the AuthContext for TypeScript
+interface AuthContextType {
+  login: (token: string, role: string) => void;
+  currentUser: { role: string } | null;
+  loading: boolean;
+}
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login } = useAuth() as AuthContextType;
+
+  // Load Apple Sign-In SDK
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src =
+      "https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    script.onload = () => {
+      window.AppleID.auth.init({
+        clientId: process.env.APPLE_CLIENT_ID || "",
+        scope: "email",
+        redirectURI:
+          "https://backend-puce-rho-15.vercel.app/api/auth/apple/callback",
+        usePopup: true,
+      });
+    };
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
+
     try {
       const response = await fetch(
         "https://backend-puce-rho-15.vercel.app/api/auth/login",
@@ -24,6 +59,8 @@ const Login: React.FC = () => {
       const data = await response.json();
       if (response.ok) {
         login(data.token, data.role);
+        setEmail("");
+        setPassword("");
         navigate(data.role === "creator" ? "/creator-dashboard" : "/");
       } else {
         setError(data.error || "Email ou mot de passe incorrect");
@@ -31,6 +68,25 @@ const Login: React.FC = () => {
     } catch (error) {
       setError("Erreur réseau. Veuillez réessayer.");
       console.error("Erreur réseau:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (
+    credentialResponse: CredentialResponse
+  ) => {
+    window.location.href =
+      "https://backend-puce-rho-15.vercel.app/api/auth/google?role=user";
+  };
+
+  const handleAppleSignIn = async () => {
+    try {
+      await window.AppleID.auth.signIn();
+      // The backend handles the redirect to /auth/callback
+    } catch (error) {
+      setError("Erreur lors de la connexion avec Apple");
+      console.error("Apple Sign-In error:", error);
     }
   };
 
@@ -124,19 +180,50 @@ const Login: React.FC = () => {
           </div>
           <button
             type="submit"
+            disabled={loading}
             style={{
               padding: "8px",
-              backgroundColor: "#2563eb",
+              backgroundColor: loading ? "#93c5fd" : "#2563eb",
               color: "white",
               borderRadius: "4px",
               border: "none",
               fontSize: "1rem",
-              cursor: "pointer",
+              cursor: loading ? "not-allowed" : "pointer",
             }}
           >
-            Se connecter
+            {loading ? "Connexion..." : "Se connecter"}
           </button>
         </form>
+
+        <div
+          style={{
+            marginTop: "16px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+          }}
+        >
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => setError("Erreur lors de la connexion avec Google")}
+            text="signin_with"
+            width="100%"
+          />
+          <Button
+            style={{
+              backgroundColor: "black",
+              color: "white",
+              padding: "8px",
+              borderRadius: "4px",
+              fontSize: "1rem",
+              cursor: "pointer",
+            }}
+            onClick={handleAppleSignIn}
+          >
+            Continuer avec Apple
+          </Button>
+        </div>
+
         <p
           style={{
             textAlign: "center",
