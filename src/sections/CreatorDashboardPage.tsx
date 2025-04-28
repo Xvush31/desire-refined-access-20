@@ -22,14 +22,12 @@ const CreatorDashboardPage: React.FC = () => {
 
   const creatorId = currentUser?.uid || "creator5";
 
-  // Redirect to login if not authenticated
   useEffect(() => {
     if (!loading && !currentUser) {
       navigate("/login");
     }
   }, [loading, currentUser, navigate]);
 
-  // Initialize regulatoryFirewall and show toasts
   useEffect(() => {
     if (!currentUser || loading) return;
 
@@ -53,8 +51,7 @@ const CreatorDashboardPage: React.FC = () => {
           );
         }, 3000);
 
-        const regulations = regulatoryFirewall.getRegulations();
-        if (regulations.cookieNoticeRequired) {
+        if (regulatoryFirewall.requiresCookieNotice()) {
           const cookieTimer = setTimeout(() => {
             toast.message(lang === "fr" ? "Notice cookies" : "Cookie notice", {
               description:
@@ -80,7 +77,6 @@ const CreatorDashboardPage: React.FC = () => {
     initializeRegulations();
   }, [lang, currentUser, loading]);
 
-  // Show a loading screen while auth state is being determined
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -89,7 +85,6 @@ const CreatorDashboardPage: React.FC = () => {
     );
   }
 
-  // Don't render anything if not authenticated (redirect will handle)
   if (!currentUser) {
     return null;
   }
