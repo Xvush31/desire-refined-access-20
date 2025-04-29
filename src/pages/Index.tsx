@@ -21,16 +21,16 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground">
       <Header />
 
-      {/* Hero Section */}
-      <HeroSection />
-
-      {/* XTease Section - MOVED TO TOP */}
+      {/* XTease Section - PREMIÈRE SECTION */}
       <div className="container mx-auto px-golden-sm py-golden-md">
         <XTeaseSection />
       </div>
 
-      {/* Creators Section - MOVED SECOND */}
+      {/* Creators Section - DEUXIÈME SECTION */}
       <HomeCreatorsSection />
+
+      {/* Hero Section - DÉPLACÉE EN TROISIÈME POSITION */}
+      <HeroSection />
 
       {/* Trending Videos */}
       <TrendingSection />
