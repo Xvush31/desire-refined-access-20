@@ -1,3 +1,4 @@
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -35,6 +36,9 @@ export default defineConfig(({ mode }) => ({
             type: "image/png"
           }
         ]
+      },
+      workbox: {
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB limit instead of default 2MB
       }
     }),
   ].filter(Boolean),
