@@ -4,10 +4,10 @@ import { useAuth } from "../contexts/AuthContext";
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import { Button } from "@/components/ui/button";
 
-// Define the shape of the AuthContext for TypeScript
+// Update the AuthContextType interface to match the actual implementation
 interface AuthContextType {
-  login: (token: string, role: string) => void;
-  currentUser: { role: string } | null;
+  login: (token: string, role: string, uid: string) => void;
+  currentUser: { role: string; uid: string } | null;
   loading: boolean;
 }
 
@@ -58,7 +58,7 @@ const Login: React.FC = () => {
       );
       const data = await response.json();
       if (response.ok) {
-        login(data.token, data.role);
+        login(data.token, data.role, data.uid || ""); // Add uid parameter with default empty string
         setEmail("");
         setPassword("");
         navigate(data.role === "creator" ? "/creator-dashboard" : "/");

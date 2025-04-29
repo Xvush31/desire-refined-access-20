@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,10 +7,10 @@ import Logo from "@/components/Logo";
 import { useAuth } from "../contexts/AuthContext";
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 
-// Define the shape of the AuthContext for TypeScript
+// Update the AuthContextType interface to match the actual implementation
 interface AuthContextType {
-  login: (token: string, role: string) => void;
-  currentUser: { role: string } | null;
+  login: (token: string, role: string, uid: string) => void;
+  currentUser: { role: string; uid: string } | null;
   loading: boolean;
 }
 
@@ -61,13 +62,13 @@ const Signup: React.FC = () => {
       );
       const data = await response.json();
       if (response.ok) {
-        login(data.token, data.role);
+        login(data.token, data.role, data.uid || ""); // Add uid parameter with default empty string
         setEmail("");
         setPassword("");
         setRole("user");
         navigate(data.role === "creator" ? "/creator-dashboard" : "/");
       } else {
-        setError(data.error || "Erreur lors de l’inscription");
+        setError(data.error || "Erreur lors de l'inscription");
       }
     } catch (error) {
       setError("Erreur réseau. Veuillez réessayer.");
