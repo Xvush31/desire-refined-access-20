@@ -35,9 +35,11 @@ const HomeCreatorsSection = () => (
     viewAllLink="/creators"
     className="bg-muted/20"
   >
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    <div className="flex flex-col items-center sm:grid sm:grid-cols-2 md:grid-cols-3 gap-6">
       {creators.map((creator) => (
-        <CreatorCard key={creator.id} creator={creator} />
+        <div key={creator.id} className="w-full max-w-md">
+          <CreatorCard key={creator.id} creator={creator} />
+        </div>
       ))}
       <div className="flex items-center justify-center">
         <Button 
