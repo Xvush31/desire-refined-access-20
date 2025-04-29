@@ -24,19 +24,19 @@ const Index = () => {
       {/* Hero Section */}
       <HeroSection />
 
-      {/* Trending Videos */}
-      <TrendingSection />
-
-      {/* XTease Section */}
+      {/* XTease Section - MOVED TO TOP */}
       <div className="container mx-auto px-golden-sm py-golden-md">
         <XTeaseSection />
       </div>
 
+      {/* Creators Section - MOVED SECOND */}
+      <HomeCreatorsSection />
+
+      {/* Trending Videos */}
+      <TrendingSection />
+
       {/* Categories */}
       <HomeCategoriesSection />
-
-      {/* SECTION CREATOR - before SubscriptionTiers */}
-      <HomeCreatorsSection />
 
       {/* Subscription Tiers */}
       <SubscriptionTiers />
