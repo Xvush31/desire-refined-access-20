@@ -8,6 +8,8 @@ import SearchBar from "./SearchBar";
 import ThemeToggle from "./ThemeToggle";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTheme } from "@/hooks/use-theme";
+import { NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuLink, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -40,6 +42,29 @@ const Header = () => {
             <div className="flex-shrink-0">
               <Logo />
             </div>
+
+            {/* Navigation menu for CreaVerse */}
+            {!isMobile && (
+              <NavigationMenu className="mx-4 hidden md:flex">
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    <Link to="/" className={navigationMenuTriggerStyle()}>
+                      Accueil
+                    </Link>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    <Link to="/creators" className={navigationMenuTriggerStyle()}>
+                      Créateurs
+                    </Link>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    <Link to="/performer/1" className={navigationMenuTriggerStyle()}>
+                      CreaVerse Demo
+                    </Link>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+            )}
 
             <div className="flex-grow flex justify-center max-w-2xl">
               <SearchBar />

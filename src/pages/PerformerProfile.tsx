@@ -13,6 +13,7 @@ const PerformerProfile: React.FC = () => {
   useEffect(() => {
     // Redirection vers CreaVerse avec remplacement pour éviter de pouvoir revenir en arrière
     navigate(`/performer/${performerId || '1'}`, { replace: true });
+    console.log("Redirection vers CreaVerse:", `/performer/${performerId || '1'}`);
   }, [performerId, navigate]);
   
   return (

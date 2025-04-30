@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -174,7 +173,7 @@ const App = () => {
                       <Route path="/performer/*" element={<CreaVerse />} />
                       
                       {/* Redirection from old URLs to new URLs */}
-                      <Route path="/performers/:id" element={<Navigate to="/performer/:id" replace />} />
+                      <Route path="/performers/:performerId" element={<Navigate to={`/performer/$1`} replace />} />
                       
                       <Route path="/recent" element={<Recent />} />
                       <Route path="/favorites" element={<Favorites />} />
