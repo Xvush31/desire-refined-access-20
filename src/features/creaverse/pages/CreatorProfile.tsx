@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { fetchPerformerData } from "../api/performers";
@@ -37,8 +36,6 @@ const generateSampleContentItems = (count: number, trending: boolean = false): C
       thumbnail: getRandomThumbnail("1", i, format),
       type: contentType,
       format: format as "video" | "image" | "audio" | "text",
-      isPremium: Math.random() > 0.7,
-      isNew: Math.random() > 0.8,
       createdAt: new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000),
       ...formatProps
     });
@@ -160,7 +157,7 @@ const CreatorProfile: React.FC = () => {
   }
   
   if (error || !performer) {
-    return <NotFoundState />;
+    return <NotFoundState error={error} />;
   }
   
   return (
