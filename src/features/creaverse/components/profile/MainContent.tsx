@@ -1,11 +1,14 @@
 
 import React from "react";
-import { motion } from "framer-motion";
-import CreatorHeader from "@/components/creator/CreatorHeader";
-import TabNavigationMenu from "./TabNavigationMenu";
-import ProfileContent from "./ProfileContent";
-import { ContentItem } from "../content/ContentCard";
 import { PerformerData } from "../../types/performer";
+import ProfileInfo from "../creator/ProfileInfo";
+import ProfileActions from "../creator/ProfileActions";
+import ProfileContent from "./ProfileContent";
+import TabNavigationMenu from "./TabNavigationMenu";
+import { ContentItem } from "../content/ContentCard";
+import { Button } from "@/components/ui/button";
+import { RelationshipLevel } from "../../api/services/relationshipService";
+import { Users } from "lucide-react";
 
 interface MainContentProps {
   performer: PerformerData;
@@ -19,30 +22,13 @@ interface MainContentProps {
   onToggleFollow: () => void;
   onSubscribe: () => void;
   onSendMessage: () => void;
+  onViewRelationship?: () => void;
   setActiveTab: (tab: string) => void;
   setContentLayout: (layout: "grid" | "masonry" | "featured" | "flow") => void;
   handleContentClick: (contentItem: any) => void;
   filterByFormat?: (format: "all" | "video" | "image" | "audio" | "text") => void;
+  relationshipLevel?: RelationshipLevel;
 }
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { type: "spring", stiffness: 100, damping: 15 }
-  }
-};
 
 const MainContent: React.FC<MainContentProps> = ({
   performer,
@@ -56,42 +42,73 @@ const MainContent: React.FC<MainContentProps> = ({
   onToggleFollow,
   onSubscribe,
   onSendMessage,
+  onViewRelationship,
   setActiveTab,
   setContentLayout,
   handleContentClick,
-  filterByFormat
+  filterByFormat,
+  relationshipLevel = RelationshipLevel.None
 }) => {
   return (
-    <motion.main
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      {/* En-tête du créateur avec statistiques dynamiques */}
-      <motion.div variants={itemVariants}>
-        <CreatorHeader 
-          performer={performer} 
-          isOwner={isOwner}
-          showRevenue={showRevenue}
-          onToggleRevenue={onToggleRevenue}
-          isFollowing={isFollowing}
-          onToggleFollow={onToggleFollow}
-          onSubscribe={onSubscribe}
-          onSendMessage={onSendMessage}
+    <div className="p-4 bg-card rounded-lg max-w-screen-xl mx-auto shadow-sm mb-4">
+      {/* Profile Info & Actions */}
+      <div className="mb-6">
+        <ProfileInfo
+          image={performer.image}
+          displayName={performer.displayName}
+          description={performer.description}
+          followers={performer.followers}
+          stats={performer.stats}
+          nextEvent={performer.nextEvent}
+          relationshipLevel={relationshipLevel}
         />
-      </motion.div>
+        
+        <div className="flex items-center justify-between mt-4">
+          <ProfileActions
+            isFollowing={isFollowing}
+            onToggleFollow={onToggleFollow}
+            onSubscribe={onSubscribe}
+            onSendMessage={onSendMessage}
+            relationshipLevel={relationshipLevel}
+          />
+          
+          {relationshipLevel && relationshipLevel > RelationshipLevel.None && onViewRelationship && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={onViewRelationship}
+              className="ml-2"
+            >
+              <Users size={16} className="mr-1" />
+              Relation
+            </Button>
+          )}
+          
+          {/* Revenue Toggle for Owner */}
+          {isOwner && (
+            <div className="ml-auto">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={onToggleRevenue} 
+                className={showRevenue ? "bg-muted" : ""}
+              >
+                {showRevenue ? 'Masquer revenus' : 'Voir revenus'}
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
       
-      {/* Menu de navigation amélioré */}
-      <motion.div variants={itemVariants}>
-        <TabNavigationMenu 
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          isCreatorMode={isOwner}
-        />
-      </motion.div>
+      {/* Navigation Tabs */}
+      <TabNavigationMenu 
+        activeTab={activeTab} 
+        onTabChange={setActiveTab} 
+        isOwner={isOwner}
+      />
       
-      {/* Contenu des tabs avec le wrapper Tabs correct */}
-      <ProfileContent
+      {/* Content Area */}
+      <ProfileContent 
         activeTab={activeTab}
         contentLayout={contentLayout}
         setContentLayout={setContentLayout}
@@ -102,7 +119,7 @@ const MainContent: React.FC<MainContentProps> = ({
         sampleContentItems={sampleContentItems}
         filterByFormat={filterByFormat}
       />
-    </motion.main>
+    </div>
   );
 };
 

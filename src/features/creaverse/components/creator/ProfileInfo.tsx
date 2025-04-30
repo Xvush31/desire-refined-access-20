@@ -3,6 +3,8 @@ import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Award } from "@/icons";
+import RelationshipBadge from "../relationship/RelationshipBadge";
+import { RelationshipLevel } from "../../api/services/relationshipService";
 
 interface ProfileInfoProps {
   image: string;
@@ -18,6 +20,8 @@ interface ProfileInfoProps {
     type: string;
     timeRemaining: string;
   };
+  relationshipLevel?: RelationshipLevel;
+  showRelationship?: boolean;
 }
 
 const ProfileInfo: React.FC<ProfileInfoProps> = ({ 
@@ -26,7 +30,9 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
   description, 
   followers, 
   stats, 
-  nextEvent 
+  nextEvent,
+  relationshipLevel = RelationshipLevel.None,
+  showRelationship = true
 }) => {
   return (
     <div className="flex items-start">
@@ -41,6 +47,12 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
             {displayName.substring(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
+        
+        {showRelationship && relationshipLevel > RelationshipLevel.None && (
+          <div className="mt-2 flex justify-center">
+            <RelationshipBadge level={relationshipLevel} size="sm" />
+          </div>
+        )}
         
         {nextEvent && (
           <Badge variant="outline" className="mt-2 w-full justify-center flex items-center gap-1 bg-muted">
