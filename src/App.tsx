@@ -50,17 +50,17 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 };
 
 // Redirect component for legacy routes
-const PerformerRedirect = () => {
+const PerformerRedirect: React.FC = () => {
   const { performerId } = useParams<{ performerId: string }>();
   return <Navigate to={`/creaverse/performer/${performerId}`} replace />;
 };
 
-const CreatorDashboardRedirect = () => {
+const CreatorDashboardRedirect: React.FC = () => {
   const { performerId } = useParams<{ performerId: string }>();
   return <Navigate to={`/creaverse/creator/${performerId}/dashboard`} replace />;
 };
 
-const CreatorSettingsRedirect = () => {
+const CreatorSettingsRedirect: React.FC = () => {
   const { performerId } = useParams<{ performerId: string }>();
   return <Navigate to={`/creaverse/creator/${performerId}/settings`} replace />;
 };
@@ -72,6 +72,9 @@ function App() {
   
   // Debug logging
   console.log("App rendering, auth state:", { currentUser, loading, path: location.pathname });
+  
+  // Add a direct link to CreaVerse on the console for debugging
+  console.log("Try accessing CreaVerse directly at:", window.location.origin + "/creaverse");
   
   return (
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
@@ -103,8 +106,10 @@ function App() {
         <Route path="/auth/callback" element={<Layout><AuthCallback /></Layout>} />
         <Route path="/access-denied" element={<Layout><AccessDenied /></Layout>} />
 
-        {/* CreaVerse Routes - Using the CreaVerse layout wrapper */}
+        {/* CreaVerse Routes - Now correctly defined with the CreaVerse layout wrapper */}
         <Route path="/creaverse" element={<CreaVerse />}>
+          {/* Include an index route for direct /creaverse access */}
+          <Route index element={<></>} />
           <Route path="performer/:performerId" element={<CreatorProfile />} />
           <Route path="creator/:performerId/dashboard" element={<CreatorDashboard />} />
           <Route path="creator/:performerId/settings" element={<CreatorSettings />} />
