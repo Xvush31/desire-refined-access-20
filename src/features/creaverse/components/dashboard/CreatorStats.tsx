@@ -1,9 +1,9 @@
 
 import React from "react";
-import { PerformerData } from "../../types/performer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PerformerData } from "../../types/performer";
 import { useTheme } from "@/hooks/use-theme";
-import { TrendingUp, Star, Users, Clock } from "lucide-react";
+import { TrendingUp, Users, Clock, Star } from "lucide-react";
 
 interface CreatorStatsProps {
   performer: PerformerData;
@@ -13,120 +13,61 @@ const CreatorStats: React.FC<CreatorStatsProps> = ({ performer }) => {
   const { theme } = useTheme();
   const bgClass = theme === 'light' ? 'bg-white' : 'bg-zinc-900';
   
+  const stats = [
+    {
+      title: "Engagement Rate",
+      value: "6.8%",
+      change: "+0.5%",
+      icon: <TrendingUp size={18} className="text-green-500" />,
+      description: "Basé sur les interactions"
+    },
+    {
+      title: "Nouveaux Abonnés",
+      value: `+${Math.floor(performer.stats.superfans * 0.1)}`,
+      change: "+2.3%",
+      icon: <Users size={18} className="text-blue-500" />,
+      description: "Sur les 30 derniers jours"
+    },
+    {
+      title: "Temps de Visionnage",
+      value: performer.stats.watchMinutes,
+      change: "+18%",
+      icon: <Clock size={18} className="text-purple-500" />,
+      description: "Total cumulé"
+    },
+    {
+      title: "Satisfaction",
+      value: `${performer.stats.rating}/5.0`,
+      change: "+0.2",
+      icon: <Star size={18} className="text-yellow-500" />,
+      description: "Note moyenne"
+    }
+  ];
+  
   return (
-    <div className="space-y-6">
-      <h2 className="text-xl font-bold mb-4">Statistiques de Performance</h2>
-      
+    <div className="space-y-4">
+      <h2 className="text-xl font-bold mb-4">Statistiques Clés</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card className={bgClass}>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center">
-              <TrendingUp size={18} className="mr-2 text-brand-red" />
-              Engagement
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Vues totales</span>
-                  <span className="font-medium">{performer.stats.views}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">J'aime</span>
-                  <span className="font-medium">{performer.stats.likes}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Minutes visionnées</span>
-                  <span className="font-medium">{performer.stats.watchMinutes}</span>
-                </div>
+        {stats.map((stat, index) => (
+          <Card key={index} className={bgClass}>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center">
+                {stat.icon}
+                <span className="ml-2">{stat.title}</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex justify-between items-baseline">
+                <span className="text-2xl font-bold">{stat.value}</span>
+                <span className="text-sm text-green-500 flex items-center">
+                  <TrendingUp size={14} className="mr-1" />
+                  {stat.change}
+                </span>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className={bgClass}>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center">
-              <Users size={18} className="mr-2 text-brand-red" />
-              Audience
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Abonnés</span>
-                  <span className="font-medium">{performer.followers}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Super-fans</span>
-                  <span className="font-medium">{performer.stats.superfans}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Taux de fidélisation</span>
-                  <span className="font-medium">{performer.stats.retentionRate}</span>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className={bgClass}>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center">
-              <Star size={18} className="mr-2 text-brand-red" />
-              Qualité
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Note moyenne</span>
-                  <span className="font-medium">{performer.stats.rating} / 5</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Vidéos publiées</span>
-                  <span className="font-medium">{performer.videos}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Niveau du compte</span>
-                  <span className="font-medium capitalize">{performer.tier}</span>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className={bgClass}>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center">
-              <Clock size={18} className="mr-2 text-brand-red" />
-              Historique
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">A rejoint XVush</span>
-                  <span className="font-medium">{performer.joinDate}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Progression vers niveau supérieur</span>
-                  <span className="font-medium">{performer.tierProgress}%</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Prochain événement</span>
-                  <span className="font-medium">
-                    {performer.nextEvent ? `${performer.nextEvent.type} (${performer.nextEvent.timeRemaining})` : 'Aucun'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+              <p className="text-xs text-muted-foreground mt-1">{stat.description}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </div>
   );
