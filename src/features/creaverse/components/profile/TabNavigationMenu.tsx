@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Gallery, FileImage, Clock, Calendar, Layers } from "lucide-react";
+import { Grid, FileImage, Clock, Calendar, Layers } from "lucide-react";
 
 interface TabNavigationMenuProps {
   activeTab: string;
@@ -22,7 +22,7 @@ const TabNavigationMenu: React.FC<TabNavigationMenuProps> = ({
             value="gallery" 
             className="flex items-center gap-2 py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none bg-transparent"
           >
-            <Gallery size={18} />
+            <Grid size={18} />
             <span>Galerie</span>
           </TabsTrigger>
           

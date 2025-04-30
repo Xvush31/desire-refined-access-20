@@ -26,4 +26,6 @@ export {
   Eye,
   EyeOff,
   Lock,
+  FileImage,
+  Layers,
 } from "lucide-react";
