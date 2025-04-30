@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { fetchPerformerData } from "../api/performers";
@@ -8,60 +9,20 @@ import DynamicHeader from "../components/header/DynamicHeader";
 import LoadingState from "../components/profile/LoadingState";
 import NotFoundState from "../components/profile/NotFoundState";
 import { useAuth } from "@/contexts/AuthContext";
-import { getFormatProperties, getRandomThumbnail } from "../api/utils/contentGenerators";
-import { ContentItem } from "../components/content/ContentCard";
-import { RelationshipLevel } from "../api/services/relationshipService";
-import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRevolutionaryNavigation } from "@/hooks/use-revolutionary-navigation";
-
-// Helper function to generate sample content items
-const generateSampleContentItems = (count: number, trending: boolean = false): ContentItem[] => {
-  const formats = ["video", "image", "audio", "text"];
-  const items: ContentItem[] = [];
-  
-  for (let i = 0; i < count; i++) {
-    const format = formats[Math.floor(Math.random() * formats.length)];
-    const formatProps = trending 
-      ? { ...getFormatProperties(format, true) }
-      : { ...getFormatProperties(format) };
-    
-    // Randomly assign content type (standard, premium, vip)
-    const contentTypes: Array<"standard" | "premium" | "vip"> = ["standard", "premium", "vip"];
-    const contentType = contentTypes[Math.floor(Math.random() * contentTypes.length)];
-    
-    items.push({
-      id: `content-${i}`,
-      title: `${trending ? 'Trending' : 'Sample'} ${format} ${i + 1}`,
-      thumbnail: getRandomThumbnail("1", i, format),
-      type: contentType,
-      format: format as "video" | "image" | "audio" | "text",
-      ...formatProps
-    });
-  }
-  
-  return items;
-};
+import { useProfileContent } from "../hooks/useProfileContent";
 
 const CreatorProfile: React.FC = () => {
   const { performerId } = useParams<{ performerId: string }>();
   const { currentUser } = useAuth();
   const isMobile = useIsMobile();
-  const { isImmersiveMode, zoomLevel } = useRevolutionaryNavigation();
+  const { isImmersiveMode } = useRevolutionaryNavigation();
   
   const [performer, setPerformer] = useState<PerformerData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isOwner, setIsOwner] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [showRevenue, setShowRevenue] = useState(false);
-  const [contentLayout, setContentLayout] = useState<"grid" | "masonry" | "featured" | "flow">("grid");
-  const [activeTab, setActiveTab] = useState<string>("gallery");
-  const [sampleContentItems, setSampleContentItems] = useState<ContentItem[]>([]);
-  const [trendingContent, setTrendingContent] = useState<ContentItem[]>([]);
-  const [collections, setCollections] = useState<any[]>([]);
-  const [relationshipLevel, setRelationshipLevel] = useState<RelationshipLevel>(RelationshipLevel.None);
-  const [contentFormat, setContentFormat] = useState<"all" | "video" | "image" | "audio" | "text">("all");
   
   // Load performer data
   useEffect(() => {
@@ -83,47 +44,6 @@ const CreatorProfile: React.FC = () => {
           setIsOwner(true);
         }
         
-        // Generate sample content items
-        const contentItems = generateSampleContentItems(20);
-        const trending = generateSampleContentItems(12, true);
-        
-        setSampleContentItems(contentItems);
-        setTrendingContent(trending);
-        
-        // Set sample collections with properly structured itemTypes
-        setCollections([
-          { 
-            id: "1", 
-            name: "Meilleurs moments", 
-            description: "Les meilleurs moments de ma carrière",
-            thumbnail: "/placeholder.svg",
-            itemCount: 12,
-            itemTypes: { videos: 8, images: 4 }
-          },
-          { 
-            id: "2", 
-            name: "Backstage", 
-            description: "Découvrez les coulisses",
-            thumbnail: "/placeholder.svg",
-            itemCount: 8,
-            itemTypes: { videos: 3, images: 5 }
-          },
-          { 
-            id: "3", 
-            name: "Exclusivités", 
-            description: "Contenu exclusif pour mes fans",
-            thumbnail: "/placeholder.svg",
-            itemCount: 5,
-            itemTypes: { videos: 2, images: 3 }
-          }
-        ]);
-        
-        // Set relationship level based on some logic
-        // This would normally come from a backend service
-        const randomLevel = Math.floor(Math.random() * 5) as RelationshipLevel;
-        // Use SuperFan level for owners
-        setRelationshipLevel(isOwner ? RelationshipLevel.SuperFan : randomLevel);
-        
         setLoading(false);
       } catch (err: any) {
         console.error("Error loading performer:", err);
@@ -134,50 +54,34 @@ const CreatorProfile: React.FC = () => {
     
     loadPerformer();
   }, [performerId, currentUser]);
-  
-  // Action handlers
-  const handleToggleFollow = () => {
-    setIsFollowing(prev => !prev);
-    toast.success(isFollowing ? "Abonnement annulé" : "Vous êtes maintenant abonné");
-  };
-  
-  const handleSubscribe = () => {
-    toast.success("Redirection vers la page d'abonnement");
-    // Redirect to subscription page or open modal
-  };
-  
-  const handleSendMessage = () => {
-    toast.success("Envoi d'un message");
-    // Open message dialog
-  };
-  
-  const handleViewRelationship = () => {
-    toast.success("Affichage des détails de la relation");
-    // Navigate to relationship details or open modal
-  };
-  
-  const handleContentClick = (contentItem: ContentItem) => {
-    toast.success(`Contenu sélectionné: ${contentItem.title}`);
-    // Handle content item click
-  };
-  
-  const handleCollectionClick = (collection: any) => {
-    toast.success(`Collection sélectionnée: ${collection.name}`);
-    setActiveTab("collections");
-    // Handle collection click
-  };
-  
-  const filterByFormat = (format: "all" | "video" | "image" | "audio" | "text") => {
-    setContentFormat(format);
-    // In a real app, this would filter the content items
-  };
+
+  // Use our custom hook to manage content and interactions
+  const {
+    sampleContentItems,
+    trendingContent,
+    collections,
+    relationshipLevel,
+    contentLayout,
+    activeTab,
+    isFollowing,
+    showRevenue,
+    setShowRevenue,
+    setContentLayout,
+    setActiveTab,
+    handleToggleFollow,
+    handleSubscribe,
+    handleSendMessage,
+    handleViewRelationship,
+    handleContentClick,
+    handleCollectionClick,
+    filterByFormat
+  } = useProfileContent(performerId, isOwner);
   
   if (loading) {
     return <LoadingState />;
   }
   
   if (error || !performer) {
-    // Make sure we're passing a string to NotFoundState
     return <NotFoundState errorMessage={error || "Performer not found"} />;
   }
   
