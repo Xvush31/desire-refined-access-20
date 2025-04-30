@@ -1,6 +1,6 @@
 
 import { Routes, Route } from "react-router-dom";
-import RootLayout from "./layouts/RootLayout";
+// Remove the incorrect import and use a temporary layout instead
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Trending from "./pages/Trending";
@@ -36,40 +36,42 @@ import CreatorSettings from "./features/creaverse/pages/CreatorSettings";
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<RootLayout />}>
-        <Route index element={<Index />} />
-        <Route path="about" element={<About />} />
-        <Route path="trending" element={<Trending />} />
-        <Route path="recent" element={<Recent />} />
-        <Route path="categories" element={<Categories />} />
-        <Route path="category/:categoryId" element={<CategoryPage />} />
-        <Route path="creators" element={<Creators />} />
-        <Route path="creators/popular" element={<CreatorsPopular />} />
-        <Route path="creators/recent" element={<CreatorsRecent />} />
-        <Route path="community" element={<Community />} />
-        <Route path="login" element={<Login />} />
-        <Route path="signup" element={<Signup />} />
-        <Route path="performers" element={<Performers />} />
-        <Route path="performer/:performerId" element={<PerformerProfile />} />
-        <Route path="video/:videoId" element={<SingleVideo />} />
-        <Route path="upload" element={<Upload />} />
-        <Route path="contact" element={<Contact />} />
-        <Route path="privacy" element={<Privacy />} />
-        <Route path="terms" element={<Terms />} />
-        <Route path="invite" element={<Invite />} />
-        <Route path="favorites" element={<Favorites />} />
-        <Route path="history" element={<History />} />
-        <Route path="xtease" element={<XTease />} />
-        <Route path="subscription" element={<Subscription />} />
-        <Route path="subscription/confirmation" element={<SubscriptionConfirmation />} />
-        <Route path="auth/callback" element={<AuthCallback />} />
-        <Route path="access-denied" element={<AccessDenied />} />
+      <Route path="/" element={<div className="min-h-screen">{/* Placeholder for layout */}
+        <Routes>
+          <Route index element={<Index />} />
+          <Route path="about" element={<About />} />
+          <Route path="trending" element={<Trending />} />
+          <Route path="recent" element={<Recent />} />
+          <Route path="categories" element={<Categories />} />
+          <Route path="category/:categoryId" element={<CategoryPage />} />
+          <Route path="creators" element={<Creators />} />
+          <Route path="creators/popular" element={<CreatorsPopular />} />
+          <Route path="creators/recent" element={<CreatorsRecent />} />
+          <Route path="community" element={<Community />} />
+          <Route path="login" element={<Login />} />
+          <Route path="signup" element={<Signup />} />
+          <Route path="performers" element={<Performers />} />
+          <Route path="performer/:performerId" element={<PerformerProfile />} />
+          <Route path="video/:videoId" element={<SingleVideo />} />
+          <Route path="upload" element={<Upload />} />
+          <Route path="contact" element={<Contact />} />
+          <Route path="privacy" element={<Privacy />} />
+          <Route path="terms" element={<Terms />} />
+          <Route path="invite" element={<Invite />} />
+          <Route path="favorites" element={<Favorites />} />
+          <Route path="history" element={<History />} />
+          <Route path="xtease" element={<XTease />} />
+          <Route path="subscription" element={<Subscription />} />
+          <Route path="subscription/confirmation" element={<SubscriptionConfirmation />} />
+          <Route path="auth/callback" element={<AuthCallback />} />
+          <Route path="access-denied" element={<AccessDenied />} />
 
-        {/* Routes CreaVerse */}
-        <Route path="performer/:performerId" element={<CreatorProfile />} />
-        <Route path="creator/:performerId/dashboard" element={<CreatorDashboard />} />
-        <Route path="creator/:performerId/settings" element={<CreatorSettings />} />
-      </Route>
+          {/* Routes CreaVerse */}
+          <Route path="performer/:performerId" element={<CreatorProfile />} />
+          <Route path="creator/:performerId/dashboard" element={<CreatorDashboard />} />
+          <Route path="creator/:performerId/settings" element={<CreatorSettings />} />
+        </Routes>
+      </div>} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

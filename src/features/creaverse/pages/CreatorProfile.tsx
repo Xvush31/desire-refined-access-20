@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -17,31 +16,32 @@ import TabNavigationMenu from "../components/profile/TabNavigationMenu";
 import CollectionsTabContent from "../components/profile/CollectionsTabContent";
 import JourneyTabContent from "../components/profile/JourneyTabContent";
 import ContentGrid from "../components/content/ContentGrid";
+import { ContentItem } from "../components/content/ContentCard";
 
 import { fetchPerformerData } from "../api/performers";
 import { PerformerData } from "../types/performer";
 
-// Contenu d'exemple pour la grille de contenu
-const sampleContentItems = [
+// Contenu d'exemple pour la grille de contenu - Make sure types match ContentItem exactly
+const sampleContentItems: ContentItem[] = [
   {
     id: "1",
     title: "Shooting en studio - Collection été",
     thumbnail: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
-    type: "standard",
+    type: "standard", // Fixed to use the exact string literal type
     metrics: { views: 1250, likes: 78, engagement: 4.2 }
   },
   {
     id: "2",
     title: "Séance exclusive en extérieur",
     thumbnail: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
-    type: "premium",
+    type: "premium", // Fixed to use the exact string literal type
     metrics: { views: 843, likes: 124, engagement: 6.7 }
   },
   {
     id: "3",
     title: "Behind the scenes - VIP uniquement",
     thumbnail: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952",
-    type: "vip",
+    type: "vip", // Fixed to use the exact string literal type
     metrics: { views: 412, likes: 89, engagement: 9.1 }
   }
 ];
@@ -141,10 +141,10 @@ const CreatorProfile: React.FC = () => {
     <div className={`min-h-screen ${theme === 'light' ? 'bg-gray-100' : 'bg-black'}`}>
       {/* Header avec navigation */}
       <ProfileHeader 
-        username={performer.username}
-        displayName={performer.displayName}
-        profileImage={performer.image} 
-        tier={performer.tier}
+        username={performer?.username || ""}
+        displayName={performer?.displayName || ""}
+        profileImage={performer?.image} 
+        tier={performer?.tier}
         status={creatorStatus}
         lastActive={lastActive}
         performer={performer}
@@ -187,7 +187,7 @@ const CreatorProfile: React.FC = () => {
         </motion.div>
         
         {/* Contenu des tabs avec le wrapper Tabs correct */}
-        <Tabs value={activeTab}>
+        <Tabs value={activeTab} defaultValue="gallery">
           <TabsContent value="gallery" className="mt-0 p-4">
             <motion.div
               initial={{ opacity: 0 }}
@@ -298,7 +298,7 @@ const CreatorProfile: React.FC = () => {
               transition={{ delay: 0.2 }}
             >
               <MonetizationTiers 
-                performerId={performer.id}
+                performerId={performer?.id}
                 onSubscribe={handleSubscribe}
               />
             </motion.div>
@@ -308,14 +308,14 @@ const CreatorProfile: React.FC = () => {
       
       {/* Navigation inférieure */}
       <NavigationFooter
-        performerId={performer.id}
-        performerImage={performer.image}
-        performerName={performer.displayName}
+        performerId={performer?.id}
+        performerImage={performer?.image}
+        performerName={performer?.displayName}
       />
       
       <SendMessageDialog 
-        performerName={performer.displayName} 
-        performerId={performer.id}
+        performerName={performer?.displayName || ""} 
+        performerId={performer?.id}
         isOpen={isMessageDialogOpen}
         onOpenChange={setIsMessageDialogOpen}
       />
