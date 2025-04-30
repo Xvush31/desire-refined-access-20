@@ -13,7 +13,6 @@ import Community from "./pages/Community";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Performers from "./pages/Performers";
-import PerformerProfile from "./pages/PerformerProfile";
 import SingleVideo from "./pages/SingleVideo";
 import Upload from "./pages/Upload";
 import Contact from "./pages/Contact";
@@ -28,6 +27,7 @@ import SubscriptionConfirmation from "./pages/SubscriptionConfirmation";
 import Subscription from "./pages/Subscription";
 import AuthCallback from "./pages/AuthCallback";
 import AccessDenied from "./pages/AccessDenied";
+import CreaVerse from "./features/creaverse";
 import CreatorProfile from "./features/creaverse/pages/CreatorProfile";
 import CreatorDashboard from "./features/creaverse/pages/CreatorDashboard";
 import CreatorSettings from "./features/creaverse/pages/CreatorSettings";
@@ -53,7 +53,6 @@ function App() {
       <Route path="/login" element={<Layout><Login /></Layout>} />
       <Route path="/signup" element={<Layout><Signup /></Layout>} />
       <Route path="/performers" element={<Layout><Performers /></Layout>} />
-      <Route path="/performer/:performerId" element={<Layout><PerformerProfile /></Layout>} />
       <Route path="/video/:videoId" element={<Layout><SingleVideo /></Layout>} />
       <Route path="/upload" element={<Layout><Upload /></Layout>} />
       <Route path="/contact" element={<Layout><Contact /></Layout>} />
@@ -68,10 +67,12 @@ function App() {
       <Route path="/auth/callback" element={<Layout><AuthCallback /></Layout>} />
       <Route path="/access-denied" element={<Layout><AccessDenied /></Layout>} />
 
-      {/* Routes CreaVerse */}
-      <Route path="/performer/:performerId" element={<Layout><CreatorProfile /></Layout>} />
-      <Route path="/creator/:performerId/dashboard" element={<Layout><CreatorDashboard /></Layout>} />
-      <Route path="/creator/:performerId/settings" element={<Layout><CreatorSettings /></Layout>} />
+      {/* CreaVerse Routes - Using the CreaVerse layout wrapper */}
+      <Route element={<CreaVerse />}>
+        <Route path="/performer/:performerId" element={<Layout><CreatorProfile /></Layout>} />
+        <Route path="/creator/:performerId/dashboard" element={<Layout><CreatorDashboard /></Layout>} />
+        <Route path="/creator/:performerId/settings" element={<Layout><CreatorSettings /></Layout>} />
+      </Route>
 
       {/* 404 Route */}
       <Route path="*" element={<NotFound />} />

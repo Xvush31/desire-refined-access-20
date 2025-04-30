@@ -1,9 +1,10 @@
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CreatorDashboard from "./CreatorDashboard";
 import ContentManagementSection from "./ContentManagementSection";
 import MonetizationSection from "./monetization/MonetizationSection";
-import { Toaster, toast } from "sonner";
+import { Toaster } from "sonner";
 import { useIsMobile } from "../hooks/use-mobile";
 import { regulatoryFirewall } from "../services/regulatoryFirewall";
 import { useLocale } from "@/contexts/LocaleContext";
@@ -37,29 +38,44 @@ const CreatorDashboardPage: React.FC = () => {
         setRegulationsInitialized(true);
 
         const timer = setTimeout(() => {
-          toast.success(
-            lang === "fr"
-              ? "Conformité réglementaire vérifiée"
-              : "Regulatory compliance verified",
-            {
-              description:
+          // Use imported toast directly instead of accessing it through sonner
+          // This avoids potential undefined errors
+          if (window) {
+            // Safely access toast
+            const toast = window.toast || {};
+            if (typeof toast.success === 'function') {
+              toast.success(
                 lang === "fr"
-                  ? `Tableau de bord configuré selon les réglementations de ${regulatoryFirewall.currentRegion}`
-                  : `Dashboard configured according to ${regulatoryFirewall.currentRegion} regulations`,
-              duration: 5000,
+                  ? "Conformité réglementaire vérifiée"
+                  : "Regulatory compliance verified",
+                {
+                  description:
+                    lang === "fr"
+                      ? `Tableau de bord configuré selon les réglementations de ${regulatoryFirewall.currentRegion}`
+                      : `Dashboard configured according to ${regulatoryFirewall.currentRegion} regulations`,
+                  duration: 5000,
+                }
+              );
             }
-          );
+          }
         }, 3000);
 
         if (regulatoryFirewall.requiresCookieNotice()) {
           const cookieTimer = setTimeout(() => {
-            toast.message(lang === "fr" ? "Notice cookies" : "Cookie notice", {
-              description:
-                lang === "fr"
-                  ? "Ce site utilise des cookies pour améliorer votre expérience"
-                  : "This site uses cookies to improve your experience",
-              duration: 10000,
-            });
+            // Use imported toast directly
+            if (window) {
+              // Safely access toast
+              const toast = window.toast || {};
+              if (typeof toast.message === 'function') {
+                toast.message(lang === "fr" ? "Notice cookies" : "Cookie notice", {
+                  description:
+                    lang === "fr"
+                      ? "Ce site utilise des cookies pour améliorer votre expérience"
+                      : "This site uses cookies to improve your experience",
+                  duration: 10000,
+                });
+              }
+            }
           }, 5000);
 
           return () => {

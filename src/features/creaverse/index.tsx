@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,10 +9,13 @@ import { useAuth } from "@/contexts/AuthContext";
 const CreaVerse: React.FC = () => {
   const { currentUser } = useAuth();
   
-  // This component now serves as a layout wrapper with protection logic
-  // The actual routes are defined in App.tsx
+  // If user is not authenticated, redirect to login page
+  if (!currentUser) {
+    return <Navigate to="/login" replace />;
+  }
   
-  return currentUser ? <Outlet /> : <Navigate to="/login" replace />;
+  // Otherwise, render the child routes
+  return <Outlet />;
 };
 
 export default CreaVerse;
