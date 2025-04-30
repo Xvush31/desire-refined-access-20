@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useTheme } from "@/hooks/use-theme";
 import { useAuth } from "@/contexts/AuthContext";
-import { TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
 
 import CreatorHeader from "@/components/creator/CreatorHeader";
@@ -153,52 +153,54 @@ const CreatorProfile: React.FC = () => {
           />
         </motion.div>
         
-        {/* Contenu des tabs */}
-        <TabsContent value="gallery" className="mt-0 p-0">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <ContentGallery 
-              performerId={performer.id} 
-              isOwner={isOwner}
-            />
-          </motion.div>
-        </TabsContent>
-        
-        <TabsContent value="collections" className="mt-0">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <CollectionsTabContent />
-          </motion.div>
-        </TabsContent>
-        
-        <TabsContent value="journey" className="mt-0">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <JourneyTabContent />
-          </motion.div>
-        </TabsContent>
-        
-        <TabsContent value="tiers" className="mt-0">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <MonetizationTiers 
-              performerId={performer.id}
-              onSubscribe={handleSubscribe}
-            />
-          </motion.div>
-        </TabsContent>
+        {/* Contenu des tabs - Correction ici: envelopper les TabsContent dans un Tabs */}
+        <Tabs value={activeTab}>
+          <TabsContent value="gallery" className="mt-0 p-0">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              <ContentGallery 
+                performerId={performer.id} 
+                isOwner={isOwner}
+              />
+            </motion.div>
+          </TabsContent>
+          
+          <TabsContent value="collections" className="mt-0">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              <CollectionsTabContent />
+            </motion.div>
+          </TabsContent>
+          
+          <TabsContent value="journey" className="mt-0">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              <JourneyTabContent />
+            </motion.div>
+          </TabsContent>
+          
+          <TabsContent value="tiers" className="mt-0">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              <MonetizationTiers 
+                performerId={performer.id}
+                onSubscribe={handleSubscribe}
+              />
+            </motion.div>
+          </TabsContent>
+        </Tabs>
       </motion.main>
       
       {/* Navigation inférieure */}
