@@ -27,11 +27,16 @@ const generateSampleContentItems = (count: number, trending: boolean = false): C
       ? { ...getFormatProperties(format, true) }
       : { ...getFormatProperties(format) };
     
+    // Randomly assign content type (standard, premium, vip)
+    const contentTypes: Array<"standard" | "premium" | "vip"> = ["standard", "premium", "vip"];
+    const contentType = contentTypes[Math.floor(Math.random() * contentTypes.length)];
+    
     items.push({
       id: `content-${i}`,
       title: `${trending ? 'Trending' : 'Sample'} ${format} ${i + 1}`,
       thumbnail: getRandomThumbnail("1", i, format),
-      type: format as "video" | "image" | "audio" | "text",
+      type: contentType,
+      format: format as "video" | "image" | "audio" | "text",
       isPremium: Math.random() > 0.7,
       isNew: Math.random() > 0.8,
       createdAt: new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000),
@@ -99,7 +104,8 @@ const CreatorProfile: React.FC = () => {
         // Set relationship level based on some logic
         // This would normally come from a backend service
         const randomLevel = Math.floor(Math.random() * 5) as RelationshipLevel;
-        setRelationshipLevel(isOwner ? RelationshipLevel.Admin : randomLevel);
+        // Use SuperFan level for owners instead of Admin which doesn't exist
+        setRelationshipLevel(isOwner ? RelationshipLevel.SuperFan : randomLevel);
         
         setLoading(false);
       } catch (err: any) {
