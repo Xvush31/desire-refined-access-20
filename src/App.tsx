@@ -53,16 +53,19 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 // Redirect component for legacy routes
 const PerformerRedirect: React.FC = () => {
   const { performerId } = useParams<{ performerId: string }>();
+  console.log("Redirecting from legacy performer route to:", `/creaverse/performer/${performerId}`);
   return <Navigate to={`/creaverse/performer/${performerId}`} replace />;
 };
 
 const CreatorDashboardRedirect: React.FC = () => {
   const { performerId } = useParams<{ performerId: string }>();
+  console.log("Redirecting from legacy creator dashboard to:", `/creaverse/creator/${performerId}/dashboard`);
   return <Navigate to={`/creaverse/creator/${performerId}/dashboard`} replace />;
 };
 
 const CreatorSettingsRedirect: React.FC = () => {
   const { performerId } = useParams<{ performerId: string }>();
+  console.log("Redirecting from legacy creator settings to:", `/creaverse/creator/${performerId}/settings`);
   return <Navigate to={`/creaverse/creator/${performerId}/settings`} replace />;
 };
 

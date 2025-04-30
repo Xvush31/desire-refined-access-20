@@ -38,7 +38,9 @@ const HomeCreatorsSection = () => (
     <div className="flex flex-col items-center sm:grid sm:grid-cols-2 md:grid-cols-3 gap-6">
       {creators.map((creator) => (
         <div key={creator.id} className="w-full max-w-md">
-          <CreatorCard key={creator.id} creator={creator} />
+          <Link to={`/creaverse/performer/${creator.id}`}>
+            <CreatorCard key={creator.id} creator={creator} />
+          </Link>
         </div>
       ))}
       <div className="flex items-center justify-center">

@@ -19,13 +19,9 @@ const AuthCallback = () => {
       login(token, role, uid);
       console.log("Authentication callback successful, redirecting based on role:", role);
       
-      if (role === "creator") {
-        navigate("/creaverse");
-        toast.success("Connexion réussie! Bienvenue sur CreaVerse");
-      } else {
-        navigate("/");
-        toast.success("Connexion réussie!");
-      }
+      // Always redirect to CreaVerse after successful authentication
+      navigate("/creaverse");
+      toast.success("Connexion réussie! Bienvenue sur CreaVerse");
     } else {
       console.error("Authentication callback failed: missing token or role");
       toast.error("Échec de l'authentification");

@@ -19,6 +19,8 @@ const NavigationFooter: React.FC<NavigationFooterProps> = ({
   const { theme } = useTheme();
   const secondaryBgClass = theme === 'light' ? 'bg-white' : 'bg-zinc-900';
   const borderClass = theme === 'light' ? 'border-gray-200' : 'border-gray-800';
+  
+  console.log("NavigationFooter rendering with performerId:", performerId);
 
   return (
     <nav className={`fixed bottom-0 w-full flex justify-around py-3 ${secondaryBgClass} border-t ${borderClass} z-10`}>
@@ -39,7 +41,7 @@ const NavigationFooter: React.FC<NavigationFooterProps> = ({
           <Avatar className="w-6 h-6 border border-pink-500">
             <AvatarImage src={performerImage} />
             <AvatarFallback className="bg-pink-500 text-white text-xs">
-              {performerName.substring(0, 2).toUpperCase()}
+              {(performerName || "").substring(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
         </div>
