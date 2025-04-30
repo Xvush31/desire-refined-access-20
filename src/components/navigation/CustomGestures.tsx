@@ -6,7 +6,7 @@ export type GestureType = "swipe-up" | "swipe-down" | "swipe-left" | "swipe-righ
 
 interface GestureAction {
   type: GestureType;
-  handler: () => void;
+  handler: (e?: any) => void;  // Updated to accept optional parameter
   description: string;
 }
 

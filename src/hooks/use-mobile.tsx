@@ -10,15 +10,7 @@ export function useIsMobile(forceMobile = false) {
     return true;
   }
   
-  // Initialize with current window size, but use null for server-side rendering
-  const [isMobile, setIsMobile] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    
-    // Check both window width and user agent for better detection
-    return detectMobileDevice();
-  });
-
-  // Comprehensive mobile detection function
+  // Helper function to detect mobile device - defined BEFORE it's used
   const detectMobileDevice = useCallback(() => {
     if (typeof window === "undefined") return false;
     
@@ -66,6 +58,14 @@ export function useIsMobile(forceMobile = false) {
     // Fallback to screen width check
     return isMobileWidth;
   }, []);
+  
+  // Initialize with current window size, but use null for server-side rendering
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    
+    // Check both window width and user agent for better detection
+    return detectMobileDevice();
+  });
 
   // Debounced resize handler for better performance
   const debouncedResize = useCallback(() => {

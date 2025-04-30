@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -178,7 +177,7 @@ const RevolutionaryNavigation: React.FC<RevolutionaryNavigationProps> = ({ child
     },
     {
       type: "double-tap" as GestureType,
-      handler: (e: any) => {
+      handler: () => {
         // Reset zoom level on double tap
         setZoomLevel(1);
       },
