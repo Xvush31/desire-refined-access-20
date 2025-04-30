@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useTheme } from "@/hooks/use-theme";
 import { Progress } from "@/components/ui/progress";
@@ -138,8 +137,7 @@ const ProfileStats: React.FC<ProfileStatsProps> = ({
         </div>
         <Progress
           value={tierProgress}
-          className="h-2"
-          indicatorClassName={`bg-gradient-to-r ${tierColor}`}
+          className={`h-2 bg-gradient-to-r ${tierColor}`}
         />
       </div>
     </div>
