@@ -4,11 +4,15 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
 import { useTheme } from "@/hooks/use-theme";
 import { useAuth } from "@/contexts/AuthContext";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Bell, BookmarkCheck, Award, Grid, MoreVertical, CircleDollarSign, Lock, Play } from "@/icons";
 
-import CreatorHeader from "../components/CreatorHeader";
-import EngagementDashboard from "../components/EngagementDashboard";
-import ContentGallery from "../components/ContentGallery";
-import MonetizationTiers from "../components/MonetizationTiers";
+import CreatorHeader from "@/components/creator/CreatorHeader";
+import EngagementDashboard from "@/components/creator/EngagementDashboard";
+import ContentGallery from "@/components/creator/ContentGallery";
+import MonetizationTiers from "@/components/creator/MonetizationTiers";
 import NavigationFooter from "../components/NavigationFooter";
 import SendMessageDialog from "@/components/SendMessageDialog";
 
