@@ -1,11 +1,11 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Logo from "@/components/Logo";
 import { useAuth } from "../contexts/AuthContext";
-import { signInWithGoogle, getGoogleRedirectResult } from "../firebase";
+import { signInWithGoogle } from "../firebase";
 import { toast } from "sonner";
 
 // Update the AuthContextType interface to match the actual implementation
@@ -23,55 +23,6 @@ const Signup: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth() as AuthContextType;
-  
-  // Check for Google redirect result when component mounts
-  useEffect(() => {
-    const checkRedirectResult = async () => {
-      setLoading(true);
-      const result = await getGoogleRedirectResult();
-      
-      if (result.success && result.user) {
-        try {
-          // Enregistrer l'utilisateur dans votre backend
-          const response = await fetch(
-            `https://backend-puce-rho-15.vercel.app/api/auth/signup-google`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ 
-                uid: result.user.uid,
-                email: result.user.email,
-                displayName: result.user.displayName,
-                role: role
-              }),
-            }
-          );
-          
-          const data = await response.json();
-          
-          if (response.ok) {
-            // Utilisateur enregistré dans le backend
-            login(result.token, data.role || role, result.user.uid);
-            navigate(data.role === "creator" ? "/creator-dashboard" : "/");
-            toast.success("Inscription réussie!");
-          } else {
-            setError(data.error || "Erreur lors de l'inscription");
-            toast.error(data.error || "Erreur lors de l'inscription");
-          }
-        } catch (error) {
-          console.error("Erreur lors de l'enregistrement avec le backend:", error);
-          setError("Erreur réseau. Veuillez réessayer.");
-          toast.error("Erreur réseau. Veuillez réessayer.");
-        }
-      } else if (result.error) {
-        setError(result.error);
-      }
-      
-      setLoading(false);
-    };
-
-    checkRedirectResult();
-  }, [login, navigate, role]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,13 +64,52 @@ const Signup: React.FC = () => {
     setLoading(true);
     
     try {
-      // Cette fonction effectue une redirection, donc pas besoin de gérer le résultat ici
-      await signInWithGoogle();
-      // Le useEffect s'occupera de gérer le résultat après la redirection
+      const result = await signInWithGoogle();
+      
+      if (result.success && result.user) {
+        try {
+          // Enregistrer l'utilisateur dans votre backend
+          const response = await fetch(
+            `https://backend-puce-rho-15.vercel.app/api/auth/signup-google`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ 
+                uid: result.user.uid,
+                email: result.user.email,
+                displayName: result.user.displayName,
+                role: role
+              }),
+            }
+          );
+          
+          const data = await response.json();
+          
+          if (response.ok) {
+            // Utilisateur enregistré dans le backend
+            login(result.token, data.role || role, result.user.uid);
+            navigate(data.role === "creator" ? "/creator-dashboard" : "/");
+            toast.success("Inscription réussie!");
+          } else {
+            setError(data.error || "Erreur lors de l'inscription");
+            toast.error(data.error || "Erreur lors de l'inscription");
+          }
+        } catch (error) {
+          console.error("Erreur lors de l'enregistrement avec le backend:", error);
+          setError("Erreur réseau. Veuillez réessayer.");
+          toast.error("Erreur réseau. Veuillez réessayer.");
+        }
+      } else if (result.error) {
+        setError(result.error);
+        toast.error(result.error);
+      }
+      
     } catch (error) {
       setError("Erreur lors de la connexion avec Google");
       toast.error("Erreur lors de la connexion avec Google");
       console.error("Google sign-in error:", error);
+      setLoading(false);
+    } finally {
       setLoading(false);
     }
   };
