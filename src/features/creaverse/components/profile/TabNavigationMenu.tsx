@@ -1,16 +1,21 @@
 
 import React, { useRef, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Grid, BookmarkCheck, Award, CircleDollarSign } from "@/icons";
+import { Grid, BookmarkCheck, Award, CircleDollarSign, Calendar } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import { motion } from "framer-motion";
 
 interface TabNavigationMenuProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  isCreatorMode?: boolean;
 }
 
-const TabNavigationMenu: React.FC<TabNavigationMenuProps> = ({ activeTab, setActiveTab }) => {
+const TabNavigationMenu: React.FC<TabNavigationMenuProps> = ({ 
+  activeTab, 
+  setActiveTab,
+  isCreatorMode = false
+}) => {
   const { theme } = useTheme();
   const tabsRef = useRef<HTMLDivElement>(null);
   
@@ -24,12 +29,19 @@ const TabNavigationMenu: React.FC<TabNavigationMenuProps> = ({ activeTab, setAct
     }
   }, [activeTab]);
   
-  const tabs = [
+  const standardTabs = [
     { id: "gallery", icon: <Grid size={18} />, label: "Galerie" },
     { id: "collections", icon: <BookmarkCheck size={18} />, label: "Collections" },
     { id: "journey", icon: <Award size={18} />, label: "Journey" },
     { id: "tiers", icon: <CircleDollarSign size={18} />, label: "Abonnement" }
   ];
+  
+  const creatorTabs = [
+    ...standardTabs,
+    { id: "calendar", icon: <Calendar size={18} />, label: "Planning" }
+  ];
+  
+  const tabs = isCreatorMode ? creatorTabs : standardTabs;
   
   return (
     <div className="relative w-full mt-4">

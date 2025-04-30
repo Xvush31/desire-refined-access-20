@@ -18,7 +18,10 @@ const PerformerProfile: React.FC = () => {
   
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <p>Redirection vers CreaVerse...</p>
+      <div className="text-center">
+        <p className="mb-2">Redirection vers CreaVerse...</p>
+        <div className="w-12 h-12 border-2 border-t-brand-red rounded-full animate-spin mx-auto"></div>
+      </div>
     </div>
   );
 };
