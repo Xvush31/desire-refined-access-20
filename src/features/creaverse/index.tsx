@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Navigate, Outlet, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,11 @@ const CreaVerse: React.FC = () => {
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
   
+  useEffect(() => {
+    // Log successful access for debugging
+    console.log("Successfully accessed CreaVerse with user:", currentUser.uid);
+  }, [currentUser]);
+  
   // Otherwise, render the child routes with a fallback for direct /creaverse access
   return (
     <div className="min-h-screen bg-background pb-16">
@@ -39,7 +44,7 @@ const CreaVerse: React.FC = () => {
           <h1 className="text-2xl font-bold mb-4">Bienvenue à CreaVerse</h1>
           <p className="mb-6">L'univers des créateurs de XVush</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild variant="default">
+            <Button asChild variant="default" className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white">
               <Link to={`/creaverse/performer/${currentUser.uid}`}>Mon profil</Link>
             </Button>
             <Button asChild variant="outline">

@@ -24,7 +24,8 @@ const Login: React.FC = () => {
   const { login } = useAuth() as AuthContextType;
 
   // Get the intended destination from location state, or use default
-  const from = location.state?.from?.pathname || "/";
+  const from = location.state?.from || "/";
+  console.log("Login page - Redirecting from:", from);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,6 +33,7 @@ const Login: React.FC = () => {
     setLoading(true);
 
     try {
+      console.log("Attempting login with email:", email);
       const response = await fetch(
         "https://backend-puce-rho-15.vercel.app/api/auth/login",
         {
@@ -46,9 +48,13 @@ const Login: React.FC = () => {
         setEmail("");
         setPassword("");
         
+        // Extract the path from the 'from' object if it's an object
+        const redirectPath = typeof from === 'string' ? from : from.pathname || '/';
+        console.log("Login successful, navigating to:", redirectPath);
+        
         // Navigate to the previous intended page or based on role
-        if (from !== "/" && from !== "/login") {
-          navigate(from);
+        if (redirectPath !== "/" && redirectPath !== "/login") {
+          navigate(redirectPath);
         } else if (data.role === "creator") {
           navigate("/creaverse");
         } else {
@@ -56,7 +62,6 @@ const Login: React.FC = () => {
         }
         
         toast.success("Connexion réussie!");
-        console.log("Login successful, navigating to:", from !== "/" ? from : data.role === "creator" ? "/creaverse" : "/");
       } else {
         setError(data.error || "Email ou mot de passe incorrect");
         toast.error(data.error || "Email ou mot de passe incorrect");

@@ -3,6 +3,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { HomeIcon, UsersIcon } from "lucide-react";
 
 const NotFoundState: React.FC = () => {
   const navigate = useNavigate();
@@ -30,9 +31,16 @@ const NotFoundState: React.FC = () => {
       <p className="text-muted-foreground mb-6">
         Nous n'avons pas pu trouver le profil que vous recherchez.
       </p>
-      <Button onClick={() => navigate('/')}>
-        Retourner à l'accueil
-      </Button>
+      <div className="flex flex-col sm:flex-row gap-4">
+        <Button onClick={() => navigate('/')} className="flex items-center gap-2">
+          <HomeIcon size={18} />
+          Retourner à l'accueil
+        </Button>
+        <Button onClick={() => navigate('/creators')} variant="outline" className="flex items-center gap-2">
+          <UsersIcon size={18} />
+          Voir tous les créateurs
+        </Button>
+      </div>
     </motion.div>
   );
 };
