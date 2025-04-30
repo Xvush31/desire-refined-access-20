@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -24,7 +25,6 @@ import Categories from "./pages/Categories";
 import CategoryPage from "./pages/CategoryPage";
 import Trending from "./pages/Trending";
 import Performers from "./pages/Performers";
-import PerformerProfile from "./pages/PerformerProfile";
 import Recent from "./pages/Recent";
 import Favorites from "./pages/Favorites";
 import CreatorsPopular from "./pages/CreatorsPopular";
@@ -41,9 +41,12 @@ import SingleVideo from "./pages/SingleVideo";
 import VideoList from "./components/VideoList";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import AccessDenied from "./pages/AccessDenied";
-import AuthCallback from "./pages/AuthCallback"; // Import is correct for .tsx
+import AuthCallback from "./pages/AuthCallback";
 import { useTheme } from "./hooks/use-theme";
 import { useAuth, AuthProvider } from "./contexts/AuthContext";
+
+// Import CreaVerse
+import CreaVerse from "./features/creaverse";
 
 const queryClient = new QueryClient();
 
@@ -80,7 +83,7 @@ const App = () => {
           : localStorage.getItem("age-verified") === "true";
         setAgeVerified(isVerified);
       } catch (error) {
-        console.error("Erreur lors de l’initialisation des services:", error);
+        console.error("Erreur lors de l'initialisation des services:", error);
       } finally {
         setLoading(false);
       }
@@ -166,10 +169,10 @@ const App = () => {
                       />
                       <Route path="/trending" element={<Trending />} />
                       <Route path="/performers" element={<Performers />} />
-                      <Route
-                        path="/performers/:performerId"
-                        element={<PerformerProfile />}
-                      />
+                      
+                      {/* Remplacer la route performer par CreaVerse */}
+                      <Route path="/performer/*" element={<CreaVerse />} />
+                      
                       <Route path="/recent" element={<Recent />} />
                       <Route path="/favorites" element={<Favorites />} />
                       <Route path="/about" element={<About />} />
