@@ -85,11 +85,25 @@ const CreatorProfile: React.FC = () => {
   const isOwner = currentUser && currentUser.uid === performer.id.toString();
   
   const handleSubscribe = () => {
+    if (!currentUser) {
+      // Enregistre la page actuelle pour y revenir après connexion
+      sessionStorage.setItem('returnTo', `/creaverse/performer/${performer.id}`);
+      navigate('/login');
+      toast.info("Connectez-vous pour vous abonner à ce créateur");
+      return;
+    }
     navigate(`/subscription?creator=${performer.id}`);
     toast.success("Redirection vers l'abonnement");
   };
 
   const handleFollowToggle = () => {
+    if (!currentUser) {
+      // Enregistre la page actuelle pour y revenir après connexion
+      sessionStorage.setItem('returnTo', `/creaverse/performer/${performer.id}`);
+      navigate('/login');
+      toast.info("Connectez-vous pour suivre ce créateur");
+      return;
+    }
     setIsFollowing(!isFollowing);
     toast.success(isFollowing ? 
       `Vous ne suivez plus ${performer.displayName}` : 
@@ -97,7 +111,25 @@ const CreatorProfile: React.FC = () => {
     );
   };
   
+  const handleSendMessage = () => {
+    if (!currentUser) {
+      // Enregistre la page actuelle pour y revenir après connexion
+      sessionStorage.setItem('returnTo', `/creaverse/performer/${performer.id}`);
+      navigate('/login');
+      toast.info("Connectez-vous pour envoyer un message à ce créateur");
+      return;
+    }
+    setIsMessageDialogOpen(true);
+  };
+  
   const handleContentClick = (contentItem: any) => {
+    if (contentItem.type !== "standard" && !currentUser) {
+      // Enregistre la page actuelle pour y revenir après connexion
+      sessionStorage.setItem('returnTo', `/creaverse/performer/${performer.id}`);
+      navigate('/login');
+      toast.info("Connectez-vous pour accéder au contenu premium");
+      return;
+    }
     toast.info(`Ouverture de: ${contentItem.title}`);
     // Implémentation de l'ouverture de contenu à faire
   };
@@ -131,7 +163,7 @@ const CreatorProfile: React.FC = () => {
         onToggleRevenue={() => setShowRevenue(!showRevenue)}
         onToggleFollow={handleFollowToggle}
         onSubscribe={handleSubscribe}
-        onSendMessage={() => setIsMessageDialogOpen(true)}
+        onSendMessage={handleSendMessage}
         setActiveTab={setActiveTab}
         setContentLayout={setContentLayout}
         handleContentClick={handleContentClick}
@@ -139,9 +171,9 @@ const CreatorProfile: React.FC = () => {
       
       {/* Navigation inférieure */}
       <NavigationFooter
-        performerId={performer?.id}
-        performerImage={performer?.image}
-        performerName={performer?.displayName}
+        performerId={currentUser?.uid || "visitor"} 
+        performerImage={currentUser ? performer?.image || "/placeholder.svg" : "/placeholder.svg"}
+        performerName={currentUser?.uid || "Visiteur"}
       />
       
       <ScrollToTopButton threshold={200} />

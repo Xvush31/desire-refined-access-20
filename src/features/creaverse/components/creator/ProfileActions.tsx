@@ -3,6 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { MessageCircle } from "@/icons";
 import { useTheme } from "@/hooks/use-theme";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ProfileActionsProps {
   isFollowing: boolean;
@@ -18,6 +19,7 @@ const ProfileActions: React.FC<ProfileActionsProps> = ({
   onSendMessage
 }) => {
   const { theme } = useTheme();
+  const { currentUser } = useAuth();
   
   return (
     <div className="flex gap-2 mt-4">
@@ -28,7 +30,7 @@ const ProfileActions: React.FC<ProfileActionsProps> = ({
           'bg-primary text-primary-foreground'}`}
         size="sm"
       >
-        {isFollowing ? 'Suivi(e)' : 'Suivre'}
+        {currentUser ? (isFollowing ? 'Suivi(e)' : 'Suivre') : 'Suivre'}
       </Button>
       <Button 
         onClick={onSubscribe}
