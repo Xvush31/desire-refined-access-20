@@ -34,6 +34,7 @@ import CreatorProfile from "./features/creaverse/pages/CreatorProfile";
 import CreatorDashboard from "./features/creaverse/pages/CreatorDashboard";
 import CreatorSettings from "./features/creaverse/pages/CreatorSettings";
 import { useAuth } from "./contexts/AuthContext";
+import PerformerProfile from "./pages/PerformerProfile";
 
 // Simple layout component to wrap routes that handles auth loading state
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -80,6 +81,13 @@ function App() {
   // Add a direct link to CreaVerse on the console for debugging
   console.log("Try accessing CreaVerse directly at:", window.location.origin + "/creaverse");
   
+  useEffect(() => {
+    // Log when routes like /performers/:id are accessed
+    if (location.pathname.includes('/performers/')) {
+      console.log("Detected access to performers route:", location.pathname);
+    }
+  }, [location.pathname]);
+  
   return (
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
       <Routes>
@@ -121,8 +129,9 @@ function App() {
           <Route path="creator/:performerId/settings" element={<CreatorSettings />} />
         </Route>
 
-        {/* Legacy performer route - redirect to CreaVerse route */}
+        {/* Legacy performer route - now properly handled */}
         <Route path="/performer/:performerId" element={<PerformerRedirect />} />
+        <Route path="/performers/:performerId" element={<PerformerProfile />} />
 
         {/* Legacy creator routes - redirect to CreaVerse routes */}
         <Route path="/creator/:performerId/dashboard" element={<CreatorDashboardRedirect />} />

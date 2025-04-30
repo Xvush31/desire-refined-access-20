@@ -1,6 +1,7 @@
 
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 /**
  * Ce composant est maintenant remplacé par CreaVerse
@@ -11,9 +12,14 @@ const PerformerProfile: React.FC = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
+    console.log("PerformerProfile: Redirecting to CreaVerse", performerId);
+    
+    // Ensure performerId is valid, default to "1" if not
+    const targetId = performerId || "1";
+    
     // Redirection vers CreaVerse avec remplacement pour éviter de pouvoir revenir en arrière
-    navigate(`/creaverse/performer/${performerId || '1'}`, { replace: true });
-    console.log("Redirection vers CreaVerse:", `/creaverse/performer/${performerId || '1'}`);
+    navigate(`/creaverse/performer/${targetId}`, { replace: true });
+    toast.info("Redirection vers le profil du créateur...");
   }, [performerId, navigate]);
   
   return (
