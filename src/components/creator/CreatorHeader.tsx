@@ -95,7 +95,10 @@ const CreatorHeader: React.FC<CreatorHeaderProps> = ({
             onToggleRevenue={onToggleRevenue}
             stats={{
               monthlyRevenue: performer.stats.monthlyRevenue,
-              monthlyRevenueChange: performer.stats.monthlyRevenueChange
+              monthlyRevenueChange: performer.stats.monthlyRevenueChange,
+              watchMinutes: performer.stats.watchMinutes,
+              retentionRate: performer.stats.retentionRate,
+              superfans: performer.stats.superfans
             }}
           />
         </div>
