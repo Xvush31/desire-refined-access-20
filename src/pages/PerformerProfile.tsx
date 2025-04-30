@@ -9,7 +9,7 @@ import {
   ArrowLeft, Bell, MessageCircle, MoreVertical, Grid,
   Play, User, Home, Search, Plus, Video, Award,
   TrendingUp, Heart, BookmarkCheck, Calendar, Clock, CircleDollarSign, 
-  BarChart, Star, CircleCheck
+  BarChart, Star, CircleCheck, Lock
 } from "lucide-react";
 import { toast } from "sonner";
 import SendMessageDialog from "@/components/SendMessageDialog";
