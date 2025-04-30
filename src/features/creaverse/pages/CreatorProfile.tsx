@@ -12,6 +12,7 @@ import ProfileHeader from "../components/profile/ProfileHeader";
 import LoadingState from "../components/profile/LoadingState";
 import NotFoundState from "../components/profile/NotFoundState";
 import MainContent from "../components/profile/MainContent";
+import ScrollToTopButton from "@/components/ui/scroll-to-top-button";
 
 import { fetchPerformerData } from "../api/performers";
 import { PerformerData } from "../types/performer";
@@ -142,6 +143,8 @@ const CreatorProfile: React.FC = () => {
         performerImage={performer?.image}
         performerName={performer?.displayName}
       />
+      
+      <ScrollToTopButton threshold={200} />
       
       <SendMessageDialog 
         performerName={performer?.displayName || ""} 
