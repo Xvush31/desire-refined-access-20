@@ -77,7 +77,9 @@ const CreatorProfile: React.FC = () => {
     <div className={`min-h-screen ${theme === 'light' ? 'bg-gray-100' : 'bg-black'}`}>
       {/* Header avec navigation */}
       <ProfileHeader 
-        username={performer.username} 
+        username={performer.username}
+        displayName={performer.displayName}
+        profileImage={performer.image} 
         tier={performer.tier} 
       />
       
