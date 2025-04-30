@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { ContentItem } from "./ContentCard";
 import { TypeBadge, FormatBadge, TrendingBadge, DurationBadge, ValueIndicator, CollectionTags } from "./CardBadges";
 import ContentMetrics from "./ContentMetrics";
+import { Play } from "lucide-react"; // Added import for Play icon
 
 interface FlowCardLayoutProps {
   item: ContentItem;
