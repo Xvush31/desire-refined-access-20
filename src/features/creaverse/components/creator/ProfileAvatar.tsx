@@ -67,7 +67,7 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
       )}
       
       <Avatar className={`${getSizeClass()} border-2 ${hasStory ? 'border-transparent' : 'border-background'}`}>
-        <AvatarImage src={image} alt={displayName} />
+        <AvatarImage src={image} alt={displayName} className="object-cover" />
         <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
       </Avatar>
       

@@ -13,7 +13,10 @@ export interface PerformerData {
   lastActive?: string;
   nextEvent?: {
     type: string;
+    title: string;
     timeRemaining: string;
+    date: string;
+    time: string;
   };
   stats: {
     monthlyRevenue: number;

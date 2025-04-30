@@ -2,7 +2,6 @@
 import React from "react";
 import { motion } from "framer-motion";
 import CreatorHeader from "@/components/creator/CreatorHeader";
-import EngagementDashboard from "@/components/creator/EngagementDashboard";
 import TabNavigationMenu from "./TabNavigationMenu";
 import ProfileContent from "./ProfileContent";
 import { ContentItem } from "../content/ContentCard";
@@ -77,14 +76,6 @@ const MainContent: React.FC<MainContentProps> = ({
           onToggleFollow={onToggleFollow}
           onSubscribe={onSubscribe}
           onSendMessage={onSendMessage}
-        />
-      </motion.div>
-      
-      {/* Tableau de bord d'engagement en temps réel */}
-      <motion.div variants={itemVariants}>
-        <EngagementDashboard 
-          performer={performer}
-          isOwner={isOwner}
         />
       </motion.div>
       

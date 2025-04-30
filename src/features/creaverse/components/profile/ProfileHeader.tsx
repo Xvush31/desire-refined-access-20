@@ -21,13 +21,7 @@ interface ProfileHeaderProps {
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ 
   username, 
-  displayName = "", 
-  profileImage,
-  tier,
-  status = "offline",
-  lastActive,
   performer,
-  activityMessage
 }) => {
   const { theme } = useTheme();
   const navigate = useNavigate();
@@ -40,14 +34,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     <div className="relative">
       <DynamicHeader
         username={username}
-        displayName={displayName}
-        profileImage={profileImage}
-        tier={tier}
         showBackButton={true}
         onBack={() => navigate("/")}
-        status={status}
-        lastActive={lastActive}
-        activityMessage={activityMessage}
       />
       
       {isOwner && (

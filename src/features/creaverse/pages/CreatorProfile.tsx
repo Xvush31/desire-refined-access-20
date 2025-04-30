@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -55,28 +54,26 @@ const CreatorProfile: React.FC = () => {
   const { currentUser } = useAuth() || { currentUser: null };
   const [showRevenue, setShowRevenue] = useState(true);
   const [contentLayout, setContentLayout] = useState<"grid" | "masonry" | "featured">("grid");
-  const [creatorActivityMessage, setCreatorActivityMessage] = useState<string | undefined>();
   
   useEffect(() => {
     const loadPerformerData = async () => {
       try {
         setLoading(true);
         const data = await fetchPerformerData(performerId || "1");
-        setPerformer(data);
         
-        // Simuler des messages d'activité en fonction du statut du créateur
-        if (data.isLive) {
-          setCreatorActivityMessage("Diffusion d'un live exclusif");
-        } else if (data.isActive) {
-          // Choisir aléatoirement un message d'activité
-          const activities = [
-            "Préparation d'une nouvelle collection",
-            "Réponse aux messages des fans",
-            "Création de contenu exclusif",
-            "Planification d'un événement"
-          ];
-          setCreatorActivityMessage(activities[Math.floor(Math.random() * activities.length)]);
-        }
+        // Ajout de données d'exemple pour l'événement à venir
+        const enhancedData = {
+          ...data,
+          nextEvent: {
+            type: "live",
+            title: "Session photo spéciale abonnés",
+            timeRemaining: "23h 45m",
+            date: "Demain",
+            time: "20:00"
+          }
+        };
+        
+        setPerformer(enhancedData);
       } catch (error) {
         console.error("Erreur lors du chargement des données:", error);
         toast.error("Impossible de charger les données du créateur");
@@ -149,25 +146,12 @@ const CreatorProfile: React.FC = () => {
     // Implémentation de l'ouverture de contenu à faire
   };
   
-  // Déterminer le statut du créateur (online, streaming, away, offline)
-  const creatorStatus = performer.isLive ? "streaming" : 
-                       performer.isActive && creatorActivityMessage?.includes("Réponse aux messages") ? "responding" :
-                       performer.isActive && creatorActivityMessage?.includes("Création") ? "creating" :
-                       performer.isActive ? "online" : "offline";
-  const lastActive = performer.lastActive || "il y a 3h";
-  
   return (
     <div className={`min-h-screen ${theme === 'light' ? 'bg-gray-100' : 'bg-black'}`}>
       {/* Header avec navigation */}
       <ProfileHeader 
         username={performer?.username || ""}
-        displayName={performer?.displayName || ""}
-        profileImage={performer?.image} 
-        tier={performer?.tier}
-        status={creatorStatus}
-        lastActive={lastActive}
         performer={performer}
-        activityMessage={creatorActivityMessage}
       />
       
       <MainContent

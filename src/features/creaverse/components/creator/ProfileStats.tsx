@@ -1,9 +1,8 @@
 
 import React from "react";
 import { useTheme } from "@/hooks/use-theme";
-import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { EyeIcon, EyeOffIcon, TrendingUp, TrendingDown, Clock, Users } from "lucide-react";
+import { EyeIcon, EyeOffIcon, TrendingUp, TrendingDown } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip } from "recharts";
 
 interface ProfileStatsProps {
@@ -48,7 +47,6 @@ const ProfileStats: React.FC<ProfileStatsProps> = ({
   tier,
   nextTier,
   tierProgress,
-  tierColor,
   isOwner,
   showRevenue,
   onToggleRevenue,
@@ -56,7 +54,6 @@ const ProfileStats: React.FC<ProfileStatsProps> = ({
 }) => {
   const { theme } = useTheme();
   const bgClass = theme === 'light' ? 'bg-gray-100' : 'bg-zinc-800';
-  const textClass = theme === 'light' ? 'text-gray-800' : 'text-gray-200';
   
   // Générer des données de revenus simulées
   const revenueData = generateRevenueData(stats.monthlyRevenue, stats.monthlyRevenue * 0.1);
@@ -64,138 +61,84 @@ const ProfileStats: React.FC<ProfileStatsProps> = ({
   // Couleur du graphique basée sur la croissance
   const chartColor = stats.monthlyRevenueChange >= 0 ? "#4CAF50" : "#F44336";
   
+  if (!isOwner) return null;
+  
   return (
     <div className="mt-2">
-      {isOwner && (
-        <div className={`p-3 rounded-lg ${bgClass} mb-3`}>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Revenus mensuels</span>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={onToggleRevenue} 
-              className="h-6 w-6"
-            >
-              {showRevenue ? <EyeIcon size={14} /> : <EyeOffIcon size={14} />}
-            </Button>
-          </div>
-          
-          {showRevenue ? (
-            <>
-              <div className="flex items-baseline">
-                <span className="text-lg font-bold mr-2">{stats.monthlyRevenue.toLocaleString('fr-FR')}€</span>
-                <span className={`text-xs flex items-center gap-1 ${stats.monthlyRevenueChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                  {stats.monthlyRevenueChange >= 0 ? (
-                    <>
-                      <TrendingUp size={12} />
-                      +{stats.monthlyRevenueChange}%
-                    </>
-                  ) : (
-                    <>
-                      <TrendingDown size={12} />
-                      {stats.monthlyRevenueChange}%
-                    </>
-                  )}
-                </span>
-              </div>
-              
-              {/* Mini graphique de revenus */}
-              <div className="h-20 mt-1">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart
-                    data={revenueData}
-                    margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
-                  >
-                    <defs>
-                      <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={chartColor} stopOpacity={0.8} />
-                        <stop offset="95%" stopColor={chartColor} stopOpacity={0.1} />
-                      </linearGradient>
-                    </defs>
-                    <Tooltip 
-                      content={({ active, payload }) => {
-                        if (active && payload && payload.length) {
-                          return (
-                            <div className={`px-2 py-1 ${theme === 'light' ? 'bg-white' : 'bg-zinc-900'} shadow rounded text-xs`}>
-                              Jour {payload[0].payload.day}: {payload[0].value}€
-                            </div>
-                          );
-                        }
-                        return null;
-                      }}
-                    />
-                    <Area 
-                      type="monotone" 
-                      dataKey="value" 
-                      stroke={chartColor} 
-                      strokeWidth={2}
-                      fill="url(#revenueGradient)" 
-                      animationDuration={1000}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </>
-          ) : (
-            <div className="text-center py-4 text-muted-foreground">
-              <p className="text-sm">Revenus masqués</p>
-            </div>
-          )}
+      <div className={`p-3 rounded-lg ${bgClass} mb-3`}>
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-medium">Revenus mensuels</span>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={onToggleRevenue} 
+            className="h-6 w-6"
+          >
+            {showRevenue ? <EyeIcon size={14} /> : <EyeOffIcon size={14} />}
+          </Button>
         </div>
-      )}
-      
-      {/* Impact Metrics Section */}
-      <div className="mb-3">
-        <div className="flex flex-wrap gap-3 mb-2">
-          {/* Temps de visionnage total */}
-          {stats.watchMinutes && (
-            <div className="flex items-center gap-1 text-sm">
-              <Clock size={14} className="text-muted-foreground" />
-              <span className="font-medium">{stats.watchMinutes}</span>
-              <span className="text-muted-foreground">vues</span>
+        
+        {showRevenue ? (
+          <>
+            <div className="flex items-baseline">
+              <span className="text-lg font-bold mr-2">{stats.monthlyRevenue.toLocaleString('fr-FR')}€</span>
+              <span className={`text-xs flex items-center gap-1 ${stats.monthlyRevenueChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                {stats.monthlyRevenueChange >= 0 ? (
+                  <>
+                    <TrendingUp size={12} />
+                    +{stats.monthlyRevenueChange}%
+                  </>
+                ) : (
+                  <>
+                    <TrendingDown size={12} />
+                    {stats.monthlyRevenueChange}%
+                  </>
+                )}
+              </span>
             </div>
-          )}
-          
-          {/* Taux de fidélisation */}
-          {stats.retentionRate && (
-            <div className="flex items-center gap-1 text-sm">
-              <TrendingUp size={14} className="text-green-500" />
-              <span className="font-medium">{stats.retentionRate}</span>
-              <span className="text-muted-foreground">fidélisation</span>
+            
+            {/* Mini graphique de revenus */}
+            <div className="h-20 mt-1">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={revenueData}
+                  margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={chartColor} stopOpacity={0.8} />
+                      <stop offset="95%" stopColor={chartColor} stopOpacity={0.1} />
+                    </linearGradient>
+                  </defs>
+                  <Tooltip 
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className={`px-2 py-1 ${theme === 'light' ? 'bg-white' : 'bg-zinc-900'} shadow rounded text-xs`}>
+                            Jour {payload[0].payload.day}: {payload[0].value}€
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="value" 
+                    stroke={chartColor} 
+                    strokeWidth={2}
+                    fill="url(#revenueGradient)" 
+                    animationDuration={1000}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
-          )}
-          
-          {/* Super-fans */}
-          {stats.superfans !== undefined && (
-            <div className="flex items-center gap-1 text-sm">
-              <Users size={14} className="text-muted-foreground" />
-              <span className="font-medium">{stats.superfans}</span>
-              <span className="text-muted-foreground">super-fans</span>
-            </div>
-          )}
-        </div>
-      </div>
-      
-      {/* Progression de palier */}
-      <div className="mt-2">
-        <div className="flex items-center justify-between text-xs mb-1">
-          <div className="flex items-center gap-1">
-            <span className="font-medium uppercase">{tier}</span>
-            <span className="text-muted-foreground">Actuel</span>
+          </>
+        ) : (
+          <div className="text-center py-4 text-muted-foreground">
+            <p className="text-sm">Revenus masqués</p>
           </div>
-          <div className="flex items-center gap-1">
-            <span className="font-medium uppercase">{nextTier}</span>
-            <span className="text-muted-foreground">Suivant</span>
-          </div>
-        </div>
-        <Progress
-          value={tierProgress}
-          className={`h-2 bg-gradient-to-r ${tierColor}`}
-        />
-        {/* Message encourageant pour le prochain palier */}
-        <p className="text-xs text-muted-foreground mt-1 text-right">
-          {Math.round(100 - tierProgress)}% pour atteindre le palier {nextTier}
-        </p>
+        )}
       </div>
     </div>
   );
