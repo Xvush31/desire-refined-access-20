@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { fetchPerformerData } from "../api/performers";
@@ -36,7 +37,8 @@ const generateSampleContentItems = (count: number, trending: boolean = false): C
       thumbnail: getRandomThumbnail("1", i, format),
       type: contentType,
       format: format as "video" | "image" | "audio" | "text",
-      createdAt: new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000),
+      // Removed isPremium and isNew as they don't exist in ContentItem
+      // Removed createdAt as it doesn't exist in ContentItem
       ...formatProps
     });
   }
@@ -101,7 +103,7 @@ const CreatorProfile: React.FC = () => {
         // Set relationship level based on some logic
         // This would normally come from a backend service
         const randomLevel = Math.floor(Math.random() * 5) as RelationshipLevel;
-        // Use SuperFan level for owners instead of Admin which doesn't exist
+        // Use SuperFan level for owners
         setRelationshipLevel(isOwner ? RelationshipLevel.SuperFan : randomLevel);
         
         setLoading(false);
@@ -157,7 +159,7 @@ const CreatorProfile: React.FC = () => {
   }
   
   if (error || !performer) {
-    return <NotFoundState error={error} />;
+    return <NotFoundState error={error || "Performer not found"} />;
   }
   
   return (

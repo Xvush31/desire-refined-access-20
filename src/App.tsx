@@ -35,7 +35,6 @@ import CreatorDashboard from "./features/creaverse/pages/CreatorDashboard";
 import CreatorSettings from "./features/creaverse/pages/CreatorSettings";
 import { useAuth } from "./contexts/AuthContext";
 import PerformerProfile from "./pages/PerformerProfile";
-import RevolutionaryNavigation from "./components/navigation/RevolutionaryNavigation";
 
 // Simple layout component to wrap routes that handles auth loading state
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -51,9 +50,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   
   return (
     <div className="min-h-screen">
-      <RevolutionaryNavigation>
-        {children}
-      </RevolutionaryNavigation>
+      {children}
     </div>
   );
 };
@@ -126,7 +123,7 @@ function App() {
         <Route path="/auth/callback" element={<Layout><AuthCallback /></Layout>} />
         <Route path="/access-denied" element={<Layout><AccessDenied /></Layout>} />
 
-        {/* CreaVerse Routes - maintenant CreaVerse utilise sa propre instance de RevolutionaryNavigation */}
+        {/* CreaVerse Routes - CreaVerse utilise sa propre instance de RevolutionaryNavigation */}
         <Route path="/creaverse" element={<CreaVerse />}>
           <Route index element={<div className="container mx-auto px-4 py-8 text-center">
             <h1 className="text-2xl font-bold mb-4">Bienvenue à CreaVerse</h1>
