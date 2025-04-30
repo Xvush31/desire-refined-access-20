@@ -3,27 +3,23 @@ export interface PerformerData {
   id: number;
   username: string;
   displayName: string;
-  image: string;
-  videos: number;
-  followers: string;
-  following: number;
   description: string;
-  joinDate: string;
-  tags: string[];
+  image: string;
+  followers: string;
   tier: "bronze" | "silver" | "gold" | "platinum" | "diamond";
   tierProgress: number;
-  stats: {
-    likes: string;
-    views: string;
-    rating: number;
-    retentionRate: string;
-    watchMinutes: string;
-    monthlyRevenue: number;
-    monthlyRevenueChange: number;
-    superfans: number;
-  };
+  isLive?: boolean;
+  isActive?: boolean;
+  lastActive?: string;
   nextEvent?: {
     type: string;
     timeRemaining: string;
+  };
+  stats: {
+    monthlyRevenue: number;
+    monthlyRevenueChange: number;
+    watchMinutes: string;
+    retentionRate: string;
+    superfans: number;
   };
 }

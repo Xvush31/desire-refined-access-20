@@ -9,13 +9,17 @@ interface ProfileHeaderProps {
   displayName?: string;
   profileImage?: string;
   tier?: "bronze" | "silver" | "gold" | "platinum" | "diamond";
+  status?: "online" | "offline" | "streaming" | "away";
+  lastActive?: string;
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ 
   username, 
   displayName = "", 
   profileImage,
-  tier 
+  tier,
+  status = "offline",
+  lastActive
 }) => {
   const { theme } = useTheme();
   const navigate = useNavigate();
@@ -28,6 +32,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
       tier={tier}
       showBackButton={true}
       onBack={() => navigate("/")}
+      status={status}
+      lastActive={lastActive}
     />
   );
 };
