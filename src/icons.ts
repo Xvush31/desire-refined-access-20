@@ -22,4 +22,8 @@ export {
   TrendingUp,
   CircleCheck,
   ArrowRight,
+  // Add missing icons
+  Eye,
+  EyeOff,
+  Lock,
 } from "lucide-react";
