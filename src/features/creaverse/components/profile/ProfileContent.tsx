@@ -10,13 +10,14 @@ import MonetizationTiers from "@/components/creator/MonetizationTiers";
 
 interface ProfileContentProps {
   activeTab: string;
-  contentLayout: "grid" | "masonry" | "featured";
-  setContentLayout: (layout: "grid" | "masonry" | "featured") => void;
+  contentLayout: "grid" | "masonry" | "featured" | "flow";
+  setContentLayout: (layout: "grid" | "masonry" | "featured" | "flow") => void;
   isOwner: boolean;
   performerId: number;
   handleSubscribe: () => void;
   handleContentClick: (contentItem: any) => void;
   sampleContentItems: ContentItem[];
+  filterByFormat?: (format: "all" | "video" | "image" | "audio" | "text") => void;
 }
 
 const ProfileContent: React.FC<ProfileContentProps> = ({
@@ -27,7 +28,8 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
   performerId,
   handleSubscribe,
   handleContentClick,
-  sampleContentItems
+  sampleContentItems,
+  filterByFormat
 }) => {
   return (
     <Tabs value={activeTab} defaultValue="gallery">
@@ -37,54 +39,13 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          {/* En-tête avec contrôles de mise en page */}
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold">Galerie de contenu</h2>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setContentLayout("grid")}
-                className={`p-1 rounded ${contentLayout === "grid" ? "bg-muted" : ""}`}
-                aria-label="Affichage en grille"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="3" width="7" height="7" />
-                  <rect x="14" y="3" width="7" height="7" />
-                  <rect x="3" y="14" width="7" height="7" />
-                  <rect x="14" y="14" width="7" height="7" />
-                </svg>
-              </button>
-              <button
-                onClick={() => setContentLayout("masonry")}
-                className={`p-1 rounded ${contentLayout === "masonry" ? "bg-muted" : ""}`}
-                aria-label="Affichage en mosaïque"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="3" width="7" height="9" />
-                  <rect x="14" y="3" width="7" height="5" />
-                  <rect x="3" y="14" width="7" height="7" />
-                  <rect x="14" y="10" width="7" height="11" />
-                </svg>
-              </button>
-              <button
-                onClick={() => setContentLayout("featured")}
-                className={`p-1 rounded ${contentLayout === "featured" ? "bg-muted" : ""}`}
-                aria-label="Affichage avec élément en avant"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="3" width="18" height="8" />
-                  <rect x="3" y="13" width="8" height="8" />
-                  <rect x="13" y="13" width="8" height="8" />
-                </svg>
-              </button>
-            </div>
-          </div>
-          
-          {/* Grille de contenu avec différentes dispositions */}
           <ContentGrid
             items={sampleContentItems}
             layout={contentLayout}
             showMetrics={isOwner}
             onItemClick={handleContentClick}
+            onLayoutChange={setContentLayout}
+            filterByFormat={filterByFormat}
           />
         </motion.div>
       </TabsContent>

@@ -37,5 +37,12 @@ export interface PerformerData {
     total: number;
     premium: number;
     trending: number;
+    formats?: {
+      videos: number;
+      photos: number;
+      audio: number;
+      text: number;
+    };
+    collections?: string[];
   };
 }

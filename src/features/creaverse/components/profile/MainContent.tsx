@@ -12,7 +12,7 @@ interface MainContentProps {
   isOwner: boolean;
   showRevenue: boolean;
   isFollowing: boolean;
-  contentLayout: "grid" | "masonry" | "featured";
+  contentLayout: "grid" | "masonry" | "featured" | "flow";
   activeTab: string;
   sampleContentItems: ContentItem[];
   onToggleRevenue: () => void;
@@ -20,8 +20,9 @@ interface MainContentProps {
   onSubscribe: () => void;
   onSendMessage: () => void;
   setActiveTab: (tab: string) => void;
-  setContentLayout: (layout: "grid" | "masonry" | "featured") => void;
+  setContentLayout: (layout: "grid" | "masonry" | "featured" | "flow") => void;
   handleContentClick: (contentItem: any) => void;
+  filterByFormat?: (format: "all" | "video" | "image" | "audio" | "text") => void;
 }
 
 const containerVariants = {
@@ -57,7 +58,8 @@ const MainContent: React.FC<MainContentProps> = ({
   onSendMessage,
   setActiveTab,
   setContentLayout,
-  handleContentClick
+  handleContentClick,
+  filterByFormat
 }) => {
   return (
     <motion.main
@@ -98,6 +100,7 @@ const MainContent: React.FC<MainContentProps> = ({
         handleSubscribe={onSubscribe}
         handleContentClick={handleContentClick}
         sampleContentItems={sampleContentItems}
+        filterByFormat={filterByFormat}
       />
     </motion.main>
   );

@@ -14,38 +14,18 @@ import NotFoundState from "../components/profile/NotFoundState";
 import MainContent from "../components/profile/MainContent";
 import ScrollToTopButton from "@/components/ui/scroll-to-top-button";
 import ContentCarousel from "../components/content/ContentCarousel";
+import ContentFlow from "../components/content/ContentFlow";
+import ContentCollections from "../components/content/ContentCollections";
 
-import { fetchPerformerData } from "../api/performers";
+import { fetchPerformerData, fetchPerformerContent, fetchPerformerCollections, fetchTrendingContent } from "../api/performers";
 import { PerformerData } from "../types/performer";
 import { ContentItem } from "../components/content/ContentCard";
-
-// Contenu d'exemple pour la grille de contenu
-const generateSampleContent = (count: number, type: "standard" | "premium" | "vip"): ContentItem[] => {
-  return Array.from({ length: count }, (_, i) => {
-    const id = `${type}-${i + 1}`;
-    return {
-      id,
-      title: type === "premium" 
-        ? `Contenu Premium #${i + 1}` 
-        : type === "vip" 
-          ? `Exclusivité VIP #${i + 1}`
-          : `Création #${i + 1}`,
-      thumbnail: `https://images.unsplash.com/photo-${1580000000000 + i * 10000}?auto=format&fit=crop&w=800&q=80`,
-      type,
-      metrics: { 
-        views: Math.floor(Math.random() * 10000) + 500, 
-        likes: Math.floor(Math.random() * 1000) + 100, 
-        engagement: Number((Math.random() * 10 + 2).toFixed(1))
-      },
-      revenue: type !== "standard" ? Math.floor(Math.random() * 500) + 100 : undefined
-    };
-  });
-};
 
 const CreatorProfile: React.FC = () => {
   const { performerId } = useParams<{ performerId: string }>();
   const [performer, setPerformer] = useState<PerformerData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [contentLoading, setContentLoading] = useState(false);
   const navigate = useNavigate();
   const [isMessageDialogOpen, setIsMessageDialogOpen] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -53,24 +33,13 @@ const CreatorProfile: React.FC = () => {
   const { theme } = useTheme();
   const { currentUser } = useAuth() || { currentUser: null };
   const [showRevenue, setShowRevenue] = useState(true);
-  const [contentLayout, setContentLayout] = useState<"grid" | "masonry" | "featured">("grid");
+  const [contentLayout, setContentLayout] = useState<"grid" | "masonry" | "featured" | "flow">("grid");
   
-  // Générer les différentes catégories de contenu
-  const standardContent = generateSampleContent(8, "standard");
-  const premiumContent = generateSampleContent(4, "premium");
-  const vipContent = generateSampleContent(2, "vip");
-  const trendingContent = [...generateSampleContent(3, "premium"), ...generateSampleContent(2, "standard")];
-  
-  // Combiner les contenus pour l'affichage principal
-  const sampleContentItems: ContentItem[] = [
-    ...standardContent.slice(0, 3),
-    ...premiumContent.slice(0, 2),
-    ...vipContent.slice(0, 1),
-    ...standardContent.slice(3, 6),
-    ...premiumContent.slice(2, 4),
-    ...vipContent.slice(1, 2),
-    ...standardContent.slice(6, 8)
-  ];
+  // Content states
+  const [contentItems, setContentItems] = useState<ContentItem[]>([]);
+  const [trendingContent, setTrendingContent] = useState<ContentItem[]>([]);
+  const [collections, setCollections] = useState<any[]>([]);
+  const [activeFormat, setActiveFormat] = useState<"all" | "video" | "image" | "audio" | "text">("all");
   
   useEffect(() => {
     const loadPerformerData = async () => {
@@ -88,6 +57,35 @@ const CreatorProfile: React.FC = () => {
     
     loadPerformerData();
   }, [performerId]);
+  
+  useEffect(() => {
+    const loadContent = async () => {
+      if (!performer) return;
+      
+      try {
+        setContentLoading(true);
+        
+        // Load content based on active format
+        const content = await fetchPerformerContent(performerId || "1", activeFormat);
+        setContentItems(content);
+        
+        // Load trending content
+        const trending = await fetchTrendingContent(8);
+        setTrendingContent(trending);
+        
+        // Load collections
+        const collections = await fetchPerformerCollections(performerId || "1");
+        setCollections(collections);
+      } catch (error) {
+        console.error("Erreur lors du chargement du contenu:", error);
+        toast.error("Impossible de charger le contenu du créateur");
+      } finally {
+        setContentLoading(false);
+      }
+    };
+    
+    loadContent();
+  }, [performer, performerId, activeFormat]);
   
   if (loading) {
     return <LoadingState />;
@@ -150,6 +148,15 @@ const CreatorProfile: React.FC = () => {
     // Implémentation de l'ouverture de contenu à faire
   };
   
+  const handleFilterByFormat = (format: "all" | "video" | "image" | "audio" | "text") => {
+    setActiveFormat(format);
+  };
+  
+  const handleCollectionClick = (collection: any) => {
+    toast.info(`Collection sélectionnée: ${collection.name}`);
+    // Implementation de l'affichage de la collection à faire
+  };
+  
   return (
     <div className={`min-h-screen ${theme === 'light' ? 'bg-gray-100' : 'bg-black'}`}>
       {/* Header avec navigation */}
@@ -165,7 +172,7 @@ const CreatorProfile: React.FC = () => {
         isFollowing={isFollowing}
         contentLayout={contentLayout}
         activeTab={activeTab}
-        sampleContentItems={sampleContentItems}
+        sampleContentItems={contentItems}
         onToggleRevenue={() => setShowRevenue(!showRevenue)}
         onToggleFollow={handleFollowToggle}
         onSubscribe={handleSubscribe}
@@ -173,11 +180,33 @@ const CreatorProfile: React.FC = () => {
         setActiveTab={setActiveTab}
         setContentLayout={setContentLayout}
         handleContentClick={handleContentClick}
+        filterByFormat={handleFilterByFormat}
       />
       
-      {/* Sections de contenu en carrousel - visible uniquement sur l'onglet Galerie */}
+      {/* Sections de contenu selon le layout sélectionné - visible uniquement sur l'onglet Galerie */}
       {activeTab === "gallery" && (
-        <div className="px-4 pb-20">
+        <motion.div 
+          className="px-4 pb-20"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          {/* Contenu en flux vertical animé */}
+          {contentLayout === "flow" && (
+            <ContentFlow 
+              items={contentItems}
+              onItemClick={handleContentClick}
+            />
+          )}
+          
+          {/* Collections thématiques */}
+          {collections.length > 0 && (
+            <ContentCollections 
+              collections={collections}
+              onCollectionClick={handleCollectionClick}
+            />
+          )}
+          
           {/* Contenus en tendance */}
           <ContentCarousel
             title="En tendance"
@@ -189,11 +218,23 @@ const CreatorProfile: React.FC = () => {
           {/* Contenus premium */}
           <ContentCarousel
             title="Contenu Premium"
-            items={premiumContent}
+            items={contentItems.filter(item => item.type === "premium").slice(0, 8)}
             type="premium"
             onItemClick={handleContentClick}
           />
-        </div>
+          
+          {/* Afficher les collections en carrousel */}
+          {collections.length > 0 && collections.map((collection) => (
+            <ContentCarousel
+              key={collection.id}
+              title={collection.name}
+              items={contentItems.slice(0, 6)} // Pour la démo, on utilise les mêmes items
+              type="collection"
+              collectionName={collection.name}
+              onItemClick={handleContentClick}
+            />
+          ))}
+        </motion.div>
       )}
       
       {/* Navigation inférieure */}
