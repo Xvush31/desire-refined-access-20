@@ -6,7 +6,7 @@ import { Home, Search, Plus, Video, User } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 
 interface NavigationFooterProps {
-  performerId: number;
+  performerId: number | string;
   performerImage: string;
   performerName: string;
 }
@@ -34,7 +34,7 @@ const NavigationFooter: React.FC<NavigationFooterProps> = ({
       <Link to="/xtease" className="text-primary">
         <Video size={24} />
       </Link>
-      <Link to={`/performer/${performerId}`} className="text-primary">
+      <Link to={`/creaverse/performer/${performerId}`} className="text-primary">
         <div className="relative">
           <Avatar className="w-6 h-6 border border-pink-500">
             <AvatarImage src={performerImage} />

@@ -1,6 +1,6 @@
 
-import React, { Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
+import React, { Suspense, useEffect } from "react";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Trending from "./pages/Trending";
@@ -50,7 +50,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 };
 
 function App() {
-  console.log("App rendering");
+  const { currentUser, loading } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Debug logging
+  console.log("App rendering, auth state:", { currentUser, loading, path: location.pathname });
   
   return (
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
@@ -83,11 +88,46 @@ function App() {
         <Route path="/access-denied" element={<Layout><AccessDenied /></Layout>} />
 
         {/* CreaVerse Routes - Using the CreaVerse layout wrapper */}
-        <Route element={<CreaVerse />}>
-          <Route path="/performer/:performerId" element={<Layout><CreatorProfile /></Layout>} />
-          <Route path="/creator/:performerId/dashboard" element={<Layout><CreatorDashboard /></Layout>} />
-          <Route path="/creator/:performerId/settings" element={<Layout><CreatorSettings /></Layout>} />
+        <Route path="/creaverse" element={<CreaVerse />}>
+          <Route path="performer/:performerId" element={<CreatorProfile />} />
+          <Route path="creator/:performerId/dashboard" element={<CreatorDashboard />} />
+          <Route path="creator/:performerId/settings" element={<CreatorSettings />} />
         </Route>
+
+        {/* Legacy performer route - redirect to CreaVerse route */}
+        <Route path="/performer/:performerId" element={
+          <Layout>
+            {({ performerId }) => {
+              useEffect(() => {
+                navigate(`/creaverse/performer/${performerId}`);
+              }, [performerId]);
+              return <div>Redirecting...</div>;
+            }}
+          </Layout>
+        } />
+
+        {/* Legacy creator routes - redirect to CreaVerse routes */}
+        <Route path="/creator/:performerId/dashboard" element={
+          <Layout>
+            {({ performerId }) => {
+              useEffect(() => {
+                navigate(`/creaverse/creator/${performerId}/dashboard`);
+              }, [performerId]);
+              return <div>Redirecting...</div>;
+            }}
+          </Layout>
+        } />
+        
+        <Route path="/creator/:performerId/settings" element={
+          <Layout>
+            {({ performerId }) => {
+              useEffect(() => {
+                navigate(`/creaverse/creator/${performerId}/settings`);
+              }, [performerId]);
+              return <div>Redirecting...</div>;
+            }}
+          </Layout>
+        } />
 
         {/* 404 Route */}
         <Route path="*" element={<NotFound />} />

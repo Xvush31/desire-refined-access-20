@@ -12,7 +12,12 @@ interface AuthContextType {
 }
 
 // Create context with a meaningful default value for better debugging
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType>({
+  currentUser: null,
+  login: () => console.warn("AuthProvider not initialized"),
+  logout: () => console.warn("AuthProvider not initialized"),
+  loading: true
+});
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -30,6 +35,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
     const uid = localStorage.getItem("uid");
+    
     if (token && role && uid) {
       console.log("Found auth data in localStorage, restoring session");
       setCurrentUser({ token, role, uid });
@@ -38,26 +44,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     // Then set up Firebase auth state listener
     const unsubscribe = onAuthStateChanged(auth, async (user: User | null) => {
       console.log("Firebase auth state changed:", user ? "User authenticated" : "No user");
-      if (user) {
-        // If Firebase auth has a user but we don't have local storage data,
-        // update with Firebase user data
-        if (!currentUser) {
+      
+      try {
+        if (user) {
+          // If Firebase auth has a user but we don't have local storage data,
+          // update with Firebase user data
           const token = await user.getIdToken();
           const role = localStorage.getItem("role") || "user";
           const uid = user.uid;
-          console.log("Setting current user from Firebase auth");
+          console.log("Setting current user from Firebase auth with uid:", uid);
+          
           setCurrentUser({ token, role, uid });
           localStorage.setItem("token", token);
           localStorage.setItem("role", role);
           localStorage.setItem("uid", uid);
+        } else if (!user) {
+          // If Firebase has no user, clear local storage data if it exists
+          if (localStorage.getItem("token")) {
+            console.log("No Firebase user but found local data, logging out");
+            localStorage.removeItem("token");
+            localStorage.removeItem("role");
+            localStorage.removeItem("uid");
+            setCurrentUser(null);
+          }
         }
-      } else if (!user && currentUser) {
-        // If Firebase has no user but we have local storage data,
-        // clear the local data
-        console.log("No Firebase user but found local data, logging out");
-        logout();
+      } catch (error) {
+        console.error("Error in auth state change handler:", error);
+        // Don't set currentUser to null here to prevent logout on temporary errors
+      } finally {
+        // Always set loading to false once we've processed the auth state
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => {
@@ -67,7 +84,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const login = (token: string, role: string, uid: string) => {
-    console.log("Login called, setting user data");
+    console.log("Login called, setting user data with uid:", uid);
     setCurrentUser({ token, role, uid });
     localStorage.setItem("token", token);
     localStorage.setItem("role", role);
@@ -86,7 +103,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
-  // Provide a more informative value for debugging
+  // Provide the context value
   const contextValue: AuthContextType = {
     currentUser,
     login,
@@ -105,7 +122,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
+  if (context === undefined) {
     console.error("useAuth was called outside of AuthProvider. Check your component hierarchy.");
     throw new Error("useAuth must be used within an AuthProvider");
   }
