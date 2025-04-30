@@ -51,6 +51,68 @@
   @apply flex items-center gap-2 min-w-[120px] justify-center;
 }
 
+/* Style for hiding scrollbars but keeping scroll functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* Internet Explorer and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari and Opera */
+}
+
+/* Improve touch scrolling behavior */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Page transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: scale(0.98);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.page-transition-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* Improved animations for micro-interactions */
+.micro-animation-pop {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.micro-animation-pop:active {
+  transform: scale(0.95);
+}
+
+/* Smooth tap highlight effect */
+@keyframes tap-highlight {
+  0% { background-color: transparent; }
+  50% { background-color: rgba(255, 255, 255, 0.1); }
+  100% { background-color: transparent; }
+}
+
+.tap-highlight {
+  animation: tap-highlight 0.5s ease-out;
+}
+
+/* Optimized mobile scroll experience */
+html, body {
+  overscroll-behavior-y: contain; /* Prevents pull-to-refresh and overscroll glow */
+}
+
 /* Styles spécifiques pour la vue mobile */
 @media (max-width: 640px) {
   .golden-grid,
@@ -64,6 +126,12 @@
 
   .category-card {
     @apply mb-2;
+  }
+
+  /* Optimize touch targets for mobile */
+  button, a, [role="button"] {
+    @apply min-h-10 min-w-10;
+    touch-action: manipulation; /* Optimization for touch interfaces */
   }
 }
 
@@ -92,4 +160,14 @@
 .xtease-container:first-child {
   @apply ml-0;
   margin-left: 0 !important;
+}
+
+/* Smooth appearance animations */
+.smooth-appear {
+  animation: smoothAppear 0.3s ease forwards;
+}
+
+@keyframes smoothAppear {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

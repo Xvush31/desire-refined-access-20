@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Bell, MessageCircle, MoreVertical, ArrowLeft, Star } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface DynamicHeaderProps {
   username: string;
@@ -26,16 +27,29 @@ const DynamicHeader: React.FC<DynamicHeaderProps> = ({
   const { theme } = useTheme();
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
+  const [prevScrollPos, setPrevScrollPos] = useState(0);
+  const [visible, setVisible] = useState(true);
   
   useEffect(() => {
     const handleScroll = () => {
-      const offset = window.scrollY;
-      setScrolled(offset > 10);
+      const currentScrollPos = window.pageYOffset;
+      
+      // Determine if scrolled past threshold for background change
+      setScrolled(currentScrollPos > 10);
+      
+      // Hide header when scrolling down, show when scrolling up
+      // Don't hide when at the top of the page
+      const isScrollingDown = prevScrollPos < currentScrollPos;
+      const isAtTop = currentScrollPos < 10;
+      
+      setVisible(!isScrollingDown || isAtTop);
+      setPrevScrollPos(currentScrollPos);
     };
 
-    window.addEventListener("scroll", handleScroll);
+    // Use passive event listener for better performance
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [prevScrollPos]);
 
   const handleBack = () => {
     if (onBack) {
@@ -46,53 +60,71 @@ const DynamicHeader: React.FC<DynamicHeaderProps> = ({
   };
 
   return (
-    <header className={`sticky top-0 z-40 transition-all duration-300 ${
-      scrolled 
-        ? theme === 'light' 
-          ? 'bg-white/90 backdrop-blur-md border-b border-gray-200' 
-          : 'bg-zinc-900/90 backdrop-blur-md border-b border-gray-800' 
-        : 'bg-transparent'
-    }`}>
+    <motion.header 
+      className={`sticky top-0 z-40 transition-all duration-300 ${
+        scrolled 
+          ? theme === 'light' 
+            ? 'bg-white/90 backdrop-blur-md border-b border-gray-200' 
+            : 'bg-zinc-900/90 backdrop-blur-md border-b border-gray-800' 
+          : 'bg-transparent'
+      }`}
+      initial={{ y: 0 }}
+      animate={{ y: visible ? 0 : -70 }}
+      transition={{ duration: 0.2 }}
+    >
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             {showBackButton && (
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className="mr-2" 
-                onClick={handleBack}
-                aria-label="Retour"
-              >
-                <ArrowLeft className="text-primary" />
-              </Button>
+              <motion.div whileTap={{ scale: 0.9 }}>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  className="mr-2" 
+                  onClick={handleBack}
+                  aria-label="Retour"
+                >
+                  <ArrowLeft className="text-primary" />
+                </Button>
+              </motion.div>
             )}
             
-            <h1 className="text-lg font-medium">@{username}</h1>
+            <motion.h1 
+              className="text-lg font-medium"
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              @{username}
+            </motion.h1>
           </div>
 
           <div className="flex gap-2">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="rounded-full"
-              aria-label="Notifications"
-            >
-              <Bell className="text-primary" size={20} />
-            </Button>
+            <motion.div whileTap={{ scale: 0.9 }}>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="rounded-full"
+                aria-label="Notifications"
+              >
+                <Bell className="text-primary" size={20} />
+              </Button>
+            </motion.div>
             
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="rounded-full"
-              aria-label="Plus d'options"
-            >
-              <MoreVertical className="text-primary" size={20} />
-            </Button>
+            <motion.div whileTap={{ scale: 0.9 }}>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="rounded-full"
+                aria-label="Plus d'options"
+              >
+                <MoreVertical className="text-primary" size={20} />
+              </Button>
+            </motion.div>
           </div>
         </div>
       </div>
-    </header>
+    </motion.header>
   );
 };
 

@@ -103,7 +103,7 @@ const MainContent: React.FC<MainContentProps> = ({
       {/* Navigation Tabs */}
       <TabNavigationMenu 
         activeTab={activeTab} 
-        onTabChange={setActiveTab} 
+        setActiveTab={setActiveTab} 
         isOwner={isOwner}
       />
       

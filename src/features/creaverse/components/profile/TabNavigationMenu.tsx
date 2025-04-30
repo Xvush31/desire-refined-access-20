@@ -7,12 +7,14 @@ interface TabNavigationMenuProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   isCreatorMode?: boolean;
+  isOwner?: boolean;
 }
 
 const TabNavigationMenu: React.FC<TabNavigationMenuProps> = ({
   activeTab,
   setActiveTab,
-  isCreatorMode = false
+  isCreatorMode = false,
+  isOwner = false
 }) => {
   const { theme } = useTheme();
 
@@ -47,7 +49,7 @@ const TabNavigationMenu: React.FC<TabNavigationMenuProps> = ({
     ) }
   ];
 
-  if (isCreatorMode) {
+  if (isCreatorMode || isOwner) {
     tabs.push(
       { id: "stats", label: "Statistiques", icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -60,7 +62,7 @@ const TabNavigationMenu: React.FC<TabNavigationMenuProps> = ({
 
   return (
     <nav className={`border-b ${theme === 'light' ? 'border-gray-200 bg-white' : 'border-zinc-800 bg-zinc-900'} px-2`}>
-      <div className="flex overflow-x-auto hide-scrollbar">
+      <div className="flex overflow-x-auto hide-scrollbar scroll-smooth">
         {tabs.map((tab) => (
           <button
             key={tab.id}

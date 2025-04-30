@@ -1,27 +1,50 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const MOBILE_BREAKPOINT = 768;
 
-export function useIsMobile(forceMobile = true) {
-  // Si forceMobile est true, retourner toujours true
+export function useIsMobile(forceMobile = false) {
+  // For forcing mobile mode during development or for testing
   if (forceMobile) {
     return true;
   }
   
-  // Sinon, utiliser la logique de détection de taille d'écran
-  const [isMobile, setIsMobile] = useState<boolean>(
-    typeof window !== "undefined" ? window.innerWidth < MOBILE_BREAKPOINT : false
-  );
+  // Initialize with current window size, but use null for server-side rendering
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth < MOBILE_BREAKPOINT;
+  });
+
+  // Debounced resize handler for better performance
+  const debouncedResize = useCallback(() => {
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      
+      timeoutId = setTimeout(() => {
+        setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+      }, 100); // Small delay to avoid excessive updates
+    };
+  }, []);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
-    };
+    // Check initial size
+    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+    // Create the debounced handler
+    const handleResize = debouncedResize();
+    
+    // Add passive listener for better performance
+    window.addEventListener("resize", handleResize, { passive: true });
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [debouncedResize]);
 
   return isMobile;
 }
