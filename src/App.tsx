@@ -1,6 +1,6 @@
 
 import React, { Suspense, useEffect } from "react";
-import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Trending from "./pages/Trending";
@@ -49,10 +49,27 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   return <div className="min-h-screen">{children}</div>;
 };
 
+// Redirect component for legacy routes
+const PerformerRedirect = () => {
+  const { performerId } = useParams<{ performerId: string }>();
+  return <Navigate to={`/creaverse/performer/${performerId}`} replace />;
+};
+
+const CreatorDashboardRedirect = () => {
+  const { performerId } = useParams<{ performerId: string }>();
+  return <Navigate to={`/creaverse/creator/${performerId}/dashboard`} replace />;
+};
+
+const CreatorSettingsRedirect = () => {
+  const { performerId } = useParams<{ performerId: string }>();
+  return <Navigate to={`/creaverse/creator/${performerId}/settings`} replace />;
+};
+
 function App() {
   const { currentUser, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { useParams } = require("react-router-dom");
   
   // Debug logging
   console.log("App rendering, auth state:", { currentUser, loading, path: location.pathname });
@@ -95,39 +112,11 @@ function App() {
         </Route>
 
         {/* Legacy performer route - redirect to CreaVerse route */}
-        <Route path="/performer/:performerId" element={
-          <Layout>
-            {({ performerId }) => {
-              useEffect(() => {
-                navigate(`/creaverse/performer/${performerId}`);
-              }, [performerId]);
-              return <div>Redirecting...</div>;
-            }}
-          </Layout>
-        } />
+        <Route path="/performer/:performerId" element={<PerformerRedirect />} />
 
         {/* Legacy creator routes - redirect to CreaVerse routes */}
-        <Route path="/creator/:performerId/dashboard" element={
-          <Layout>
-            {({ performerId }) => {
-              useEffect(() => {
-                navigate(`/creaverse/creator/${performerId}/dashboard`);
-              }, [performerId]);
-              return <div>Redirecting...</div>;
-            }}
-          </Layout>
-        } />
-        
-        <Route path="/creator/:performerId/settings" element={
-          <Layout>
-            {({ performerId }) => {
-              useEffect(() => {
-                navigate(`/creaverse/creator/${performerId}/settings`);
-              }, [performerId]);
-              return <div>Redirecting...</div>;
-            }}
-          </Layout>
-        } />
+        <Route path="/creator/:performerId/dashboard" element={<CreatorDashboardRedirect />} />
+        <Route path="/creator/:performerId/settings" element={<CreatorSettingsRedirect />} />
 
         {/* 404 Route */}
         <Route path="*" element={<NotFound />} />
@@ -137,3 +126,4 @@ function App() {
 }
 
 export default App;
+
