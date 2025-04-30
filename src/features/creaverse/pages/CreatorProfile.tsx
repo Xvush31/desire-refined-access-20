@@ -12,6 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRevolutionaryNavigation } from "@/hooks/use-revolutionary-navigation";
 import { useProfileContent } from "../hooks/useProfileContent";
+import NavigationFooter from "../components/NavigationFooter";
 
 const CreatorProfile: React.FC = () => {
   const { performerId } = useParams<{ performerId: string }>();
@@ -123,6 +124,14 @@ const CreatorProfile: React.FC = () => {
         handleContentClick={handleContentClick}
         handleCollectionClick={handleCollectionClick}
       />
+      
+      {isMobile && performer && (
+        <NavigationFooter 
+          performerId={performer.id} 
+          performerImage={performer.image}
+          performerName={performer.displayName}
+        />
+      )}
     </div>
   );
 };

@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { GestureType } from "@/components/navigation/CustomGestures";
 import { useIsMobile } from "./use-mobile";
+import { toast } from "sonner";
 
 interface NavigationSettings {
   enableRadialMenu: boolean;
@@ -23,6 +24,7 @@ export function useRevolutionaryNavigation() {
   const [isRadialOpen, setIsRadialOpen] = useState(false);
   const [isImmersiveMode, setIsImmersiveMode] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [currentLayout, setCurrentLayout] = useState<"grid" | "masonry" | "featured" | "flow">("grid");
   const [settings, setSettings] = useState<NavigationSettings>({
     enableRadialMenu: true,
     enableSemanticZoom: true,
@@ -35,27 +37,42 @@ export function useRevolutionaryNavigation() {
   const [gestureActions, setGestureActions] = useState<GestureAction[]>([
     {
       type: "swipe-up",
-      handler: () => setIsImmersiveMode(true),
+      handler: () => {
+        setIsImmersiveMode(true);
+        toast.info("Mode immersif activé");
+      },
       description: "Mode immersif activé"
     },
     {
       type: "swipe-down",
-      handler: () => setIsImmersiveMode(false),
+      handler: () => {
+        setIsImmersiveMode(false);
+        toast.info("Mode immersif désactivé");
+      },
       description: "Mode immersif désactivé"
     },
     {
       type: "double-tap",
-      handler: () => setZoomLevel(1),
+      handler: () => {
+        setZoomLevel(1);
+        toast.info("Zoom réinitialisé");
+      },
       description: "Zoom réinitialisé"
     },
     {
       type: "long-press",
-      handler: () => setIsRadialOpen(true),
+      handler: () => {
+        setIsRadialOpen(true);
+        toast.info("Menu radial ouvert");
+      },
       description: "Menu radial ouvert"
     },
     {
       type: "pinch",
-      handler: () => setZoomLevel(zoomLevel > 0.8 ? 0.6 : 1),
+      handler: () => {
+        setZoomLevel(zoomLevel > 0.8 ? 0.6 : 1);
+        toast.info(zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant");
+      },
       description: zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant"
     }
   ]);
@@ -67,6 +84,9 @@ export function useRevolutionaryNavigation() {
       if (savedSettings) {
         setSettings(JSON.parse(savedSettings));
       }
+      
+      // For demo purposes, log that the navigation is initialized
+      console.log("Revolutionary navigation initialized with settings:", settings);
     } catch (err) {
       console.error("Failed to load navigation settings:", err);
     }
@@ -102,22 +122,34 @@ export function useRevolutionaryNavigation() {
       // Alt+R to toggle radial menu
       if (e.altKey && e.key === 'r') {
         setIsRadialOpen(prev => !prev);
+        toast.info(isRadialOpen ? "Menu radial fermé" : "Menu radial ouvert");
       }
       
       // Alt+I to toggle immersive mode
       if (e.altKey && e.key === 'i') {
         setIsImmersiveMode(prev => !prev);
+        toast.info(isImmersiveMode ? "Mode normal" : "Mode immersif activé");
       }
       
       // Alt+Z to toggle zoom level
       if (e.altKey && e.key === 'z') {
         setZoomLevel(prev => prev > 0.8 ? 0.6 : 1);
+        toast.info(zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant");
+      }
+      
+      // Alt+G to cycle through layouts
+      if (e.altKey && e.key === 'g') {
+        const layouts: Array<"grid" | "masonry" | "featured" | "flow"> = ["grid", "masonry", "featured", "flow"];
+        const currentIndex = layouts.indexOf(currentLayout);
+        const nextLayout = layouts[(currentIndex + 1) % layouts.length];
+        setCurrentLayout(nextLayout);
+        toast.info(`Affichage en ${nextLayout}`);
       }
     };
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [isRadialOpen, isImmersiveMode, zoomLevel, currentLayout]);
   
   // Update a specific setting
   const updateSetting = useCallback((key: keyof NavigationSettings, value: boolean) => {
@@ -145,6 +177,8 @@ export function useRevolutionaryNavigation() {
     setIsImmersiveMode,
     zoomLevel,
     setZoomLevel,
+    currentLayout,
+    setCurrentLayout,
     settings,
     updateSetting,
     gestureActions,

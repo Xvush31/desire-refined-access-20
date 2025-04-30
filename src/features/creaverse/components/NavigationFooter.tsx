@@ -56,7 +56,7 @@ const NavigationFooter: React.FC<NavigationFooterProps> = ({
 
   return (
     <motion.nav 
-      className={`fixed bottom-0 w-full flex justify-around py-3 ${secondaryBgClass} border-t ${borderClass} z-40`}
+      className={`fixed bottom-0 left-0 right-0 w-full flex justify-around py-3 ${secondaryBgClass} border-t ${borderClass} z-40`}
       initial={{ y: 100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 380, damping: 30 }}

@@ -68,16 +68,16 @@ const ContentCollections: React.FC<ContentCollectionsProps> = ({
                     {collection.itemCount} éléments
                   </div>
                   <div className="flex items-center">
-                    {collection.itemTypes?.videos !== undefined && (
+                    {collection.itemTypes && collection.itemTypes.videos !== undefined && (
                       <span className="mr-2 text-sm">{collection.itemTypes.videos} vidéos</span>
                     )}
-                    {collection.itemTypes?.images !== undefined && (
+                    {collection.itemTypes && collection.itemTypes.images !== undefined && (
                       <span className="mr-2 text-sm">{collection.itemTypes.images} photos</span>
                     )}
-                    {collection.itemTypes?.audio !== undefined && (
+                    {collection.itemTypes && collection.itemTypes.audio !== undefined && (
                       <span className="mr-2 text-sm">{collection.itemTypes.audio} audios</span>
                     )}
-                    {collection.itemTypes?.text !== undefined && (
+                    {collection.itemTypes && collection.itemTypes.text !== undefined && (
                       <span className="mr-2 text-sm">{collection.itemTypes.text} textes</span>
                     )}
                   </div>

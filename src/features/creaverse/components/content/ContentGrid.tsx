@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { ContentItem } from "./ContentCard";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ContentLayout from "./ContentLayout";
 import ContentFormatFilter from "./ContentFormatFilter";
 import { Grid2X2, LayoutGrid, List, Rows } from "lucide-react";
@@ -62,6 +61,13 @@ const ContentGrid: React.FC<ContentGridProps> = ({
 
   return (
     <div className="space-y-4">
+      {/* Format filter tabs */}
+      <ContentFormatFilter 
+        activeFormat={activeFormat} 
+        onFormatChange={handleFormatChange} 
+        metrics={metrics.formats}
+      />
+
       {/* Layout selector and statistics */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         {/* Statistics */}
@@ -78,7 +84,7 @@ const ContentGrid: React.FC<ContentGridProps> = ({
         )}
         
         {/* Layout selector */}
-        <div className="flex items-center space-x-1 ml-auto">
+        <div className="flex items-center space-x-1 ml-auto sticky bottom-20 bg-background/80 backdrop-blur-sm p-2 rounded-full shadow-md border border-muted z-20">
           <Button
             variant={layout === "grid" ? "default" : "outline"}
             size="icon"
@@ -113,13 +119,6 @@ const ContentGrid: React.FC<ContentGridProps> = ({
           </Button>
         </div>
       </div>
-
-      {/* Format filter tabs */}
-      <ContentFormatFilter 
-        activeFormat={activeFormat} 
-        onFormatChange={handleFormatChange} 
-        metrics={metrics.formats}
-      />
 
       {/* Content layout */}
       <ContentLayout

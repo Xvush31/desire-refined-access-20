@@ -50,9 +50,9 @@ const MainContent: React.FC<MainContentProps> = ({
   relationshipLevel = RelationshipLevel.None
 }) => {
   return (
-    <div className="p-4 bg-card rounded-lg max-w-screen-xl mx-auto shadow-sm mb-4">
+    <div className="bg-card rounded-lg max-w-screen-xl mx-auto shadow-sm mb-4">
       {/* Profile Info & Actions */}
-      <div className="mb-6">
+      <div className="px-4 pt-4 pb-2">
         <ProfileInfo
           image={performer.image}
           displayName={performer.displayName}
@@ -63,30 +63,31 @@ const MainContent: React.FC<MainContentProps> = ({
           relationshipLevel={relationshipLevel}
         />
         
-        <div className="flex items-center justify-between mt-4">
-          <ProfileActions
-            isFollowing={isFollowing}
-            onToggleFollow={onToggleFollow}
-            onSubscribe={onSubscribe}
-            onSendMessage={onSendMessage}
-            relationshipLevel={relationshipLevel}
-          />
-          
-          {relationshipLevel && relationshipLevel > RelationshipLevel.None && onViewRelationship && (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={onViewRelationship}
-              className="ml-2"
-            >
-              <Users size={16} className="mr-1" />
-              Relation
-            </Button>
-          )}
+        <div className="flex flex-wrap items-center justify-between gap-2 mt-4">
+          <div className="flex flex-wrap gap-2">
+            <ProfileActions
+              isFollowing={isFollowing}
+              onToggleFollow={onToggleFollow}
+              onSubscribe={onSubscribe}
+              onSendMessage={onSendMessage}
+              relationshipLevel={relationshipLevel}
+            />
+            
+            {relationshipLevel && relationshipLevel > RelationshipLevel.None && onViewRelationship && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={onViewRelationship}
+              >
+                <Users size={16} className="mr-1" />
+                Relation
+              </Button>
+            )}
+          </div>
           
           {/* Revenue Toggle for Owner */}
           {isOwner && (
-            <div className="ml-auto">
+            <div>
               <Button 
                 variant="outline" 
                 size="sm" 

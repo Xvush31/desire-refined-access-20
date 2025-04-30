@@ -25,6 +25,8 @@ const generateSampleContentItems = (count: number, trending: boolean = false): C
       thumbnail: getRandomThumbnail("1", i, format),
       type: contentType,
       format: format as "video" | "image" | "audio" | "text",
+      trending: trending,
+      trendingRank: trending ? Math.floor(Math.random() * 20) + 1 : undefined,
       ...formatProps
     });
   }
