@@ -11,7 +11,7 @@ interface Collection {
   description: string;
   thumbnail: string;
   itemCount: number;
-  itemTypes: {
+  itemTypes?: {
     videos?: number;
     images?: number;
     audio?: number;
@@ -30,7 +30,7 @@ const ContentCollections: React.FC<ContentCollectionsProps> = ({
 }) => {
   const { theme } = useTheme();
   
-  if (!collections.length) return null;
+  if (!collections || !collections.length) return null;
   
   return (
     <div className="py-6">
@@ -49,7 +49,7 @@ const ContentCollections: React.FC<ContentCollectionsProps> = ({
               {/* Collection thumbnail */}
               <div className="relative aspect-video">
                 <img 
-                  src={collection.thumbnail}
+                  src={collection.thumbnail || '/placeholder.svg'}
                   alt={collection.name}
                   className="w-full h-full object-cover"
                 />
@@ -68,10 +68,10 @@ const ContentCollections: React.FC<ContentCollectionsProps> = ({
                     {collection.itemCount} éléments
                   </div>
                   <div className="flex items-center">
-                    {collection.itemTypes.videos && (
+                    {collection.itemTypes?.videos && (
                       <span className="mr-2 text-sm">{collection.itemTypes.videos} vidéos</span>
                     )}
-                    {collection.itemTypes.images && (
+                    {collection.itemTypes?.images && (
                       <span className="mr-2 text-sm">{collection.itemTypes.images} photos</span>
                     )}
                   </div>

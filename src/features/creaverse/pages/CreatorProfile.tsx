@@ -93,11 +93,32 @@ const CreatorProfile: React.FC = () => {
         setSampleContentItems(contentItems);
         setTrendingContent(trending);
         
-        // Set sample collections
+        // Set sample collections with properly structured itemTypes
         setCollections([
-          { id: 1, name: "Meilleurs moments", itemCount: 12 },
-          { id: 2, name: "Backstage", itemCount: 8 },
-          { id: 3, name: "Exclusivités", itemCount: 5 }
+          { 
+            id: "1", 
+            name: "Meilleurs moments", 
+            description: "Les meilleurs moments de ma carrière",
+            thumbnail: "/placeholder.svg",
+            itemCount: 12,
+            itemTypes: { videos: 8, images: 4 }
+          },
+          { 
+            id: "2", 
+            name: "Backstage", 
+            description: "Découvrez les coulisses",
+            thumbnail: "/placeholder.svg",
+            itemCount: 8,
+            itemTypes: { videos: 3, images: 5 }
+          },
+          { 
+            id: "3", 
+            name: "Exclusivités", 
+            description: "Contenu exclusif pour mes fans",
+            thumbnail: "/placeholder.svg",
+            itemCount: 5,
+            itemTypes: { videos: 2, images: 3 }
+          }
         ]);
         
         // Set relationship level based on some logic
@@ -159,7 +180,8 @@ const CreatorProfile: React.FC = () => {
   }
   
   if (error || !performer) {
-    return <NotFoundState error={error || "Performer not found"} />;
+    // Make sure we're passing a string to NotFoundState
+    return <NotFoundState errorMessage={error || "Performer not found"} />;
   }
   
   return (
