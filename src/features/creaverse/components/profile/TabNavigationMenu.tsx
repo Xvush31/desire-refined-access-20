@@ -2,6 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "@/hooks/use-theme";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface TabNavigationMenuProps {
   activeTab: string;
@@ -17,6 +18,7 @@ const TabNavigationMenu: React.FC<TabNavigationMenuProps> = ({
   isOwner = false
 }) => {
   const { theme } = useTheme();
+  const isMobile = useIsMobile();
 
   const tabs = [
     { id: "gallery", label: "Galerie", icon: (
@@ -60,33 +62,72 @@ const TabNavigationMenu: React.FC<TabNavigationMenuProps> = ({
     );
   }
 
+  // Animation variants for tabs
+  const tabVariants = {
+    active: { 
+      color: "var(--primary)",
+      transition: { duration: 0.2 } 
+    },
+    inactive: { 
+      color: "var(--muted-foreground)",
+      transition: { duration: 0.2 } 
+    }
+  };
+
+  // Animation variants for indicator
+  const indicatorVariants = {
+    initial: {
+      opacity: 0,
+      y: 10
+    },
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 500,
+        damping: 30
+      }
+    }
+  };
+
   return (
-    <nav className={`border-b ${theme === 'light' ? 'border-gray-200 bg-white' : 'border-zinc-800 bg-zinc-900'} px-2`}>
+    <nav className={`border-b ${theme === 'light' ? 'border-gray-200 bg-white' : 'border-zinc-800 bg-zinc-900'} px-2 sticky top-0 z-10`}>
       <div className="flex overflow-x-auto hide-scrollbar scroll-smooth">
         {tabs.map((tab) => (
-          <button
+          <motion.button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`relative flex items-center gap-1 py-3 px-4 text-sm font-medium transition-colors ${
-              activeTab === tab.id
-                ? "text-primary"
-                : "text-muted-foreground hover:text-primary"
-            }`}
+            className="relative flex items-center gap-1 py-3 px-4 text-sm font-medium transition-colors"
+            variants={tabVariants}
+            animate={activeTab === tab.id ? "active" : "inactive"}
+            whileTap={{ scale: 0.95 }}
           >
             <span className="flex items-center gap-2">
-              {tab.icon}
+              <motion.div 
+                animate={{ 
+                  rotate: activeTab === tab.id ? [0, 10, -10, 0] : 0 
+                }}
+                transition={{ 
+                  duration: 0.5,
+                  type: "spring",
+                  stiffness: 300
+                }}
+              >
+                {tab.icon}
+              </motion.div>
               {tab.label}
             </span>
             {activeTab === tab.id && (
               <motion.div
                 className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-pink-500 to-rose-500"
                 layoutId="activeTab"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.2 }}
+                variants={indicatorVariants}
+                initial="initial"
+                animate="animate"
               />
             )}
-          </button>
+          </motion.button>
         ))}
       </div>
     </nav>
