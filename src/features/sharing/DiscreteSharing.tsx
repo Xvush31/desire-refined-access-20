@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -61,14 +60,12 @@ const DiscreteSharing = () => {
     // Copier dans le presse-papier
     navigator.clipboard.writeText(fullLink).then(
       () => {
-        toast({
-          title: "Lien privé généré!",
+        toast.success("Lien privé généré!", {
           description: "Le lien a été copié dans votre presse-papier. Il expire dans 7 jours.",
         });
       },
       (err) => {
-        toast({
-          title: "Lien créé mais non copié",
+        toast.info("Lien créé mais non copié", {
           description: "Voici votre lien: " + fullLink,
         });
       }
@@ -142,8 +139,7 @@ const DiscreteSharing = () => {
                         className="ml-2 h-7 w-7 p-0" 
                         onClick={() => {
                           navigator.clipboard.writeText(`${window.location.origin}/invite/${link.code}`);
-                          toast({
-                            title: "Copié!",
+                          toast.success("Copié!", {
                             description: "Le lien a été copié dans votre presse-papier.",
                           });
                         }}

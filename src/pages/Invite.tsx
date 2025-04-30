@@ -1,15 +1,13 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Gift } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { ghostMode } from "@/services/ghostMode";
 
 const Invite = () => {
   const { code } = useParams();
-  const { toast } = useToast();
   const [isValidCode, setIsValidCode] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -48,8 +46,7 @@ const Invite = () => {
             localStorage.setItem("premium-expiry", premiumExpiry.toISOString());
           }
           
-          toast({
-            title: "Accès Premium activé!",
+          toast.success("Accès Premium activé!", {
             description: "Vous avez maintenant un accès premium pour 7 jours. Profitez-en!",
           });
           
@@ -70,31 +67,23 @@ const Invite = () => {
           setIsValidCode(false);
           
           if (now >= expiresAt) {
-            toast({
-              title: "Invitation expirée",
+            toast.error("Invitation expirée", {
               description: "Ce lien d'invitation n'est plus valide.",
-              variant: "destructive",
             });
           } else if (link.usages >= link.maxUsages) {
-            toast({
-              title: "Invitation déjà utilisée",
+            toast.error("Invitation déjà utilisée", {
               description: "Ce lien d'invitation a déjà été utilisé.",
-              variant: "destructive",
             });
           } else {
-            toast({
-              title: "Invitation non valide",
+            toast.error("Invitation non valide", {
               description: "Ce lien d'invitation n'est pas actif.",
-              variant: "destructive",
             });
           }
         }
       } else {
         setIsValidCode(false);
-        toast({
-          title: "Code non reconnu",
+        toast.error("Code non reconnu", {
           description: "Le code d'invitation n'est pas valide.",
-          variant: "destructive",
         });
       }
       
@@ -107,7 +96,7 @@ const Invite = () => {
       setIsValidCode(false);
       setIsLoading(false);
     }
-  }, [code, toast]);
+  }, [code]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">

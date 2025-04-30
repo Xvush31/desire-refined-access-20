@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -47,16 +46,13 @@ export const AffiliateProgram = () => {
     // Copy to clipboard
     navigator.clipboard.writeText(affiliateLink).then(
       () => {
-        toast({
-          title: "Lien d'affiliation copié!",
+        toast.success("Lien d'affiliation copié!", {
           description: "Partagez-le avec vos amis pour gagner des commissions.",
         });
       },
       (err) => {
-        toast({
-          title: "Erreur lors de la copie",
+        toast.error("Erreur lors de la copie", {
           description: "Veuillez copier manuellement: " + affiliateLink,
-          variant: "destructive",
         });
       }
     );

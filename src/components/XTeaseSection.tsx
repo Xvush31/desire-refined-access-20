@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Heart, Share2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
@@ -47,10 +46,7 @@ const ShareMenu: React.FC<ShareMenuProps> = ({ open, onClose, videoUrl, anchorRe
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(videoUrl);
-    toast({
-      title: "Lien copié dans le presse-papiers !",
-      duration: 2000
-    });
+    toast.success("Lien copié dans le presse-papiers !");
     onClose();
   };
 

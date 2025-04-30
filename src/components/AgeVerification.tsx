@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Shield } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { ghostMode } from "@/services/ghostMode";
 
 interface AgeVerificationProps {
@@ -11,7 +10,6 @@ interface AgeVerificationProps {
 
 const AgeVerification: React.FC<AgeVerificationProps> = ({ onVerification }) => {
   const [verified, setVerified] = useState(false);
-  const { toast } = useToast();
 
   useEffect(() => {
     const isVerified = ghostMode.isEnabled() 
@@ -35,15 +33,12 @@ const AgeVerification: React.FC<AgeVerificationProps> = ({ onVerification }) => 
         localStorage.setItem("age-verified", "true");
       }
       
-      toast({
-        title: "Accès confirmé",
+      toast.success("Accès confirmé", {
         description: "Bienvenue sur Xvush",
       });
     } else {
-      toast({
-        title: "Accès refusé",
+      toast.error("Accès refusé", {
         description: "Vous devez avoir 18 ans ou plus",
-        variant: "destructive",
       });
       
       window.location.href = "https://www.google.com";

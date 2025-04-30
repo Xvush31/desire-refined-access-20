@@ -1,14 +1,12 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Eye, EyeOff } from "lucide-react";
 import { ghostMode } from "@/services/ghostMode";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 const GhostModeToggle = () => {
   const [enabled, setEnabled] = useState(false);
-  const { toast } = useToast();
 
   useEffect(() => {
     // Vérifie l'état actuel du mode fantôme
@@ -20,16 +18,14 @@ const GhostModeToggle = () => {
       // Activation du mode fantôme
       ghostMode.enable();
       setEnabled(true);
-      toast({
-        title: "Mode Fantôme activé",
+      toast.success("Mode Fantôme activé", {
         description: "Votre navigation ne laisse plus de traces sur cet appareil",
       });
     } else {
       // Désactivation du mode fantôme
       ghostMode.disable();
       setEnabled(false);
-      toast({
-        title: "Mode Fantôme désactivé",
+      toast.success("Mode Fantôme désactivé", {
         description: "Votre navigation laisse des traces normales",
       });
     }

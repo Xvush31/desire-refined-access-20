@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Lock, Play, Volume2, VolumeX } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
@@ -83,8 +84,7 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
         setIsWatermarkVisible(true);
         setTimeout(() => setIsWatermarkVisible(false), 3000);
         
-        toast({
-          title: "Protection de contenu",
+        toast.warning("Protection de contenu", {
           description: "La copie d'écran n'est pas autorisée pour ce contenu.",
         });
         e.preventDefault();
