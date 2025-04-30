@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { fetchPerformerData } from "../api/performers";
@@ -37,8 +36,6 @@ const generateSampleContentItems = (count: number, trending: boolean = false): C
       thumbnail: getRandomThumbnail("1", i, format),
       type: contentType,
       format: format as "video" | "image" | "audio" | "text",
-      // Removed isPremium and isNew as they don't exist in ContentItem
-      // Removed createdAt as it doesn't exist in ContentItem
       ...formatProps
     });
   }
