@@ -1,8 +1,6 @@
 
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-import CreatorProfile from "./pages/CreatorProfile";
-import CreatorDashboard from "./pages/CreatorDashboard";
+import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
 /**
@@ -12,17 +10,10 @@ import { useAuth } from "@/contexts/AuthContext";
 const CreaVerse: React.FC = () => {
   const { currentUser } = useAuth();
   
-  return (
-    <Routes>
-      <Route path="/:performerId" element={<CreatorProfile />} />
-      <Route 
-        path="/dashboard/:performerId" 
-        element={
-          currentUser ? <CreatorDashboard /> : <Navigate to="/login" replace />
-        }
-      />
-    </Routes>
-  );
+  // This component now serves as a layout wrapper with protection logic
+  // The actual routes are defined in App.tsx
+  
+  return currentUser ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 export default CreaVerse;
