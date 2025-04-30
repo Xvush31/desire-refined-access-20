@@ -2,12 +2,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { Heart, MessageCircle, DollarSign } from "lucide-react";
 import { toast } from "sonner";
 import { useTheme } from "@/hooks/use-theme";
 import TipDialog from '@/components/messaging/TipDialog';
 import SendMessageDialog from '@/components/SendMessageDialog';
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 export interface CreatorFeedPost {
   id: string;
@@ -54,7 +54,7 @@ const CreatorFeedItem: React.FC<CreatorFeedItemProps> = ({ post }) => {
   const borderClass = theme === 'light' ? 'border-gray-200' : 'border-gray-800';
 
   return (
-    <div className={`${bgClass} rounded-lg overflow-hidden shadow-sm mb-4 border ${borderClass}`}>
+    <div className={`${bgClass} rounded-lg overflow-hidden shadow-sm mb-4 border ${borderClass} max-w-sm mx-auto w-full`}>
       {/* Creator Header */}
       <div className="p-3 flex items-center justify-between">
         <Link to={`/performers/${post.creatorId}`} className="flex items-center gap-2">
@@ -69,21 +69,23 @@ const CreatorFeedItem: React.FC<CreatorFeedItemProps> = ({ post }) => {
         <span className="text-xs text-muted-foreground">{post.timestamp}</span>
       </div>
 
-      {/* Post Image */}
-      <div className="aspect-square relative">
-        <img 
-          src={post.image} 
-          alt={`Publication de ${post.creatorName}`} 
-          className="w-full h-full object-cover"
-          loading="lazy"
-        />
-        {post.isPremium && (
-          <div className="absolute top-2 right-2">
-            <span className="animated-gradient-bg text-white text-xs px-2 py-1 rounded-full">
-              Premium
-            </span>
-          </div>
-        )}
+      {/* Post Image with 9:16 aspect ratio */}
+      <div className="relative">
+        <AspectRatio ratio={9/16} className="w-full">
+          <img 
+            src={post.image} 
+            alt={`Publication de ${post.creatorName}`} 
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
+          {post.isPremium && (
+            <div className="absolute top-2 right-2">
+              <span className="animated-gradient-bg text-white text-xs px-2 py-1 rounded-full">
+                Premium
+              </span>
+            </div>
+          )}
+        </AspectRatio>
       </div>
 
       {/* Post Actions */}

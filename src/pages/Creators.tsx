@@ -5,6 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import CreatorFeedItem, { CreatorFeedPost } from "@/components/creator/CreatorFeedItem";
+import XTeasePromoRow from "@/components/creator/XTeasePromoRow";
 
 // Données mockées pour le feed des créateurs
 const generateMockFeed = (): CreatorFeedPost[] => {
@@ -61,7 +62,7 @@ const generateMockFeed = (): CreatorFeedPost[] => {
       creatorId: creator.id,
       creatorName: creator.name,
       creatorAvatar: creator.avatar,
-      image: `https://picsum.photos/seed/post${i}/600/600`,
+      image: `https://picsum.photos/seed/post${i}/600/1067`, // Format 9:16 approximatif
       caption: captions[i % captions.length],
       likes: Math.floor(Math.random() * 10000) + 100,
       timestamp: timestamp,
@@ -69,6 +70,31 @@ const generateMockFeed = (): CreatorFeedPost[] => {
     };
   });
 };
+
+// Données mockées pour les vidéos XTease
+const xteaseVideos = [
+  {
+    id: 1,
+    title: "Moment intime en soirée",
+    performer: "PartyGirl",
+    views: "421K vues",
+    thumbnail: "https://picsum.photos/seed/xtease1/600/1067", // Format 9:16 approximatif
+  },
+  {
+    id: 2,
+    title: "Séance photo qui devient personnelle",
+    performer: "PhotoArtist",
+    views: "732K vues",
+    thumbnail: "https://picsum.photos/seed/xtease2/600/1067", // Format 9:16 approximatif
+  },
+  {
+    id: 3,
+    title: "Rencontre dans un hôtel 5 étoiles",
+    performer: "LuxuryCouple",
+    views: "628K vues",
+    thumbnail: "https://picsum.photos/seed/xtease3/600/1067", // Format 9:16 approximatif
+  },
+];
 
 const initialFeed = generateMockFeed().slice(0, 5);
 
@@ -113,6 +139,36 @@ const Creators: React.FC = () => {
     }
   }, [loadMorePosts, loading, hasMore]);
 
+  // Fonction pour insérer les promotions XTease après chaque groupe de 5 posts
+  const renderFeedWithPromos = () => {
+    const result = [];
+    let postGroups = [];
+    
+    // Regrouper les posts par 5
+    for (let i = 0; i < posts.length; i += 5) {
+      postGroups.push(posts.slice(i, i + 5));
+    }
+    
+    // Ajouter chaque groupe de 5 posts suivi d'une promo XTease
+    postGroups.forEach((group, index) => {
+      // Ajouter les posts du groupe
+      group.forEach((post) => {
+        result.push(
+          <CreatorFeedItem key={post.id} post={post} />
+        );
+      });
+      
+      // Ajouter une promo XTease après chaque groupe
+      if (group.length > 0) {
+        result.push(
+          <XTeasePromoRow key={`xtease-promo-${index}`} videos={xteaseVideos} />
+        );
+      }
+    });
+    
+    return result;
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -126,9 +182,7 @@ const Creators: React.FC = () => {
             onScrollCapture={handleScroll}
           >
             <div className="pb-6">
-              {posts.map((post) => (
-                <CreatorFeedItem key={post.id} post={post} />
-              ))}
+              {renderFeedWithPromos()}
               
               {loading && (
                 <div className="flex justify-center py-4">

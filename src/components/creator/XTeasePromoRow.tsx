@@ -1,0 +1,49 @@
+
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Play } from 'lucide-react';
+
+interface XTeaseVideo {
+  id: number;
+  title: string;
+  thumbnail: string;
+  performer: string;
+  views: string;
+}
+
+interface XTeasePromoRowProps {
+  videos: XTeaseVideo[];
+}
+
+const XTeasePromoRow: React.FC<XTeasePromoRowProps> = ({ videos }) => {
+  return (
+    <div className="mb-6 w-full">
+      <h3 className="text-lg font-semibold mb-2 text-center animated-gradient">Découvrez XTease</h3>
+      <div className="grid grid-cols-3 gap-2">
+        {videos.map((video) => (
+          <Link 
+            key={video.id} 
+            to={`/xtease/${video.id}`}
+            className="relative overflow-hidden rounded-lg group"
+          >
+            <div className="relative aspect-[9/16]">
+              <img 
+                src={video.thumbnail} 
+                alt={video.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <Play size={36} className="text-white opacity-80" />
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                <p className="text-white text-xs truncate">{video.title}</p>
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default XTeasePromoRow;
