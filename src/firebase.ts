@@ -4,7 +4,7 @@ import { initializeApp } from "firebase/app";
 import { 
   getAuth, 
   GoogleAuthProvider, 
-  signInWithPopup, 
+  signInWithPopup,
   signInWithEmailAndPassword,
   signOut
 } from "firebase/auth";
@@ -29,19 +29,26 @@ export const googleProvider = new GoogleAuthProvider();
 // Helper functions for authentication
 export const signInWithGoogle = async () => {
   try {
-    // Utilise signInWithPopup au lieu de signInWithRedirect 
-    // car le problème était avec le domaine non autorisé pour la redirection
+    console.log("Tentative de connexion avec Google...");
+    googleProvider.setCustomParameters({
+      prompt: 'select_account'
+    });
+    
     const result = await signInWithPopup(auth, googleProvider);
+    console.log("Résultat de la connexion Google:", result);
+    
     // Get credentials
     const user = result.user;
     const token = await user.getIdToken();
+    console.log("Token obtenu avec succès");
+    
     return { 
       success: true,
       user,
       token
     };
   } catch (error) {
-    console.error("Error signing in with Google", error);
+    console.error("Erreur lors de la connexion avec Google", error);
     return { 
       success: false, 
       error: error instanceof Error ? error.message : "Une erreur s'est produite" 
@@ -62,6 +69,19 @@ export const loginWithEmailAndPassword = async (email: string, password: string)
     return { 
       success: false, 
       error: error instanceof Error ? error.message : "Email ou mot de passe incorrect" 
+    };
+  }
+};
+
+export const logoutUser = async () => {
+  try {
+    await signOut(auth);
+    return { success: true };
+  } catch (error) {
+    console.error("Error signing out", error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : "Erreur lors de la déconnexion" 
     };
   }
 };

@@ -61,10 +61,13 @@ const Login: React.FC = () => {
     setLoading(true);
     
     try {
+      console.log("Démarrage de la connexion Google depuis Login...");
       const result = await signInWithGoogle();
+      console.log("Résultat de signInWithGoogle:", result);
       
       if (result.success && result.user) {
         try {
+          console.log("Envoi des données à l'API pour vérification...");
           // Vérifier si l'utilisateur existe dans votre backend
           const response = await fetch(
             `https://backend-puce-rho-15.vercel.app/api/auth/verify-google-user`,
@@ -80,6 +83,7 @@ const Login: React.FC = () => {
           );
           
           const data = await response.json();
+          console.log("Réponse de l'API:", data);
           
           if (response.ok) {
             // Utilisateur vérifié dans le backend
@@ -101,9 +105,9 @@ const Login: React.FC = () => {
       }
       
     } catch (error) {
+      console.error("Google sign-in error:", error);
       setError("Erreur lors de la connexion avec Google");
       toast.error("Erreur lors de la connexion avec Google");
-      console.error("Google sign-in error:", error);
     } finally {
       setLoading(false);
     }
@@ -158,14 +162,16 @@ const Login: React.FC = () => {
             </Button>
           </form>
 
-          <div className="mt-4 space-y-2">
+          <div className="mt-4">
             <Button
-              className="w-full bg-[#4285F4] text-white hover:bg-[#3367d6] flex items-center justify-center gap-2"
+              type="button"
+              variant="outline"
+              className="w-full bg-white text-black hover:bg-gray-100 flex items-center justify-center gap-2 border border-gray-300"
               onClick={handleGoogleLogin}
               disabled={loading}
             >
               <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
-                <path fill="white" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"/>
+                <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"/>
               </svg>
               Se connecter avec Google
             </Button>
