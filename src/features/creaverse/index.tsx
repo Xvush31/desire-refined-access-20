@@ -56,7 +56,7 @@ const CreaVerse: React.FC = () => {
         <NavigationFooter 
           performerId={currentUser.uid} 
           performerImage="/placeholder.svg"
-          performerName={currentUser.displayName || currentUser.uid}
+          performerName={currentUser.uid}
         />
       )}
     </div>
