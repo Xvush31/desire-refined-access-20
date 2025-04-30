@@ -21,5 +21,6 @@ export interface PerformerData {
     watchMinutes: string;
     retentionRate: string;
     superfans: number;
+    rating: number; // Added the missing rating property
   };
 }

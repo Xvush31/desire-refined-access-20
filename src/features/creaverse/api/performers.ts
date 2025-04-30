@@ -24,7 +24,8 @@ const mockPerformers: Record<string, PerformerData> = {
       monthlyRevenueChange: 12,
       watchMinutes: "1.2M",
       retentionRate: "78%",
-      superfans: 1240
+      superfans: 1240,
+      rating: 4.8 // Added rating
     }
   },
   "2": {
@@ -43,7 +44,8 @@ const mockPerformers: Record<string, PerformerData> = {
       monthlyRevenueChange: -3,
       watchMinutes: "850K",
       retentionRate: "64%",
-      superfans: 680
+      superfans: 680,
+      rating: 4.5 // Added rating
     }
   },
   "3": {
@@ -67,7 +69,8 @@ const mockPerformers: Record<string, PerformerData> = {
       monthlyRevenueChange: 8,
       watchMinutes: "2.4M",
       retentionRate: "82%",
-      superfans: 2100
+      superfans: 2100,
+      rating: 4.9 // Added rating
     }
   }
 };
