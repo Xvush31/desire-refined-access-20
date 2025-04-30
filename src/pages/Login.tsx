@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import { Button } from "@/components/ui/button";
+import { signInWithGoogle } from "../firebase";
 
-// Update the AuthContextType interface to match the actual implementation
 interface AuthContextType {
   login: (token: string, role: string, uid: string) => void;
   currentUser: { role: string; uid: string } | null;
@@ -18,29 +18,6 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth() as AuthContextType;
-
-  // Load Apple Sign-In SDK
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src =
-      "https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js";
-    script.async = true;
-    document.body.appendChild(script);
-
-    script.onload = () => {
-      window.AppleID.auth.init({
-        clientId: process.env.APPLE_CLIENT_ID || "",
-        scope: "email",
-        redirectURI:
-          "https://backend-puce-rho-15.vercel.app/api/auth/apple/callback",
-        usePopup: true,
-      });
-    };
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,7 +35,7 @@ const Login: React.FC = () => {
       );
       const data = await response.json();
       if (response.ok) {
-        login(data.token, data.role, data.uid || ""); // Add uid parameter with default empty string
+        login(data.token, data.role, data.uid || "");
         setEmail("");
         setPassword("");
         navigate(data.role === "creator" ? "/creator-dashboard" : "/");
@@ -73,17 +50,40 @@ const Login: React.FC = () => {
     }
   };
 
-  const handleGoogleSuccess = async (
-    credentialResponse: CredentialResponse
-  ) => {
-    window.location.href =
-      "https://backend-puce-rho-15.vercel.app/api/auth/google?role=user";
+  const handleGoogleLogin = async () => {
+    setError("");
+    setLoading(true);
+    
+    try {
+      const result = await signInWithGoogle();
+      
+      if (result.success && result.user) {
+        const idToken = await result.user.getIdToken();
+        
+        // Vous pouvez envoyer ce token à votre backend pour vérification et récupérer le rôle
+        // Ici, on définit un rôle par défaut de "user"
+        const role = "user";
+        
+        login(idToken, role, result.user.uid);
+        navigate("/");
+      } else {
+        setError(result.error || "Erreur lors de la connexion avec Google");
+      }
+    } catch (error) {
+      setError("Erreur lors de la connexion avec Google");
+      console.error("Google sign-in error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAppleSignIn = async () => {
     try {
-      await window.AppleID.auth.signIn();
-      // The backend handles the redirect to /auth/callback
+      // Pour simplifier sans dépendre de window.AppleID qui peut causer des erreurs
+      alert("La connexion avec Apple n'est pas encore disponible");
+      
+      // Si vous souhaitez implémenter Apple Sign-In plus tard
+      // await window.AppleID.auth.signIn();
     } catch (error) {
       setError("Erreur lors de la connexion avec Apple");
       console.error("Apple Sign-In error:", error);
@@ -203,12 +203,28 @@ const Login: React.FC = () => {
             gap: "8px",
           }}
         >
-          <GoogleLogin
-            onSuccess={handleGoogleSuccess}
-            onError={() => setError("Erreur lors de la connexion avec Google")}
-            text="signin_with"
-            width="100%"
-          />
+          <Button
+            style={{
+              backgroundColor: "#4285F4",
+              color: "white",
+              padding: "8px",
+              borderRadius: "4px",
+              fontSize: "1rem",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px"
+            }}
+            onClick={handleGoogleLogin}
+            disabled={loading}
+          >
+            <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
+              <path fill="white" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"/>
+            </svg>
+            Se connecter avec Google
+          </Button>
+          
           <Button
             style={{
               backgroundColor: "black",

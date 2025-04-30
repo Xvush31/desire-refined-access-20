@@ -1,6 +1,7 @@
+
 // Import Firebase modules
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
 
 // Firebase configuration using environment variables
 const firebaseConfig = {
@@ -17,3 +18,39 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize and export Firebase Authentication
 export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
+
+// Helper functions for authentication
+export const signInWithGoogle = async () => {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    return {
+      user: result.user,
+      token: await result.user.getIdToken(),
+      success: true
+    };
+  } catch (error) {
+    console.error("Error signing in with Google", error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : "Une erreur s'est produite" 
+    };
+  }
+};
+
+export const loginWithEmailAndPassword = async (email: string, password: string) => {
+  try {
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    return {
+      user: result.user,
+      token: await result.user.getIdToken(),
+      success: true
+    };
+  } catch (error) {
+    console.error("Error signing in with email/password", error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : "Email ou mot de passe incorrect" 
+    };
+  }
+};
