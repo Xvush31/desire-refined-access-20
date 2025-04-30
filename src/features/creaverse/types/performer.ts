@@ -8,8 +8,8 @@ export interface PerformerData {
   followers: string;
   tier: "bronze" | "silver" | "gold" | "platinum" | "diamond";
   tierProgress: number;
-  tierRevenue: string; // Ajout du pourcentage de revenus par tier
-  nextTierRevenue: string; // Ajout du pourcentage de revenus du prochain tier
+  tierRevenue: string;
+  nextTierRevenue: string;
   isLive?: boolean;
   isActive?: boolean;
   lastActive?: string;
@@ -26,7 +26,16 @@ export interface PerformerData {
     watchMinutes: string;
     retentionRate: string;
     superfans: number;
-    subscriptions?: number; // Ajout du nombre d'abonnements
+    subscriptions?: number;
     rating: number;
+    engagementRate?: string;
+    completionRate?: string;
+    averageWatchTime?: string;
+    trendingScore?: number;
+  };
+  content?: {
+    total: number;
+    premium: number;
+    trending: number;
   };
 }

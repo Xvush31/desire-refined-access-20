@@ -31,7 +31,16 @@ const mockPerformers: Record<string, PerformerData> = {
       retentionRate: "87%",
       superfans: 3200,
       subscriptions: 68,
-      rating: 4.8
+      rating: 4.8,
+      engagementRate: "24.6%",
+      completionRate: "78%",
+      averageWatchTime: "14m 32s",
+      trendingScore: 89
+    },
+    content: {
+      total: 124,
+      premium: 37,
+      trending: 8
     }
   },
   "2": {
@@ -61,7 +70,16 @@ const mockPerformers: Record<string, PerformerData> = {
       retentionRate: "64%",
       superfans: 680,
       subscriptions: 42,
-      rating: 4.5
+      rating: 4.5,
+      engagementRate: "18.7%",
+      completionRate: "65%",
+      averageWatchTime: "8m 45s",
+      trendingScore: 72
+    },
+    content: {
+      total: 87,
+      premium: 24,
+      trending: 3
     }
   },
   "3": {
@@ -92,7 +110,16 @@ const mockPerformers: Record<string, PerformerData> = {
       retentionRate: "82%",
       superfans: 2100,
       subscriptions: 145,
-      rating: 4.9
+      rating: 4.9,
+      engagementRate: "32.1%",
+      completionRate: "89%",
+      averageWatchTime: "18m 20s",
+      trendingScore: 94
+    },
+    content: {
+      total: 218,
+      premium: 86,
+      trending: 15
     }
   }
 };

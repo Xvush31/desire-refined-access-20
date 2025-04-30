@@ -1,6 +1,7 @@
 
 import React from "react";
 import ContentCard, { ContentItem } from "./ContentCard";
+import { useTheme } from "@/hooks/use-theme";
 
 interface ContentGridProps {
   items: ContentItem[];
@@ -15,9 +16,12 @@ const ContentGrid: React.FC<ContentGridProps> = ({
   showMetrics = false,
   onItemClick
 }) => {
+  const { theme } = useTheme();
+  const bgClass = theme === 'light' ? 'bg-gray-50/50' : 'bg-zinc-900/30';
+
   if (!items || items.length === 0) {
     return (
-      <div className="flex justify-center items-center h-48 text-muted-foreground">
+      <div className={`flex justify-center items-center h-48 text-muted-foreground ${bgClass} rounded-xl p-4`}>
         Aucun contenu disponible
       </div>
     );

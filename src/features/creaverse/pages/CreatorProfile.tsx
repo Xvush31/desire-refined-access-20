@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -12,35 +13,34 @@ import LoadingState from "../components/profile/LoadingState";
 import NotFoundState from "../components/profile/NotFoundState";
 import MainContent from "../components/profile/MainContent";
 import ScrollToTopButton from "@/components/ui/scroll-to-top-button";
+import ContentCarousel from "../components/content/ContentCarousel";
 
 import { fetchPerformerData } from "../api/performers";
 import { PerformerData } from "../types/performer";
 import { ContentItem } from "../components/content/ContentCard";
 
 // Contenu d'exemple pour la grille de contenu
-const sampleContentItems: ContentItem[] = [
-  {
-    id: "1",
-    title: "Shooting en studio - Collection été",
-    thumbnail: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
-    type: "standard",
-    metrics: { views: 1250, likes: 78, engagement: 4.2 }
-  },
-  {
-    id: "2",
-    title: "Séance exclusive en extérieur",
-    thumbnail: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
-    type: "premium",
-    metrics: { views: 843, likes: 124, engagement: 6.7 }
-  },
-  {
-    id: "3",
-    title: "Behind the scenes - VIP uniquement",
-    thumbnail: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952",
-    type: "vip",
-    metrics: { views: 412, likes: 89, engagement: 9.1 }
-  }
-];
+const generateSampleContent = (count: number, type: "standard" | "premium" | "vip"): ContentItem[] => {
+  return Array.from({ length: count }, (_, i) => {
+    const id = `${type}-${i + 1}`;
+    return {
+      id,
+      title: type === "premium" 
+        ? `Contenu Premium #${i + 1}` 
+        : type === "vip" 
+          ? `Exclusivité VIP #${i + 1}`
+          : `Création #${i + 1}`,
+      thumbnail: `https://images.unsplash.com/photo-${1580000000000 + i * 10000}?auto=format&fit=crop&w=800&q=80`,
+      type,
+      metrics: { 
+        views: Math.floor(Math.random() * 10000) + 500, 
+        likes: Math.floor(Math.random() * 1000) + 100, 
+        engagement: Number((Math.random() * 10 + 2).toFixed(1))
+      },
+      revenue: type !== "standard" ? Math.floor(Math.random() * 500) + 100 : undefined
+    };
+  });
+};
 
 const CreatorProfile: React.FC = () => {
   const { performerId } = useParams<{ performerId: string }>();
@@ -55,25 +55,29 @@ const CreatorProfile: React.FC = () => {
   const [showRevenue, setShowRevenue] = useState(true);
   const [contentLayout, setContentLayout] = useState<"grid" | "masonry" | "featured">("grid");
   
+  // Générer les différentes catégories de contenu
+  const standardContent = generateSampleContent(8, "standard");
+  const premiumContent = generateSampleContent(4, "premium");
+  const vipContent = generateSampleContent(2, "vip");
+  const trendingContent = [...generateSampleContent(3, "premium"), ...generateSampleContent(2, "standard")];
+  
+  // Combiner les contenus pour l'affichage principal
+  const sampleContentItems: ContentItem[] = [
+    ...standardContent.slice(0, 3),
+    ...premiumContent.slice(0, 2),
+    ...vipContent.slice(0, 1),
+    ...standardContent.slice(3, 6),
+    ...premiumContent.slice(2, 4),
+    ...vipContent.slice(1, 2),
+    ...standardContent.slice(6, 8)
+  ];
+  
   useEffect(() => {
     const loadPerformerData = async () => {
       try {
         setLoading(true);
         const data = await fetchPerformerData(performerId || "1");
-        
-        // Ajout de données d'exemple pour l'événement à venir
-        const enhancedData = {
-          ...data,
-          nextEvent: {
-            type: "live",
-            title: "Session photo spéciale abonnés",
-            timeRemaining: "23h 45m",
-            date: "Demain",
-            time: "20:00"
-          }
-        };
-        
-        setPerformer(enhancedData);
+        setPerformer(data);
       } catch (error) {
         console.error("Erreur lors du chargement des données:", error);
         toast.error("Impossible de charger les données du créateur");
@@ -134,7 +138,7 @@ const CreatorProfile: React.FC = () => {
     setIsMessageDialogOpen(true);
   };
   
-  const handleContentClick = (contentItem: any) => {
+  const handleContentClick = (contentItem: ContentItem) => {
     if (contentItem.type !== "standard" && !currentUser) {
       // Enregistre la page actuelle pour y revenir après connexion
       sessionStorage.setItem('returnTo', `/creaverse/performer/${performer.id}`);
@@ -170,6 +174,27 @@ const CreatorProfile: React.FC = () => {
         setContentLayout={setContentLayout}
         handleContentClick={handleContentClick}
       />
+      
+      {/* Sections de contenu en carrousel - visible uniquement sur l'onglet Galerie */}
+      {activeTab === "gallery" && (
+        <div className="px-4 pb-20">
+          {/* Contenus en tendance */}
+          <ContentCarousel
+            title="En tendance"
+            items={trendingContent}
+            type="trending"
+            onItemClick={handleContentClick}
+          />
+          
+          {/* Contenus premium */}
+          <ContentCarousel
+            title="Contenu Premium"
+            items={premiumContent}
+            type="premium"
+            onItemClick={handleContentClick}
+          />
+        </div>
+      )}
       
       {/* Navigation inférieure */}
       <NavigationFooter
