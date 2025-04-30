@@ -6,7 +6,9 @@ import {
   GoogleAuthProvider, 
   signInWithPopup,
   signInWithEmailAndPassword,
-  signOut
+  signOut,
+  onAuthStateChanged,
+  getAdditionalUserInfo
 } from "firebase/auth";
 
 // Firebase configuration using Vite environment variables
@@ -26,32 +28,55 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 
+// Configure Google Provider
+googleProvider.setCustomParameters({
+  prompt: 'select_account'
+});
+
 // Helper functions for authentication
 export const signInWithGoogle = async () => {
   try {
-    console.log("Tentative de connexion avec Google...");
-    googleProvider.setCustomParameters({
-      prompt: 'select_account'
-    });
+    console.log("Starting Google sign-in process...");
     
+    // Clear any previous auth state to avoid conflicts
+    await signOut(auth);
+    
+    console.log("Initiating Google popup...");
     const result = await signInWithPopup(auth, googleProvider);
-    console.log("Résultat de la connexion Google:", result);
+    console.log("Google sign-in successful:", result);
     
-    // Get credentials
+    // Check if the sign-in is a new user or existing one
+    const additionalInfo = getAdditionalUserInfo(result);
+    console.log("Is new user:", additionalInfo?.isNewUser);
+    
+    // Get user information
     const user = result.user;
     const token = await user.getIdToken();
-    console.log("Token obtenu avec succès");
+    console.log("Token obtained successfully");
     
     return { 
       success: true,
       user,
-      token
+      token,
+      isNewUser: additionalInfo?.isNewUser || false
     };
-  } catch (error) {
-    console.error("Erreur lors de la connexion avec Google", error);
+  } catch (error: any) {
+    console.error("Error during Google sign-in:", error);
+    console.log("Error code:", error.code);
+    console.log("Error message:", error.message);
+    
+    let errorMessage = "Une erreur s'est produite lors de la connexion avec Google";
+    if (error.code === 'auth/popup-closed-by-user') {
+      errorMessage = "La fenêtre de connexion a été fermée. Veuillez réessayer.";
+    } else if (error.code === 'auth/popup-blocked') {
+      errorMessage = "Popup bloqué par le navigateur. Veuillez autoriser les popups et réessayer.";
+    } else if (error.code === 'auth/unauthorized-domain') {
+      errorMessage = "Ce domaine n'est pas autorisé pour l'authentification Google. Veuillez contacter l'administrateur.";
+    }
+    
     return { 
       success: false, 
-      error: error instanceof Error ? error.message : "Une erreur s'est produite" 
+      error: errorMessage
     };
   }
 };
@@ -84,4 +109,11 @@ export const logoutUser = async () => {
       error: error instanceof Error ? error.message : "Erreur lors de la déconnexion" 
     };
   }
+};
+
+// Listen for authentication state changes
+export const subscribeToAuthChanges = (callback: (user: any) => void) => {
+  return onAuthStateChanged(auth, (user) => {
+    callback(user);
+  });
 };
