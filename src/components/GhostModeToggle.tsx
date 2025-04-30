@@ -1,17 +1,22 @@
+
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Eye, EyeOff } from "lucide-react";
 import { ghostMode } from "@/services/ghostMode";
 import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const GhostModeToggle = () => {
   const [enabled, setEnabled] = useState(false);
+  const { loading } = useAuth();
 
   useEffect(() => {
+    if (loading) return;
+    
     // Vérifie l'état actuel du mode fantôme
     setEnabled(ghostMode.isEnabled());
-  }, []);
+  }, [loading]);
 
   const handleToggle = () => {
     if (!enabled) {
@@ -30,6 +35,8 @@ const GhostModeToggle = () => {
       });
     }
   };
+
+  if (loading) return null;
 
   return (
     <div className="flex items-center space-x-2">

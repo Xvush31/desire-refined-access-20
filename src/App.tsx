@@ -1,4 +1,5 @@
 
+import React, { Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import About from "./pages/About";
@@ -31,52 +32,67 @@ import CreaVerse from "./features/creaverse";
 import CreatorProfile from "./features/creaverse/pages/CreatorProfile";
 import CreatorDashboard from "./features/creaverse/pages/CreatorDashboard";
 import CreatorSettings from "./features/creaverse/pages/CreatorSettings";
+import { useAuth } from "./contexts/AuthContext";
 
-// Simple layout component to wrap routes
+// Simple layout component to wrap routes that handles auth loading state
 const Layout = ({ children }: { children: React.ReactNode }) => {
+  const { loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-foreground">Loading authentication...</p>
+      </div>
+    );
+  }
+  
   return <div className="min-h-screen">{children}</div>;
 };
 
 function App() {
+  console.log("App rendering");
+  
   return (
-    <Routes>
-      <Route path="/" element={<Layout><Index /></Layout>} />
-      <Route path="/about" element={<Layout><About /></Layout>} />
-      <Route path="/trending" element={<Layout><Trending /></Layout>} />
-      <Route path="/recent" element={<Layout><Recent /></Layout>} />
-      <Route path="/categories" element={<Layout><Categories /></Layout>} />
-      <Route path="/category/:categoryId" element={<Layout><CategoryPage /></Layout>} />
-      <Route path="/creators" element={<Layout><Creators /></Layout>} />
-      <Route path="/creators/popular" element={<Layout><CreatorsPopular /></Layout>} />
-      <Route path="/creators/recent" element={<Layout><CreatorsRecent /></Layout>} />
-      <Route path="/community" element={<Layout><Community /></Layout>} />
-      <Route path="/login" element={<Layout><Login /></Layout>} />
-      <Route path="/signup" element={<Layout><Signup /></Layout>} />
-      <Route path="/performers" element={<Layout><Performers /></Layout>} />
-      <Route path="/video/:videoId" element={<Layout><SingleVideo /></Layout>} />
-      <Route path="/upload" element={<Layout><Upload /></Layout>} />
-      <Route path="/contact" element={<Layout><Contact /></Layout>} />
-      <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
-      <Route path="/terms" element={<Layout><Terms /></Layout>} />
-      <Route path="/invite" element={<Layout><Invite /></Layout>} />
-      <Route path="/favorites" element={<Layout><Favorites /></Layout>} />
-      <Route path="/history" element={<Layout><History /></Layout>} />
-      <Route path="/xtease" element={<Layout><XTease /></Layout>} />
-      <Route path="/subscription" element={<Layout><Subscription /></Layout>} />
-      <Route path="/subscription/confirmation" element={<Layout><SubscriptionConfirmation /></Layout>} />
-      <Route path="/auth/callback" element={<Layout><AuthCallback /></Layout>} />
-      <Route path="/access-denied" element={<Layout><AccessDenied /></Layout>} />
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <Routes>
+        <Route path="/" element={<Layout><Index /></Layout>} />
+        <Route path="/about" element={<Layout><About /></Layout>} />
+        <Route path="/trending" element={<Layout><Trending /></Layout>} />
+        <Route path="/recent" element={<Layout><Recent /></Layout>} />
+        <Route path="/categories" element={<Layout><Categories /></Layout>} />
+        <Route path="/category/:categoryId" element={<Layout><CategoryPage /></Layout>} />
+        <Route path="/creators" element={<Layout><Creators /></Layout>} />
+        <Route path="/creators/popular" element={<Layout><CreatorsPopular /></Layout>} />
+        <Route path="/creators/recent" element={<Layout><CreatorsRecent /></Layout>} />
+        <Route path="/community" element={<Layout><Community /></Layout>} />
+        <Route path="/login" element={<Layout><Login /></Layout>} />
+        <Route path="/signup" element={<Layout><Signup /></Layout>} />
+        <Route path="/performers" element={<Layout><Performers /></Layout>} />
+        <Route path="/video/:videoId" element={<Layout><SingleVideo /></Layout>} />
+        <Route path="/upload" element={<Layout><Upload /></Layout>} />
+        <Route path="/contact" element={<Layout><Contact /></Layout>} />
+        <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
+        <Route path="/terms" element={<Layout><Terms /></Layout>} />
+        <Route path="/invite" element={<Layout><Invite /></Layout>} />
+        <Route path="/favorites" element={<Layout><Favorites /></Layout>} />
+        <Route path="/history" element={<Layout><History /></Layout>} />
+        <Route path="/xtease" element={<Layout><XTease /></Layout>} />
+        <Route path="/subscription" element={<Layout><Subscription /></Layout>} />
+        <Route path="/subscription/confirmation" element={<Layout><SubscriptionConfirmation /></Layout>} />
+        <Route path="/auth/callback" element={<Layout><AuthCallback /></Layout>} />
+        <Route path="/access-denied" element={<Layout><AccessDenied /></Layout>} />
 
-      {/* CreaVerse Routes - Using the CreaVerse layout wrapper */}
-      <Route element={<CreaVerse />}>
-        <Route path="/performer/:performerId" element={<Layout><CreatorProfile /></Layout>} />
-        <Route path="/creator/:performerId/dashboard" element={<Layout><CreatorDashboard /></Layout>} />
-        <Route path="/creator/:performerId/settings" element={<Layout><CreatorSettings /></Layout>} />
-      </Route>
+        {/* CreaVerse Routes - Using the CreaVerse layout wrapper */}
+        <Route element={<CreaVerse />}>
+          <Route path="/performer/:performerId" element={<Layout><CreatorProfile /></Layout>} />
+          <Route path="/creator/:performerId/dashboard" element={<Layout><CreatorDashboard /></Layout>} />
+          <Route path="/creator/:performerId/settings" element={<Layout><CreatorSettings /></Layout>} />
+        </Route>
 
-      {/* 404 Route */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+        {/* 404 Route */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Suspense>
   );
 }
 

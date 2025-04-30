@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import SubscriptionTiers from "@/components/SubscriptionTiers";
@@ -12,10 +12,24 @@ import PopularPerformersSection from "@/components/PopularPerformersSection";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocale } from "@/contexts/LocaleContext";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
   const isMobile = useIsMobile();
   const { t } = useLocale();
+  const { loading } = useAuth();
+  
+  useEffect(() => {
+    console.log("Index component mounted, auth loading:", loading);
+  }, [loading]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-foreground">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
