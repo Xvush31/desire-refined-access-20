@@ -1,7 +1,14 @@
 
 // Import Firebase modules
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
+import { 
+  getAuth, 
+  GoogleAuthProvider, 
+  signInWithPopup, 
+  signInWithEmailAndPassword,
+  signInWithRedirect,
+  getRedirectResult
+} from "firebase/auth";
 
 // Firebase configuration using Vite environment variables
 const firebaseConfig = {
@@ -23,14 +30,32 @@ export const googleProvider = new GoogleAuthProvider();
 // Helper functions for authentication
 export const signInWithGoogle = async () => {
   try {
-    const result = await signInWithPopup(auth, googleProvider);
-    return {
-      user: result.user,
-      token: await result.user.getIdToken(),
-      success: true
-    };
+    // Use signInWithRedirect instead of signInWithPopup to avoid domain restrictions
+    await signInWithRedirect(auth, googleProvider);
+    // Note: The result will be handled in the component after the redirect
+    return { success: true };
   } catch (error) {
     console.error("Error signing in with Google", error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : "Une erreur s'est produite" 
+    };
+  }
+};
+
+export const getGoogleRedirectResult = async () => {
+  try {
+    const result = await getRedirectResult(auth);
+    if (result) {
+      return {
+        user: result.user,
+        token: await result.user.getIdToken(),
+        success: true
+      };
+    }
+    return { success: false };
+  } catch (error) {
+    console.error("Error getting redirect result", error);
     return { 
       success: false, 
       error: error instanceof Error ? error.message : "Une erreur s'est produite" 

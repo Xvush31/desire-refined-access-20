@@ -1,9 +1,10 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { signInWithGoogle } from "../firebase";
+import { signInWithGoogle, getGoogleRedirectResult } from "../firebase";
+import { toast } from "sonner";
 
 interface AuthContextType {
   login: (token: string, role: string, uid: string) => void;
@@ -18,6 +19,52 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth() as AuthContextType;
+
+  // Check for Google redirect result when component mounts
+  useEffect(() => {
+    const checkRedirectResult = async () => {
+      setLoading(true);
+      const result = await getGoogleRedirectResult();
+      
+      if (result.success && result.user) {
+        try {
+          // Vérifier si l'utilisateur existe dans votre backend
+          const response = await fetch(
+            `https://backend-puce-rho-15.vercel.app/api/auth/verify-google-user`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ 
+                uid: result.user.uid,
+                email: result.user.email,
+                displayName: result.user.displayName
+              }),
+            }
+          );
+          
+          const data = await response.json();
+          
+          if (response.ok) {
+            // Utilisateur vérifié dans le backend
+            login(result.token, data.role || "user", result.user.uid);
+            navigate(data.role === "creator" ? "/creator-dashboard" : "/");
+            toast.success("Connexion réussie!");
+          } else {
+            setError(data.error || "Erreur lors de la vérification de l'utilisateur");
+          }
+        } catch (error) {
+          console.error("Erreur lors de la vérification avec le backend:", error);
+          setError("Erreur réseau. Veuillez réessayer.");
+        }
+      } else if (result.error) {
+        setError(result.error);
+      }
+      
+      setLoading(false);
+    };
+
+    checkRedirectResult();
+  }, [login, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,11 +86,14 @@ const Login: React.FC = () => {
         setEmail("");
         setPassword("");
         navigate(data.role === "creator" ? "/creator-dashboard" : "/");
+        toast.success("Connexion réussie!");
       } else {
         setError(data.error || "Email ou mot de passe incorrect");
+        toast.error(data.error || "Email ou mot de passe incorrect");
       }
     } catch (error) {
       setError("Erreur réseau. Veuillez réessayer.");
+      toast.error("Erreur réseau. Veuillez réessayer.");
       console.error("Erreur réseau:", error);
     } finally {
       setLoading(false);
@@ -55,38 +105,13 @@ const Login: React.FC = () => {
     setLoading(true);
     
     try {
-      const result = await signInWithGoogle();
-      
-      if (result.success && result.user) {
-        const idToken = await result.user.getIdToken();
-        
-        // Vous pouvez envoyer ce token à votre backend pour vérification et récupérer le rôle
-        // Ici, on définit un rôle par défaut de "user"
-        const role = "user";
-        
-        login(idToken, role, result.user.uid);
-        navigate("/");
-      } else {
-        setError(result.error || "Erreur lors de la connexion avec Google");
-      }
+      // Cette fonction effectue une redirection, donc pas besoin de gérer le résultat ici
+      await signInWithGoogle();
     } catch (error) {
       setError("Erreur lors de la connexion avec Google");
+      toast.error("Erreur lors de la connexion avec Google");
       console.error("Google sign-in error:", error);
-    } finally {
       setLoading(false);
-    }
-  };
-
-  const handleAppleSignIn = async () => {
-    try {
-      // Pour simplifier sans dépendre de window.AppleID qui peut causer des erreurs
-      alert("La connexion avec Apple n'est pas encore disponible");
-      
-      // Si vous souhaitez implémenter Apple Sign-In plus tard
-      // await window.AppleID.auth.signIn();
-    } catch (error) {
-      setError("Erreur lors de la connexion avec Apple");
-      console.error("Apple Sign-In error:", error);
     }
   };
 
@@ -223,20 +248,6 @@ const Login: React.FC = () => {
               <path fill="white" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"/>
             </svg>
             Se connecter avec Google
-          </Button>
-          
-          <Button
-            style={{
-              backgroundColor: "black",
-              color: "white",
-              padding: "8px",
-              borderRadius: "4px",
-              fontSize: "1rem",
-              cursor: "pointer",
-            }}
-            onClick={handleAppleSignIn}
-          >
-            Continuer avec Apple
           </Button>
         </div>
 

@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Logo from "@/components/Logo";
 import { useAuth } from "../contexts/AuthContext";
-import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import { signInWithGoogle, getGoogleRedirectResult } from "../firebase";
+import { toast } from "sonner";
 
 // Update the AuthContextType interface to match the actual implementation
 interface AuthContextType {
@@ -22,29 +23,55 @@ const Signup: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth() as AuthContextType;
-
-  // Load Apple Sign-In SDK
+  
+  // Check for Google redirect result when component mounts
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src =
-      "https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js";
-    script.async = true;
-    document.body.appendChild(script);
-
-    script.onload = () => {
-      window.AppleID.auth.init({
-        clientId: process.env.APPLE_CLIENT_ID || "",
-        scope: "email",
-        redirectURI:
-          "https://backend-puce-rho-15.vercel.app/api/auth/apple/callback",
-        usePopup: true,
-      });
+    const checkRedirectResult = async () => {
+      setLoading(true);
+      const result = await getGoogleRedirectResult();
+      
+      if (result.success && result.user) {
+        try {
+          // Enregistrer l'utilisateur dans votre backend
+          const response = await fetch(
+            `https://backend-puce-rho-15.vercel.app/api/auth/signup-google`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ 
+                uid: result.user.uid,
+                email: result.user.email,
+                displayName: result.user.displayName,
+                role: role
+              }),
+            }
+          );
+          
+          const data = await response.json();
+          
+          if (response.ok) {
+            // Utilisateur enregistré dans le backend
+            login(result.token, data.role || role, result.user.uid);
+            navigate(data.role === "creator" ? "/creator-dashboard" : "/");
+            toast.success("Inscription réussie!");
+          } else {
+            setError(data.error || "Erreur lors de l'inscription");
+            toast.error(data.error || "Erreur lors de l'inscription");
+          }
+        } catch (error) {
+          console.error("Erreur lors de l'enregistrement avec le backend:", error);
+          setError("Erreur réseau. Veuillez réessayer.");
+          toast.error("Erreur réseau. Veuillez réessayer.");
+        }
+      } else if (result.error) {
+        setError(result.error);
+      }
+      
+      setLoading(false);
     };
 
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
+    checkRedirectResult();
+  }, [login, navigate, role]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,35 +89,38 @@ const Signup: React.FC = () => {
       );
       const data = await response.json();
       if (response.ok) {
-        login(data.token, data.role, data.uid || ""); // Add uid parameter with default empty string
+        login(data.token, data.role, data.uid || "");
         setEmail("");
         setPassword("");
         setRole("user");
         navigate(data.role === "creator" ? "/creator-dashboard" : "/");
+        toast.success("Inscription réussie!");
       } else {
         setError(data.error || "Erreur lors de l'inscription");
+        toast.error(data.error || "Erreur lors de l'inscription");
       }
     } catch (error) {
       setError("Erreur réseau. Veuillez réessayer.");
+      toast.error("Erreur réseau. Veuillez réessayer.");
       console.error("Erreur réseau:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleSuccess = async (
-    credentialResponse: CredentialResponse
-  ) => {
-    window.location.href = `https://backend-puce-rho-15.vercel.app/api/auth/google?role=${role}`;
-  };
-
-  const handleAppleSignIn = async () => {
+  const handleGoogleSignup = async () => {
+    setError("");
+    setLoading(true);
+    
     try {
-      await window.AppleID.auth.signIn();
-      // The backend handles the redirect to /auth/callback
+      // Cette fonction effectue une redirection, donc pas besoin de gérer le résultat ici
+      await signInWithGoogle();
+      // Le useEffect s'occupera de gérer le résultat après la redirection
     } catch (error) {
-      setError("Erreur lors de la connexion avec Apple");
-      console.error("Apple Sign-In error:", error);
+      setError("Erreur lors de la connexion avec Google");
+      toast.error("Erreur lors de la connexion avec Google");
+      console.error("Google sign-in error:", error);
+      setLoading(false);
     }
   };
 
@@ -154,24 +184,20 @@ const Signup: React.FC = () => {
             </div>
 
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Inscription..." : "S’inscrire"}
+              {loading ? "Inscription..." : "S'inscrire"}
             </Button>
           </form>
 
           <div className="mt-4 space-y-2">
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={() =>
-                setError("Erreur lors de la connexion avec Google")
-              }
-              text="signup_with"
-              width="100%"
-            />
             <Button
-              className="w-full bg-black text-white hover:bg-gray-800"
-              onClick={handleAppleSignIn}
+              className="w-full bg-[#4285F4] text-white hover:bg-[#3367d6] flex items-center justify-center gap-2"
+              onClick={handleGoogleSignup}
+              disabled={loading}
             >
-              Continuer avec Apple
+              <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
+                <path fill="white" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"/>
+              </svg>
+              S'inscrire avec Google
             </Button>
           </div>
         </div>
