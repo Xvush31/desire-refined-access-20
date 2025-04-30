@@ -49,7 +49,7 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => {
       data-is-mobile={isMobile ? "true" : "false"}
     >
       <Link 
-        to={`/performers/${creator.id}`}
+        to={`/performer/${creator.id}`}
         className="block mb-2 text-center creator-card-content"
         data-testid="creator-profile-link"
         onClick={(e) => {

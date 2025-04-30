@@ -170,8 +170,11 @@ const App = () => {
                       <Route path="/trending" element={<Trending />} />
                       <Route path="/performers" element={<Performers />} />
                       
-                      {/* Remplacer la route performer par CreaVerse */}
+                      {/* CreaVerse routes */}
                       <Route path="/performer/*" element={<CreaVerse />} />
+                      
+                      {/* Redirection from old URLs to new URLs */}
+                      <Route path="/performers/:id" element={<Navigate to="/performer/:id" replace />} />
                       
                       <Route path="/recent" element={<Recent />} />
                       <Route path="/favorites" element={<Favorites />} />

@@ -11,7 +11,7 @@ const PerformerProfile: React.FC = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
-    // Redirection vers CreaVerse
+    // Redirection vers CreaVerse avec remplacement pour éviter de pouvoir revenir en arrière
     navigate(`/performer/${performerId || '1'}`, { replace: true });
   }, [performerId, navigate]);
   
