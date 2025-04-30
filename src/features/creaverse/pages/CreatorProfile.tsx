@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { fetchPerformerById } from "../api/performers";
+import { fetchPerformerData } from "../api/performers";
 import { PerformerData } from "../types/performer";
 import MainContent from "../components/profile/MainContent";
 import ProfileSections from "../components/profile/ProfileSections";
@@ -9,12 +9,38 @@ import DynamicHeader from "../components/header/DynamicHeader";
 import LoadingState from "../components/profile/LoadingState";
 import NotFoundState from "../components/profile/NotFoundState";
 import { useAuth } from "@/contexts/AuthContext";
-import { generateSampleContentItems } from "../api/utils/contentGenerators";
+import { getFormatProperties, getRandomThumbnail } from "../api/utils/contentGenerators";
 import { ContentItem } from "../components/content/ContentCard";
 import { RelationshipLevel } from "../api/services/relationshipService";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRevolutionaryNavigation } from "@/hooks/use-revolutionary-navigation";
+
+// Helper function to generate sample content items
+const generateSampleContentItems = (count: number, trending: boolean = false): ContentItem[] => {
+  const formats = ["video", "image", "audio", "text"];
+  const items: ContentItem[] = [];
+  
+  for (let i = 0; i < count; i++) {
+    const format = formats[Math.floor(Math.random() * formats.length)];
+    const formatProps = trending 
+      ? { ...getFormatProperties(format, true) }
+      : { ...getFormatProperties(format) };
+    
+    items.push({
+      id: `content-${i}`,
+      title: `${trending ? 'Trending' : 'Sample'} ${format} ${i + 1}`,
+      thumbnail: getRandomThumbnail("1", i, format),
+      type: format as "video" | "image" | "audio" | "text",
+      isPremium: Math.random() > 0.7,
+      isNew: Math.random() > 0.8,
+      createdAt: new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000),
+      ...formatProps
+    });
+  }
+  
+  return items;
+};
 
 const CreatorProfile: React.FC = () => {
   const { performerId } = useParams<{ performerId: string }>();
@@ -48,7 +74,7 @@ const CreatorProfile: React.FC = () => {
           return;
         }
         
-        const fetchedPerformer = await fetchPerformerById(performerId);
+        const fetchedPerformer = await fetchPerformerData(performerId);
         setPerformer(fetchedPerformer);
         
         // Check if current user is the owner
@@ -73,7 +99,7 @@ const CreatorProfile: React.FC = () => {
         // Set relationship level based on some logic
         // This would normally come from a backend service
         const randomLevel = Math.floor(Math.random() * 5) as RelationshipLevel;
-        setRelationshipLevel(isOwner ? RelationshipLevel.Creator : randomLevel);
+        setRelationshipLevel(isOwner ? RelationshipLevel.Admin : randomLevel);
         
         setLoading(false);
       } catch (err: any) {
@@ -128,15 +154,16 @@ const CreatorProfile: React.FC = () => {
   }
   
   if (error || !performer) {
-    return <NotFoundState error={error} />;
+    return <NotFoundState />;
   }
   
   return (
     <div className={`min-h-screen pt-0 ${isImmersiveMode ? 'pb-0' : 'pb-20'}`}>
       <DynamicHeader 
-        performer={performer}
+        username={performer.username}
+        displayName={performer.displayName}
+        profileImage={performer.image}
         isScrolled={false}
-        isFollowing={isFollowing}
       />
       
       <MainContent 
