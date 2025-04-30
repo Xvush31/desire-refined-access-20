@@ -1,6 +1,6 @@
 
 import React, { Suspense, useEffect } from "react";
-import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation, Navigate, useParams } from "react-router-dom";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Trending from "./pages/Trending";
@@ -69,7 +69,6 @@ function App() {
   const { currentUser, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const { useParams } = require("react-router-dom");
   
   // Debug logging
   console.log("App rendering, auth state:", { currentUser, loading, path: location.pathname });
@@ -126,4 +125,3 @@ function App() {
 }
 
 export default App;
-
