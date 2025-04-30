@@ -2,7 +2,7 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { EyeOff, Eye, TrendingUp } from "@/icons";
+import { Eye, EyeOff, TrendingUp } from "@/icons";
 import { useTheme } from "@/hooks/use-theme";
 
 interface ProfileStatsProps {
