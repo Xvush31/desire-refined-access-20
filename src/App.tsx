@@ -1,4 +1,3 @@
-
 import React, { Suspense, useEffect } from "react";
 import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
@@ -81,10 +80,11 @@ function App() {
   // Add a direct link to CreaVerse on the console for debugging
   console.log("Try accessing CreaVerse directly at:", window.location.origin + "/creaverse");
   
+  // Track access to legacy URLs
   useEffect(() => {
     // Log when routes like /performers/:id are accessed
     if (location.pathname.includes('/performers/')) {
-      console.log("Detected access to performers route:", location.pathname);
+      console.log("Detected access to legacy performers route:", location.pathname);
     }
   }, [location.pathname]);
   
@@ -129,8 +129,8 @@ function App() {
           <Route path="creator/:performerId/settings" element={<CreatorSettings />} />
         </Route>
 
-        {/* Legacy performer route - now properly handled */}
-        <Route path="/performer/:performerId" element={<PerformerRedirect />} />
+        {/* Legacy performer routes - now properly handled */}
+        <Route path="/performer/:performerId" element={<PerformerProfile />} />
         <Route path="/performers/:performerId" element={<PerformerProfile />} />
 
         {/* Legacy creator routes - redirect to CreaVerse routes */}

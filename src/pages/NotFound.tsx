@@ -25,7 +25,15 @@ const NotFound = () => {
   }, [location.pathname]);
 
   // Check if this might be a creator profile route
-  const mightBeCreatorProfile = location.pathname.includes('/performer') || location.pathname.includes('/performers');
+  const mightBeCreatorProfile = 
+    location.pathname.includes('/performer') || 
+    location.pathname.includes('/performers') || 
+    location.pathname.includes('/creator') || 
+    location.pathname.match(/\/[0-9]+$/); // URLs ending with a number might be legacy creator IDs
+
+  // For legacy URLs from xvush.com, extract proper URL structure
+  const extractedId = location.pathname.match(/\/performers\/(\d+)/) || location.pathname.match(/\/performer\/(\d+)/);
+  const suggestedProfileUrl = extractedId ? `/creaverse/performer/${extractedId[1]}` : '/creators';
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -53,8 +61,8 @@ const NotFound = () => {
           
           {mightBeCreatorProfile && (
             <Button asChild variant="secondary" className="flex items-center gap-2">
-              <Link to="/creaverse">
-                Accéder à CreaVerse
+              <Link to={suggestedProfileUrl}>
+                Accéder au profil
               </Link>
             </Button>
           )}
@@ -62,7 +70,7 @@ const NotFound = () => {
         
         {mightBeCreatorProfile && (
           <p className="mt-6 text-sm text-muted-foreground">
-            Vous recherchiez peut-être un profil de créateur? Tous les profils sont maintenant dans CreaVerse.
+            Vous recherchiez peut-être un profil de créateur? Tous les profils sont maintenant accessibles via CreaVerse.
           </p>
         )}
       </div>
