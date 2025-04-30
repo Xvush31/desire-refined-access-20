@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,11 @@ const Login: React.FC = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth() as AuthContextType;
+
+  // Get the intended destination from location state, or use default
+  const from = location.state?.from?.pathname || "/";
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,8 +45,18 @@ const Login: React.FC = () => {
         login(data.token, data.role, data.uid || "");
         setEmail("");
         setPassword("");
-        navigate(data.role === "creator" ? "/creator-dashboard" : "/");
+        
+        // Navigate to the previous intended page or based on role
+        if (from !== "/" && from !== "/login") {
+          navigate(from);
+        } else if (data.role === "creator") {
+          navigate("/creaverse");
+        } else {
+          navigate("/");
+        }
+        
         toast.success("Connexion réussie!");
+        console.log("Login successful, navigating to:", from !== "/" ? from : data.role === "creator" ? "/creaverse" : "/");
       } else {
         setError(data.error || "Email ou mot de passe incorrect");
         toast.error(data.error || "Email ou mot de passe incorrect");
@@ -195,6 +209,13 @@ const Login: React.FC = () => {
             Inscrivez-vous
           </Link>
         </p>
+
+        {/* Ajout d'un lien direct vers CreaVerse pour debug */}
+        <div className="text-center mt-4">
+          <Link to="/creaverse" className="text-sm text-brand-accent hover:underline">
+            Accéder directement à CreaVerse
+          </Link>
+        </div>
       </div>
     </div>
   );

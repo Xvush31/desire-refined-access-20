@@ -3,6 +3,7 @@ import { Navigate, Outlet, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import NavigationFooter from "./components/NavigationFooter";
+import { toast } from "sonner";
 
 /**
  * CreaVerse - L'univers des créateurs de XVush
@@ -11,6 +12,8 @@ import NavigationFooter from "./components/NavigationFooter";
 const CreaVerse: React.FC = () => {
   const { currentUser, loading } = useAuth();
   const location = useLocation();
+  
+  console.log("CreaVerse rendering, auth state:", { currentUser, loading, path: location.pathname });
   
   // Show loading state while auth is initializing
   if (loading) {
@@ -23,7 +26,9 @@ const CreaVerse: React.FC = () => {
   
   // If user is not authenticated, redirect to login page with return URL
   if (!currentUser) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    console.log("User not authenticated, redirecting to login with return URL:", location.pathname);
+    toast.error("Veuillez vous connecter pour accéder à CreaVerse");
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
   
   // Otherwise, render the child routes with a fallback for direct /creaverse access
@@ -33,9 +38,17 @@ const CreaVerse: React.FC = () => {
         <div className="container mx-auto px-4 py-8 text-center">
           <h1 className="text-2xl font-bold mb-4">Bienvenue à CreaVerse</h1>
           <p className="mb-6">L'univers des créateurs de XVush</p>
-          <Button asChild>
-            <Link to="/">Retourner à l'accueil</Link>
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button asChild variant="default">
+              <Link to={`/creaverse/performer/${currentUser.uid}`}>Mon profil</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link to={`/creaverse/creator/${currentUser.uid}/dashboard`}>Mon tableau de bord</Link>
+            </Button>
+            <Button asChild variant="secondary">
+              <Link to="/">Retourner à l'accueil</Link>
+            </Button>
+          </div>
         </div>
       )}
       <Outlet />
@@ -43,7 +56,7 @@ const CreaVerse: React.FC = () => {
         <NavigationFooter 
           performerId={currentUser.uid} 
           performerImage="/placeholder.svg"
-          performerName={currentUser.uid}
+          performerName={currentUser.displayName || currentUser.uid}
         />
       )}
     </div>

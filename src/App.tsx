@@ -1,6 +1,7 @@
 
 import React, { Suspense, useEffect } from "react";
-import { Routes, Route, useNavigate, useLocation, Navigate, useParams } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Trending from "./pages/Trending";
@@ -106,10 +107,12 @@ function App() {
         <Route path="/auth/callback" element={<Layout><AuthCallback /></Layout>} />
         <Route path="/access-denied" element={<Layout><AccessDenied /></Layout>} />
 
-        {/* CreaVerse Routes - Now correctly defined with the CreaVerse layout wrapper */}
+        {/* CreaVerse Routes */}
         <Route path="/creaverse" element={<CreaVerse />}>
-          {/* Include an index route for direct /creaverse access */}
-          <Route index element={<></>} />
+          <Route index element={<div className="container mx-auto px-4 py-8 text-center">
+            <h1 className="text-2xl font-bold mb-4">Bienvenue à CreaVerse</h1>
+            <p className="mb-6">L'univers des créateurs de XVush</p>
+          </div>} />
           <Route path="performer/:performerId" element={<CreatorProfile />} />
           <Route path="creator/:performerId/dashboard" element={<CreatorDashboard />} />
           <Route path="creator/:performerId/settings" element={<CreatorSettings />} />
