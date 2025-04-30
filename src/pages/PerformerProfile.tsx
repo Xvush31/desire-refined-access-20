@@ -5,12 +5,20 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Bell, MessageCircle, MoreVertical, Grid, Play, User, Home, Search, Plus, Video } from "lucide-react";
+import {
+  ArrowLeft, Bell, MessageCircle, MoreVertical, Grid,
+  Play, User, Home, Search, Plus, Video, Award,
+  TrendingUp, Heart, BookmarkCheck, Calendar, Clock, CircleDollarSign, 
+  BarChart, Star, CircleCheck
+} from "lucide-react";
 import { toast } from "sonner";
 import SendMessageDialog from "@/components/SendMessageDialog";
-import PerformerHighlights from "@/components/performer/PerformerHighlights";
-import PerformerGrid from "@/components/performer/PerformerGrid";
 import { useTheme } from "@/hooks/use-theme";
+import CreatorHeader from "@/components/creator/CreatorHeader";
+import MonetizationTiers from "@/components/creator/MonetizationTiers";
+import ContentGallery from "@/components/creator/ContentGallery";
+import EngagementDashboard from "@/components/creator/EngagementDashboard";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface PerformerData {
   id: number;
@@ -23,10 +31,21 @@ interface PerformerData {
   description: string;
   joinDate: string;
   tags: string[];
+  tier: "bronze" | "silver" | "gold" | "platinum" | "diamond";
+  tierProgress: number;
   stats: {
     likes: string;
     views: string;
     rating: number;
+    retentionRate: string;
+    watchMinutes: string;
+    monthlyRevenue: number;
+    monthlyRevenueChange: number;
+    superfans: number;
+  };
+  nextEvent?: {
+    type: string;
+    timeRemaining: string;
   };
 }
 
@@ -42,10 +61,21 @@ const performerDetails: Record<string, PerformerData> = {
     description: "Passionnée et créative, Julie aime partager des moments intimes et authentiques. Elle se spécialise dans les vidéos solo et les danses sensuelles.",
     joinDate: "Jan 2022",
     tags: ["Amateur", "Solo", "Danse", "Lingerie", "Jeux de rôle"],
+    tier: "gold",
+    tierProgress: 73,
     stats: {
       likes: "5.7M",
       views: "28.4M",
-      rating: 4.8
+      rating: 4.8,
+      retentionRate: "87%",
+      watchMinutes: "237K",
+      monthlyRevenue: 4752,
+      monthlyRevenueChange: 12,
+      superfans: 3200
+    },
+    nextEvent: {
+      type: "Live",
+      timeRemaining: "3h24min"
     }
   },
   "2": {
@@ -59,10 +89,17 @@ const performerDetails: Record<string, PerformerData> = {
     description: "Max propose des vidéos énergiques et passionnées avec différentes partenaires. Il se démarque par son énergie et sa créativité.",
     joinDate: "Mar 2021",
     tags: ["Couple", "Fitness", "POV", "Extérieur", "Sportif"],
+    tier: "silver",
+    tierProgress: 58,
     stats: {
       likes: "3.2M",
       views: "18.7M",
-      rating: 4.6
+      rating: 4.6,
+      retentionRate: "82%",
+      watchMinutes: "184K",
+      monthlyRevenue: 3268,
+      monthlyRevenueChange: 8,
+      superfans: 1850
     }
   },
   "3": {
@@ -76,10 +113,21 @@ const performerDetails: Record<string, PerformerData> = {
     description: "Lexi est connue pour son charisme et sa douceur dans des scènes sensuelles. Elle aime explorer différents univers et fantasmes.",
     joinDate: "Nov 2020",
     tags: ["Glamour", "Lingerie", "Roleplay", "Romance", "ASMR"],
+    tier: "platinum",
+    tierProgress: 31,
     stats: {
       likes: "7.9M",
       views: "35.2M",
-      rating: 4.9
+      rating: 4.9,
+      retentionRate: "93%", 
+      watchMinutes: "412K",
+      monthlyRevenue: 8745,
+      monthlyRevenueChange: 18,
+      superfans: 5800
+    },
+    nextEvent: {
+      type: "Nouveau contenu",
+      timeRemaining: "demain"
     }
   },
 };
@@ -90,8 +138,13 @@ const PerformerProfile: React.FC = () => {
   const navigate = useNavigate();
   const [isMessageDialogOpen, setIsMessageDialogOpen] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
-  const [currentTab, setCurrentTab] = useState("posts");
+  const [activeTab, setActiveTab] = useState("gallery");
   const { theme } = useTheme();
+  const { currentUser } = useAuth() || { currentUser: null };
+  const [showRevenue, setShowRevenue] = useState(true);
+  
+  // Détermine si l'utilisateur actuel est le propriétaire du profil
+  const isOwner = currentUser && currentUser.uid === performer.id.toString();
   
   const handleSubscribe = () => {
     navigate(`/subscription?creator=${performer.id}`);
@@ -107,164 +160,195 @@ const PerformerProfile: React.FC = () => {
   };
   
   const bgClass = theme === 'light' ? 'bg-gray-100' : 'bg-black';
-  const textClass = theme === 'light' ? 'text-black' : 'text-white';
   const secondaryBgClass = theme === 'light' ? 'bg-white' : 'bg-zinc-900';
   
   return (
     <div className={`min-h-screen ${bgClass}`}>
-      {/* Header */}
-      <header className={`sticky top-0 z-10 ${secondaryBgClass} p-4 flex items-center justify-between border-b border-gray-800`}>
+      {/* Header avec navigation */}
+      <header className={`sticky top-0 z-10 ${secondaryBgClass} p-3 flex items-center justify-between border-b border-gray-800`}>
         <div className="flex items-center">
           <Link to="/" className="mr-4">
-            <ArrowLeft size={24} className={textClass} />
+            <ArrowLeft size={24} className="text-primary" />
           </Link>
-          <h1 className={`text-xl font-bold ${textClass}`}>{performer.username}</h1>
+          <h1 className="text-xl font-bold text-primary">{performer.username}</h1>
+          {performer.tier && (
+            <Badge variant="outline" className="ml-2 animated-gradient-bg text-white">
+              Palier {performer.tier.charAt(0).toUpperCase() + performer.tier.slice(1)}
+            </Badge>
+          )}
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-3">
           <button aria-label="Notifications">
-            <Bell size={24} className={textClass} />
+            <Bell size={22} className="text-primary" />
           </button>
           <button aria-label="More options">
-            <MoreVertical size={24} className={textClass} />
+            <MoreVertical size={22} className="text-primary" />
           </button>
         </div>
       </header>
       
       <main>
-        {/* Profile Info Section */}
-        <section className={`${secondaryBgClass} px-4 pt-6 pb-2`}>
-          <div className="flex items-start">
-            {/* Profile Image */}
-            <div className="mr-8">
-              <Avatar className="w-20 h-20 md:w-24 md:h-24 border-2 border-pink-500">
-                <AvatarImage src={performer.image} alt={performer.displayName} className="object-cover" />
-                <AvatarFallback className="bg-gradient-to-br from-pink-500 to-purple-500 text-white">
-                  {performer.displayName.substring(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-            </div>
-            
-            {/* Profile Stats */}
-            <div className="flex-grow">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex flex-col items-center">
-                  <span className={`font-bold text-xl ${textClass}`}>{performer.videos}</span>
-                  <span className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>publications</span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <span className={`font-bold text-xl ${textClass}`}>{performer.followers}</span>
-                  <span className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>followers</span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <span className={`font-bold text-xl ${textClass}`}>{performer.following}</span>
-                  <span className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>suivi(e)s</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Profile Bio */}
-          <div className="mt-3">
-            <h2 className={`font-bold ${textClass}`}>{performer.displayName}</h2>
-            <p className={`text-sm my-1 ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>{performer.description}</p>
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="flex gap-2 mt-4">
-            <Button 
-              onClick={handleFollowToggle}
-              className={`flex-1 ${isFollowing ? 
-                'bg-gray-200 hover:bg-gray-300 text-black' : 
-                'animated-gradient-bg text-white'}`}
-              size="sm"
-            >
-              {isFollowing ? 'Suivi(e)' : 'Suivre'}
-            </Button>
-            <Button 
-              onClick={handleSubscribe}
-              className="flex-1 animated-gradient-bg text-white"
-              size="sm"
-            >
-              S'abonner
-            </Button>
-            <Button 
-              onClick={() => setIsMessageDialogOpen(true)}
-              className={`${theme === 'light' ? 'bg-gray-200 hover:bg-gray-300 text-black' : 'bg-zinc-800 hover:bg-zinc-700 text-white'}`}
-              size="sm"
-            >
-              <MessageCircle size={18} />
-            </Button>
-          </div>
-        </section>
+        {/* En-tête du créateur avec statistiques dynamiques */}
+        <CreatorHeader 
+          performer={performer} 
+          isOwner={isOwner}
+          showRevenue={showRevenue}
+          onToggleRevenue={() => setShowRevenue(!showRevenue)}
+          isFollowing={isFollowing}
+          onToggleFollow={handleFollowToggle}
+          onSubscribe={handleSubscribe}
+          onSendMessage={() => setIsMessageDialogOpen(true)}
+        />
         
-        {/* Profile Highlights */}
-        <PerformerHighlights performer={performer} />
+        {/* Tableau de bord d'engagement en temps réel */}
+        <EngagementDashboard 
+          performer={performer}
+          isOwner={isOwner}
+        />
         
-        {/* Content Tabs */}
+        {/* Menu de navigation amélioré */}
         <Tabs 
-          value={currentTab} 
-          onValueChange={setCurrentTab} 
-          className="w-full mt-2"
+          value={activeTab} 
+          onValueChange={setActiveTab} 
+          className="w-full mt-4"
         >
-          <TabsList className={`w-full grid grid-cols-3 ${secondaryBgClass} border-y ${theme === 'light' ? 'border-gray-200' : 'border-gray-800'}`}>
+          <TabsList className={`w-full grid grid-cols-4 ${secondaryBgClass} border-y ${theme === 'light' ? 'border-gray-200' : 'border-gray-800'}`}>
             <TabsTrigger 
-              value="posts" 
-              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-red py-3"
+              value="gallery" 
+              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-red py-3 flex flex-col items-center"
             >
-              <Grid size={20} className={textClass} />
+              <Grid size={18} />
+              <span className="text-xs mt-1">Galerie</span>
             </TabsTrigger>
             <TabsTrigger 
-              value="videos" 
-              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-red py-3"
+              value="collections" 
+              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-red py-3 flex flex-col items-center"
             >
-              <Play size={20} className={textClass} />
+              <BookmarkCheck size={18} />
+              <span className="text-xs mt-1">Collections</span>
             </TabsTrigger>
             <TabsTrigger 
-              value="premium" 
-              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-red py-3"
+              value="journey" 
+              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-red py-3 flex flex-col items-center"
             >
-              <Badge variant="outline" className="animated-gradient-bg text-white">VIP</Badge>
+              <Award size={18} />
+              <span className="text-xs mt-1">Journey</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="tiers" 
+              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-red py-3 flex flex-col items-center"
+            >
+              <CircleDollarSign size={18} />
+              <span className="text-xs mt-1">Abonnement</span>
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="posts" className="mt-0">
-            <PerformerGrid type="photos" performerId={performer.id} />
+          <TabsContent value="gallery" className="mt-0 p-0">
+            <ContentGallery 
+              performerId={performer.id} 
+              isOwner={isOwner}
+            />
           </TabsContent>
           
-          <TabsContent value="videos" className="mt-0">
-            <PerformerGrid type="videos" performerId={performer.id} />
-          </TabsContent>
-          
-          <TabsContent value="premium" className="mt-0">
-            <div className={`flex flex-col items-center justify-center h-60 ${secondaryBgClass} p-4`}>
-              <Badge variant="outline" className="animated-gradient-bg text-white mb-4 px-4 py-2">Premium</Badge>
-              <h3 className={`text-lg font-bold mb-2 ${textClass}`}>Contenu exclusif réservé aux abonnés</h3>
-              <p className={`text-sm text-center mb-4 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
-                Abonnez-vous à {performer.displayName} pour découvrir son contenu exclusif
-              </p>
-              <Button onClick={handleSubscribe} className="animated-gradient-bg text-white">
-                S'abonner maintenant
-              </Button>
+          <TabsContent value="collections" className="mt-0">
+            <div className={`${secondaryBgClass} p-4`}>
+              <h2 className="text-lg font-semibold mb-4 flex items-center">
+                <BookmarkCheck className="mr-2" size={18} />
+                Collections Thématiques
+              </h2>
+              
+              <div className="grid grid-cols-2 gap-4">
+                {["Danses sensuelles", "Moments intimes", "Behind the scenes", "Archives VIP"].map((collection, index) => (
+                  <div 
+                    key={collection} 
+                    className={`${theme === 'light' ? 'bg-gray-50' : 'bg-zinc-800'} rounded-lg p-3 relative ${index === 3 ? 'opacity-70' : ''}`}
+                  >
+                    <div className="aspect-video bg-black/30 rounded-md mb-2 flex items-center justify-center">
+                      {index === 3 ? (
+                        <Lock className="text-white/70" size={24} />
+                      ) : (
+                        <Play className="text-white" size={24} />
+                      )}
+                    </div>
+                    <h3 className="font-medium">{collection}</h3>
+                    <p className="text-xs text-muted-foreground">
+                      {index === 3 ? '23 vidéos · Abonnés VIP uniquement' : `${5 + index * 3} vidéos`}
+                    </p>
+                    {index === 3 && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Button variant="default" size="sm" className="animated-gradient-bg text-white">
+                          Débloquer
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
+          </TabsContent>
+          
+          <TabsContent value="journey" className="mt-0">
+            <div className={`${secondaryBgClass} p-4`}>
+              <h2 className="text-lg font-semibold mb-4 flex items-center">
+                <Award className="mr-2" size={18} />
+                Creator Journey
+              </h2>
+              
+              <div className="space-y-4">
+                <div className="relative pl-6 pb-6 border-l-2 border-brand-red">
+                  <div className="absolute left-[-8px] top-0 bg-brand-red rounded-full w-4 h-4"></div>
+                  <div className="mb-1">
+                    <span className="text-xs text-muted-foreground">Avril 2023</span>
+                    <h3 className="font-medium">A atteint 50K abonnés</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Une étape importante dans la croissance</p>
+                </div>
+                
+                <div className="relative pl-6 pb-6 border-l-2 border-brand-red">
+                  <div className="absolute left-[-8px] top-0 bg-brand-red rounded-full w-4 h-4"></div>
+                  <div className="mb-1">
+                    <span className="text-xs text-muted-foreground">Février 2023</span>
+                    <h3 className="font-medium">Première vidéo "Sunset Dance"</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">La vidéo qui a lancé ma carrière sur XVush</p>
+                </div>
+                
+                <div className="relative pl-6 pb-6 border-l-2 border-brand-red">
+                  <div className="absolute left-[-8px] top-0 bg-brand-red rounded-full w-4 h-4"></div>
+                  <div className="mb-1">
+                    <span className="text-xs text-muted-foreground">Janvier 2022</span>
+                    <h3 className="font-medium">A rejoint XVush</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Le début d'une belle aventure</p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="tiers" className="mt-0">
+            <MonetizationTiers 
+              performerId={performer.id}
+              onSubscribe={handleSubscribe}
+            />
           </TabsContent>
         </Tabs>
       </main>
       
-      {/* Bottom Nav */}
-      <nav className={`fixed bottom-0 w-full flex justify-around py-3 ${secondaryBgClass} border-t ${theme === 'light' ? 'border-gray-200' : 'border-gray-800'}`}>
-        <Link to="/" className={textClass}>
+      {/* Navigation inférieure */}
+      <nav className={`fixed bottom-0 w-full flex justify-around py-3 ${secondaryBgClass} border-t ${theme === 'light' ? 'border-gray-200' : 'border-gray-800'} z-10`}>
+        <Link to="/" className="text-primary">
           <Home size={24} />
         </Link>
-        <Link to="/search" className={textClass}>
+        <Link to="/search" className="text-primary">
           <Search size={24} />
         </Link>
-        <Link to="/upload" className={textClass}>
+        <Link to="/upload" className="text-primary">
           <Plus size={24} className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 rounded-lg p-1" />
         </Link>
-        <Link to="/xtease" className={textClass}>
+        <Link to="/xtease" className="text-primary">
           <Video size={24} />
         </Link>
-        <Link to={`/performer/${performer.id}`} className={textClass}>
+        <Link to={`/performer/${performer.id}`} className="text-primary">
           <div className="relative">
             <Avatar className="w-6 h-6 border border-pink-500">
               <AvatarImage src={performer.image} />
