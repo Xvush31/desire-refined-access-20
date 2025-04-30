@@ -126,7 +126,7 @@ function App() {
         <Route path="/auth/callback" element={<Layout><AuthCallback /></Layout>} />
         <Route path="/access-denied" element={<Layout><AccessDenied /></Layout>} />
 
-        {/* CreaVerse Routes - These use their own layout */}
+        {/* CreaVerse Routes - maintenant CreaVerse utilise sa propre instance de RevolutionaryNavigation */}
         <Route path="/creaverse" element={<CreaVerse />}>
           <Route index element={<div className="container mx-auto px-4 py-8 text-center">
             <h1 className="text-2xl font-bold mb-4">Bienvenue à CreaVerse</h1>

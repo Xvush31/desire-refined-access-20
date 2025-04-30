@@ -1,231 +1,173 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { toast } from "sonner";
-import { useTheme } from "@/hooks/use-theme";
-import { motion } from "framer-motion";
-
-import NavigationFooter from "../components/NavigationFooter";
-import SendMessageDialog from "@/components/SendMessageDialog";
-import ProfileHeader from "../components/profile/ProfileHeader";
+import { fetchPerformerById } from "../api/performers";
+import { PerformerData } from "../types/performer";
+import MainContent from "../components/profile/MainContent";
+import ProfileSections from "../components/profile/ProfileSections";
+import DynamicHeader from "../components/header/DynamicHeader";
 import LoadingState from "../components/profile/LoadingState";
 import NotFoundState from "../components/profile/NotFoundState";
-import MainContent from "../components/profile/MainContent";
-import ScrollToTopButton from "@/components/ui/scroll-to-top-button";
-import ProfileSections from "../components/profile/ProfileSections";
-import { useProfileData } from "../hooks/useProfileData";
-import { ContentItem } from "../components/content/ContentCard";
 import { useAuth } from "@/contexts/AuthContext";
-import RelationshipDashboard from "../components/relationship/RelationshipDashboard";
-import { 
-  getUserPerformerRelationship, 
-  toggleFollowingStatus, 
-  addRelationshipPoints 
-} from "../api/services/relationshipService";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { generateSampleContentItems } from "../api/utils/contentGenerators";
+import { ContentItem } from "../components/content/ContentCard";
+import { RelationshipLevel } from "../api/services/relationshipService";
+import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useRevolutionaryNavigation } from "@/hooks/use-revolutionary-navigation";
 
 const CreatorProfile: React.FC = () => {
   const { performerId } = useParams<{ performerId: string }>();
-  const { theme } = useTheme();
   const { currentUser } = useAuth();
-  const [isMessageDialogOpen, setIsMessageDialogOpen] = useState(false);
-  const [isRelationshipDialogOpen, setIsRelationshipDialogOpen] = useState(false);
-  const [relationship, setRelationship] = useState<any>(null);
+  const isMobile = useIsMobile();
+  const { isImmersiveMode, zoomLevel } = useRevolutionaryNavigation();
   
-  // Use our custom hook to handle profile data
-  const {
-    performer,
-    loading,
-    isFollowing,
-    showRevenue,
-    contentLayout,
-    activeTab,
-    contentItems,
-    trendingContent,
-    collections,
-    isOwner,
-    setShowRevenue,
-    setContentLayout,
-    setActiveTab,
-    handleSubscribe,
-    handleFollowToggle: originalHandleFollowToggle,
-    handleFilterByFormat
-  } = useProfileData(performerId);
-
-  // Load relationship data
+  const [performer, setPerformer] = useState<PerformerData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isOwner, setIsOwner] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [showRevenue, setShowRevenue] = useState(false);
+  const [contentLayout, setContentLayout] = useState<"grid" | "masonry" | "featured" | "flow">("grid");
+  const [activeTab, setActiveTab] = useState<string>("gallery");
+  const [sampleContentItems, setSampleContentItems] = useState<ContentItem[]>([]);
+  const [trendingContent, setTrendingContent] = useState<ContentItem[]>([]);
+  const [collections, setCollections] = useState<any[]>([]);
+  const [relationshipLevel, setRelationshipLevel] = useState<RelationshipLevel>(RelationshipLevel.None);
+  const [contentFormat, setContentFormat] = useState<"all" | "video" | "image" | "audio" | "text">("all");
+  
+  // Load performer data
   useEffect(() => {
-    const loadRelationship = async () => {
-      if (!performerId || !performer) return;
-      
+    const loadPerformer = async () => {
       try {
-        const userId = currentUser?.uid || "visitor";
-        const data = await getUserPerformerRelationship(userId, performer.id);
-        setRelationship(data);
-      } catch (error) {
-        console.error("Error loading relationship data:", error);
+        setLoading(true);
+        
+        if (!performerId) {
+          setError("No performer ID provided");
+          setLoading(false);
+          return;
+        }
+        
+        const fetchedPerformer = await fetchPerformerById(performerId);
+        setPerformer(fetchedPerformer);
+        
+        // Check if current user is the owner
+        if (currentUser && currentUser.uid === fetchedPerformer.id.toString()) {
+          setIsOwner(true);
+        }
+        
+        // Generate sample content items
+        const contentItems = generateSampleContentItems(20);
+        const trending = generateSampleContentItems(12, true);
+        
+        setSampleContentItems(contentItems);
+        setTrendingContent(trending);
+        
+        // Set sample collections
+        setCollections([
+          { id: 1, name: "Meilleurs moments", itemCount: 12 },
+          { id: 2, name: "Backstage", itemCount: 8 },
+          { id: 3, name: "Exclusivités", itemCount: 5 }
+        ]);
+        
+        // Set relationship level based on some logic
+        // This would normally come from a backend service
+        const randomLevel = Math.floor(Math.random() * 5) as RelationshipLevel;
+        setRelationshipLevel(isOwner ? RelationshipLevel.Creator : randomLevel);
+        
+        setLoading(false);
+      } catch (err: any) {
+        console.error("Error loading performer:", err);
+        setError(err.message || "Failed to load performer");
+        setLoading(false);
       }
     };
     
-    if (performer) {
-      loadRelationship();
-    }
-  }, [performerId, performer, currentUser]);
+    loadPerformer();
+  }, [performerId, currentUser]);
   
-  // Enhanced follow toggle with relationship update
-  const handleFollowToggle = async () => {
-    try {
-      if (!performer) return;
-      
-      const userId = currentUser?.uid || "visitor";
-      const result = await toggleFollowingStatus(userId, performer.id);
-      
-      // Update local following state
-      originalHandleFollowToggle();
-      
-      // Update relationship if needed
-      if (result && !isFollowing) {
-        // Add relationship points for following
-        const updatedRelationship = await addRelationshipPoints(
-          userId, 
-          performer.id, 
-          1, 
-          "subscription", 
-          "A commencé à suivre"
-        );
-        setRelationship(updatedRelationship);
-        
-        toast.success("Super-fan en devenir!", {
-          description: "Abonnez-vous pour débloquer plus d'interactions."
-        });
-      }
-    } catch (error) {
-      console.error("Error toggling follow status:", error);
-    }
+  // Action handlers
+  const handleToggleFollow = () => {
+    setIsFollowing(prev => !prev);
+    toast.success(isFollowing ? "Abonnement annulé" : "Vous êtes maintenant abonné");
   };
   
-  // Enhanced subscribe handler with relationship update
-  const handleSubscribeWithRelationship = async () => {
-    try {
-      if (!performer) return;
-      
-      // Call the original subscription handler
-      handleSubscribe();
-      
-      // Update relationship with substantial points
-      const userId = currentUser?.uid || "visitor";
-      const updatedRelationship = await addRelationshipPoints(
-        userId, 
-        performer.id, 
-        50, 
-        "subscription", 
-        "Abonnement mensuel"
-      );
-      
-      setRelationship(updatedRelationship);
-      
-      toast.success("Relation améliorée!", {
-        description: `Vous êtes maintenant ${updatedRelationship.level >= 3 ? 'super-fan' : 'fan'} de ${performer.displayName}.`
-      });
-    } catch (error) {
-      console.error("Error handling subscription:", error);
-    }
+  const handleSubscribe = () => {
+    toast.success("Redirection vers la page d'abonnement");
+    // Redirect to subscription page or open modal
+  };
+  
+  const handleSendMessage = () => {
+    toast.success("Envoi d'un message");
+    // Open message dialog
+  };
+  
+  const handleViewRelationship = () => {
+    toast.success("Affichage des détails de la relation");
+    // Navigate to relationship details or open modal
+  };
+  
+  const handleContentClick = (contentItem: ContentItem) => {
+    toast.success(`Contenu sélectionné: ${contentItem.title}`);
+    // Handle content item click
+  };
+  
+  const handleCollectionClick = (collection: any) => {
+    toast.success(`Collection sélectionnée: ${collection.name}`);
+    setActiveTab("collections");
+    // Handle collection click
+  };
+  
+  const filterByFormat = (format: "all" | "video" | "image" | "audio" | "text") => {
+    setContentFormat(format);
+    // In a real app, this would filter the content items
   };
   
   if (loading) {
     return <LoadingState />;
   }
   
-  if (!performer) {
-    return <NotFoundState />;
+  if (error || !performer) {
+    return <NotFoundState error={error} />;
   }
   
-  const handleSendMessage = () => {
-    setIsMessageDialogOpen(true);
-  };
-  
-  const handleViewRelationship = () => {
-    setIsRelationshipDialogOpen(true);
-  };
-  
-  const handleContentClick = (contentItem: ContentItem) => {
-    toast.info(`Ouverture de: ${contentItem.title}`);
-    // Implementation to be completed
-  };
-  
-  const handleCollectionClick = (collection: any) => {
-    toast.info(`Collection sélectionnée: ${collection.name}`);
-    // Implementation to be completed
-  };
-  
   return (
-    <div className={`min-h-screen ${theme === 'light' ? 'bg-gray-100' : 'bg-black'}`}>
-      {/* Header with navigation */}
-      <ProfileHeader 
-        username={performer?.username || ""}
+    <div className={`min-h-screen pt-0 ${isImmersiveMode ? 'pb-0' : 'pb-20'}`}>
+      <DynamicHeader 
         performer={performer}
+        isScrolled={false}
+        isFollowing={isFollowing}
       />
       
-      <MainContent
+      <MainContent 
         performer={performer}
         isOwner={isOwner}
         showRevenue={showRevenue}
         isFollowing={isFollowing}
         contentLayout={contentLayout}
         activeTab={activeTab}
-        sampleContentItems={contentItems}
-        onToggleRevenue={() => setShowRevenue(!showRevenue)}
-        onToggleFollow={handleFollowToggle}
-        onSubscribe={handleSubscribeWithRelationship}
+        sampleContentItems={sampleContentItems}
+        onToggleRevenue={() => setShowRevenue(prev => !prev)}
+        onToggleFollow={handleToggleFollow}
+        onSubscribe={handleSubscribe}
         onSendMessage={handleSendMessage}
         onViewRelationship={handleViewRelationship}
         setActiveTab={setActiveTab}
         setContentLayout={setContentLayout}
         handleContentClick={handleContentClick}
-        filterByFormat={handleFilterByFormat}
-        relationshipLevel={relationship?.level}
+        filterByFormat={filterByFormat}
+        relationshipLevel={relationshipLevel}
       />
       
-      {/* Content sections managed by ProfileSections component */}
-      <ProfileSections
+      <ProfileSections 
         activeTab={activeTab}
         contentLayout={contentLayout}
-        contentItems={contentItems}
+        contentItems={sampleContentItems}
         trendingContent={trendingContent}
         collections={collections}
         handleContentClick={handleContentClick}
         handleCollectionClick={handleCollectionClick}
       />
-      
-      {/* Navigation inférieure */}
-      <NavigationFooter
-        performerId={performer?.id || "visitor"} 
-        performerImage={performer?.image || "/placeholder.svg"}
-        performerName={performer?.username || "Visiteur"}
-      />
-      
-      <ScrollToTopButton threshold={200} />
-      
-      {/* Message Dialog */}
-      <SendMessageDialog 
-        performerName={performer?.displayName || ""} 
-        performerId={performer?.id}
-        isOpen={isMessageDialogOpen}
-        onOpenChange={setIsMessageDialogOpen}
-      />
-      
-      {/* Relationship Dialog */}
-      <Dialog open={isRelationshipDialogOpen} onOpenChange={setIsRelationshipDialogOpen}>
-        <DialogContent className="sm:max-w-md md:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Relation avec {performer.displayName}</DialogTitle>
-          </DialogHeader>
-          
-          <RelationshipDashboard 
-            performerId={performer.id} 
-            performerName={performer.displayName} 
-          />
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
