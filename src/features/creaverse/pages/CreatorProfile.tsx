@@ -1,9 +1,8 @@
 
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useTheme } from "@/hooks/use-theme";
-import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
 
 import NavigationFooter from "../components/NavigationFooter";
@@ -13,79 +12,34 @@ import LoadingState from "../components/profile/LoadingState";
 import NotFoundState from "../components/profile/NotFoundState";
 import MainContent from "../components/profile/MainContent";
 import ScrollToTopButton from "@/components/ui/scroll-to-top-button";
-import ContentCarousel from "../components/content/ContentCarousel";
-import ContentFlow from "../components/content/ContentFlow";
-import ContentCollections from "../components/content/ContentCollections";
-
-import { fetchPerformerData, fetchPerformerContent, fetchPerformerCollections, fetchTrendingContent } from "../api/performers";
-import { PerformerData } from "../types/performer";
+import ProfileSections from "../components/profile/ProfileSections";
+import { useProfileData } from "../hooks/useProfileData";
 import { ContentItem } from "../components/content/ContentCard";
 
 const CreatorProfile: React.FC = () => {
   const { performerId } = useParams<{ performerId: string }>();
-  const [performer, setPerformer] = useState<PerformerData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [contentLoading, setContentLoading] = useState(false);
-  const navigate = useNavigate();
-  const [isMessageDialogOpen, setIsMessageDialogOpen] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [activeTab, setActiveTab] = useState("gallery");
   const { theme } = useTheme();
-  const { currentUser } = useAuth() || { currentUser: null };
-  const [showRevenue, setShowRevenue] = useState(true);
-  const [contentLayout, setContentLayout] = useState<"grid" | "masonry" | "featured" | "flow">("grid");
+  const [isMessageDialogOpen, setIsMessageDialogOpen] = useState(false);
   
-  // Content states
-  const [contentItems, setContentItems] = useState<ContentItem[]>([]);
-  const [trendingContent, setTrendingContent] = useState<ContentItem[]>([]);
-  const [collections, setCollections] = useState<any[]>([]);
-  const [activeFormat, setActiveFormat] = useState<"all" | "video" | "image" | "audio" | "text">("all");
-  
-  useEffect(() => {
-    const loadPerformerData = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchPerformerData(performerId || "1");
-        setPerformer(data);
-      } catch (error) {
-        console.error("Erreur lors du chargement des données:", error);
-        toast.error("Impossible de charger les données du créateur");
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    loadPerformerData();
-  }, [performerId]);
-  
-  useEffect(() => {
-    const loadContent = async () => {
-      if (!performer) return;
-      
-      try {
-        setContentLoading(true);
-        
-        // Load content based on active format
-        const content = await fetchPerformerContent(performerId || "1", activeFormat);
-        setContentItems(content);
-        
-        // Load trending content
-        const trending = await fetchTrendingContent(8);
-        setTrendingContent(trending);
-        
-        // Load collections
-        const collections = await fetchPerformerCollections(performerId || "1");
-        setCollections(collections);
-      } catch (error) {
-        console.error("Erreur lors du chargement du contenu:", error);
-        toast.error("Impossible de charger le contenu du créateur");
-      } finally {
-        setContentLoading(false);
-      }
-    };
-    
-    loadContent();
-  }, [performer, performerId, activeFormat]);
+  // Use our custom hook to handle profile data
+  const {
+    performer,
+    loading,
+    isFollowing,
+    showRevenue,
+    contentLayout,
+    activeTab,
+    contentItems,
+    trendingContent,
+    collections,
+    isOwner,
+    setShowRevenue,
+    setContentLayout,
+    setActiveTab,
+    handleSubscribe,
+    handleFollowToggle,
+    handleFilterByFormat
+  } = useProfileData(performerId);
   
   if (loading) {
     return <LoadingState />;
@@ -95,71 +49,23 @@ const CreatorProfile: React.FC = () => {
     return <NotFoundState />;
   }
   
-  // Détermine si l'utilisateur actuel est le propriétaire du profil
-  const isOwner = currentUser && currentUser.uid === performer.id.toString();
-  
-  const handleSubscribe = () => {
-    if (!currentUser) {
-      // Enregistre la page actuelle pour y revenir après connexion
-      sessionStorage.setItem('returnTo', `/creaverse/performer/${performer.id}`);
-      navigate('/login');
-      toast.info("Connectez-vous pour vous abonner à ce créateur");
-      return;
-    }
-    navigate(`/subscription?creator=${performer.id}`);
-    toast.success("Redirection vers l'abonnement");
-  };
-
-  const handleFollowToggle = () => {
-    if (!currentUser) {
-      // Enregistre la page actuelle pour y revenir après connexion
-      sessionStorage.setItem('returnTo', `/creaverse/performer/${performer.id}`);
-      navigate('/login');
-      toast.info("Connectez-vous pour suivre ce créateur");
-      return;
-    }
-    setIsFollowing(!isFollowing);
-    toast.success(isFollowing ? 
-      `Vous ne suivez plus ${performer.displayName}` : 
-      `Vous suivez maintenant ${performer.displayName}`
-    );
-  };
-  
   const handleSendMessage = () => {
-    if (!currentUser) {
-      // Enregistre la page actuelle pour y revenir après connexion
-      sessionStorage.setItem('returnTo', `/creaverse/performer/${performer.id}`);
-      navigate('/login');
-      toast.info("Connectez-vous pour envoyer un message à ce créateur");
-      return;
-    }
     setIsMessageDialogOpen(true);
   };
   
   const handleContentClick = (contentItem: ContentItem) => {
-    if (contentItem.type !== "standard" && !currentUser) {
-      // Enregistre la page actuelle pour y revenir après connexion
-      sessionStorage.setItem('returnTo', `/creaverse/performer/${performer.id}`);
-      navigate('/login');
-      toast.info("Connectez-vous pour accéder au contenu premium");
-      return;
-    }
     toast.info(`Ouverture de: ${contentItem.title}`);
-    // Implémentation de l'ouverture de contenu à faire
-  };
-  
-  const handleFilterByFormat = (format: "all" | "video" | "image" | "audio" | "text") => {
-    setActiveFormat(format);
+    // Implementation to be completed
   };
   
   const handleCollectionClick = (collection: any) => {
     toast.info(`Collection sélectionnée: ${collection.name}`);
-    // Implementation de l'affichage de la collection à faire
+    // Implementation to be completed
   };
   
   return (
     <div className={`min-h-screen ${theme === 'light' ? 'bg-gray-100' : 'bg-black'}`}>
-      {/* Header avec navigation */}
+      {/* Header with navigation */}
       <ProfileHeader 
         username={performer?.username || ""}
         performer={performer}
@@ -183,65 +89,22 @@ const CreatorProfile: React.FC = () => {
         filterByFormat={handleFilterByFormat}
       />
       
-      {/* Sections de contenu selon le layout sélectionné - visible uniquement sur l'onglet Galerie */}
-      {activeTab === "gallery" && (
-        <motion.div 
-          className="px-4 pb-20"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          {/* Contenu en flux vertical animé */}
-          {contentLayout === "flow" && (
-            <ContentFlow 
-              items={contentItems}
-              onItemClick={handleContentClick}
-            />
-          )}
-          
-          {/* Collections thématiques */}
-          {collections.length > 0 && (
-            <ContentCollections 
-              collections={collections}
-              onCollectionClick={handleCollectionClick}
-            />
-          )}
-          
-          {/* Contenus en tendance */}
-          <ContentCarousel
-            title="En tendance"
-            items={trendingContent}
-            type="trending"
-            onItemClick={handleContentClick}
-          />
-          
-          {/* Contenus premium */}
-          <ContentCarousel
-            title="Contenu Premium"
-            items={contentItems.filter(item => item.type === "premium").slice(0, 8)}
-            type="premium"
-            onItemClick={handleContentClick}
-          />
-          
-          {/* Afficher les collections en carrousel */}
-          {collections.length > 0 && collections.map((collection) => (
-            <ContentCarousel
-              key={collection.id}
-              title={collection.name}
-              items={contentItems.slice(0, 6)} // Pour la démo, on utilise les mêmes items
-              type="collection"
-              collectionName={collection.name}
-              onItemClick={handleContentClick}
-            />
-          ))}
-        </motion.div>
-      )}
+      {/* Content sections managed by ProfileSections component */}
+      <ProfileSections
+        activeTab={activeTab}
+        contentLayout={contentLayout}
+        contentItems={contentItems}
+        trendingContent={trendingContent}
+        collections={collections}
+        handleContentClick={handleContentClick}
+        handleCollectionClick={handleCollectionClick}
+      />
       
       {/* Navigation inférieure */}
       <NavigationFooter
-        performerId={currentUser?.uid || "visitor"} 
-        performerImage={currentUser ? performer?.image || "/placeholder.svg" : "/placeholder.svg"}
-        performerName={currentUser?.uid || "Visiteur"}
+        performerId={performer?.id || "visitor"} 
+        performerImage={performer?.image || "/placeholder.svg"}
+        performerName={performer?.username || "Visiteur"}
       />
       
       <ScrollToTopButton threshold={200} />
