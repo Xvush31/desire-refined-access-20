@@ -13,9 +13,10 @@ interface ProfileHeaderProps {
   displayName?: string;
   profileImage?: string;
   tier?: "bronze" | "silver" | "gold" | "platinum" | "diamond";
-  status?: "online" | "offline" | "streaming" | "away";
+  status?: "online" | "offline" | "streaming" | "away" | "creating" | "responding";
   lastActive?: string;
   performer?: PerformerData;
+  activityMessage?: string;
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ 
@@ -25,7 +26,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   tier,
   status = "offline",
   lastActive,
-  performer
+  performer,
+  activityMessage
 }) => {
   const { theme } = useTheme();
   const navigate = useNavigate();
@@ -45,6 +47,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
         onBack={() => navigate("/")}
         status={status}
         lastActive={lastActive}
+        activityMessage={activityMessage}
       />
       
       {isOwner && (
