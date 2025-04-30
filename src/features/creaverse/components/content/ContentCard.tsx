@@ -31,6 +31,7 @@ interface ContentCardProps {
   item: ContentItem;
   showMetrics?: boolean;
   layout?: "grid" | "masonry" | "featured" | "flow";
+  isFeatured?: boolean;
   onClick?: () => void;
 }
 
@@ -38,6 +39,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
   item,
   showMetrics = false,
   layout = "grid",
+  isFeatured = false,
   onClick
 }) => {
   const getTypeColor = () => {
