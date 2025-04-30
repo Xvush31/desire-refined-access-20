@@ -5,27 +5,33 @@ import { PerformerData } from "../types/performer";
 const mockPerformers: Record<string, PerformerData> = {
   "1": {
     id: 1,
-    username: "sophia_star",
-    displayName: "Sophia Star",
+    username: "juliesky",
+    displayName: "Julie Sky",
     description: "Créatrice de contenu lifestyle et voyage 🌍✨",
     image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3",
-    followers: "432K",
+    followers: "64.4K",
     tier: "gold",
-    tierProgress: 65,
+    tierProgress: 73,
+    tierRevenue: "80% de revenus",
+    nextTierRevenue: "90% de revenus",
     isLive: false,
     isActive: true,
     lastActive: "il y a 5 min",
     nextEvent: {
-      type: "Live Stream",
-      timeRemaining: "2h"
+      type: "live",
+      title: "Session photo spéciale abonnés",
+      timeRemaining: "23h 45m",
+      date: "Demain",
+      time: "20:00"
     },
     stats: {
-      monthlyRevenue: 8420,
+      monthlyRevenue: 4752,
       monthlyRevenueChange: 12,
-      watchMinutes: "1.2M",
-      retentionRate: "78%",
-      superfans: 1240,
-      rating: 4.8 // Added rating
+      watchMinutes: "237.0K",
+      retentionRate: "87%",
+      superfans: 3200,
+      subscriptions: 68,
+      rating: 4.8
     }
   },
   "2": {
@@ -37,15 +43,25 @@ const mockPerformers: Record<string, PerformerData> = {
     followers: "215K",
     tier: "silver",
     tierProgress: 40,
+    tierRevenue: "70% de revenus",
+    nextTierRevenue: "80% de revenus",
     isLive: true,
     isActive: true,
+    nextEvent: {
+      type: "workshop",
+      title: "Atelier photo en extérieur",
+      timeRemaining: "2j 5h",
+      date: "Mercredi",
+      time: "14:00"
+    },
     stats: {
       monthlyRevenue: 4150,
       monthlyRevenueChange: -3,
       watchMinutes: "850K",
       retentionRate: "64%",
       superfans: 680,
-      rating: 4.5 // Added rating
+      subscriptions: 42,
+      rating: 4.5
     }
   },
   "3": {
@@ -57,12 +73,17 @@ const mockPerformers: Record<string, PerformerData> = {
     followers: "678K",
     tier: "platinum",
     tierProgress: 85,
+    tierRevenue: "90% de revenus",
+    nextTierRevenue: "95% de revenus",
     isLive: false,
     isActive: false,
     lastActive: "il y a 3h",
     nextEvent: {
       type: "Workshop",
-      timeRemaining: "2j"
+      title: "Séance nutrition et recettes",
+      timeRemaining: "2j",
+      date: "Vendredi",
+      time: "18:30"
     },
     stats: {
       monthlyRevenue: 12340,
@@ -70,7 +91,8 @@ const mockPerformers: Record<string, PerformerData> = {
       watchMinutes: "2.4M",
       retentionRate: "82%",
       superfans: 2100,
-      rating: 4.9 // Added rating
+      subscriptions: 145,
+      rating: 4.9
     }
   }
 };

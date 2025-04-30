@@ -3,7 +3,7 @@ import React from "react";
 import { useTheme } from "@/hooks/use-theme";
 import { Button } from "@/components/ui/button";
 import { EyeIcon, EyeOffIcon, TrendingUp, TrendingDown } from "lucide-react";
-import { Area, AreaChart, ResponsiveContainer, Tooltip } from "recharts";
+import { Area, AreaChart, ResponsiveContainer } from "recharts";
 
 interface ProfileStatsProps {
   tier: string;
@@ -44,99 +44,72 @@ const generateRevenueData = (baseValue: number, fluctuation: number) => {
 };
 
 const ProfileStats: React.FC<ProfileStatsProps> = ({
-  tier,
-  nextTier,
-  tierProgress,
   isOwner,
   showRevenue,
   onToggleRevenue,
   stats
 }) => {
   const { theme } = useTheme();
-  const bgClass = theme === 'light' ? 'bg-gray-100' : 'bg-zinc-800';
+  const bgClass = theme === 'light' ? 'bg-gray-50' : 'bg-zinc-800/70';
   
   // Générer des données de revenus simulées
   const revenueData = generateRevenueData(stats.monthlyRevenue, stats.monthlyRevenue * 0.1);
   
   // Couleur du graphique basée sur la croissance
-  const chartColor = stats.monthlyRevenueChange >= 0 ? "#4CAF50" : "#F44336";
+  const chartColor = stats.monthlyRevenueChange >= 0 ? "#10b981" : "#ef4444";
   
   if (!isOwner) return null;
   
   return (
     <div className="mt-2">
-      <div className={`p-3 rounded-lg ${bgClass} mb-3`}>
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium">Revenus mensuels</span>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={onToggleRevenue} 
-            className="h-6 w-6"
-          >
-            {showRevenue ? <EyeIcon size={14} /> : <EyeOffIcon size={14} />}
-          </Button>
+      <div className={`p-4 rounded-xl ${bgClass} mb-3`}>
+        <div className="flex items-start justify-between mb-2">
+          <span className="text-lg font-medium">Revenus ce mois</span>
+          <div className="flex items-center">
+            {showRevenue ? (
+              <div className="flex items-center">
+                <span className="text-2xl font-bold mr-2">${stats.monthlyRevenue.toLocaleString('fr-FR')}</span>
+                <span className={`${stats.monthlyRevenueChange >= 0 ? 'text-green-500' : 'text-red-500'} font-medium text-sm flex items-center`}>
+                  {stats.monthlyRevenueChange >= 0 ? '↗' : '↘'} {Math.abs(stats.monthlyRevenueChange)}%
+                </span>
+              </div>
+            ) : (
+              <span className="text-muted-foreground">Masqués</span>
+            )}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={onToggleRevenue} 
+              className="ml-2 h-8 w-8"
+            >
+              {showRevenue ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />}
+            </Button>
+          </div>
         </div>
         
-        {showRevenue ? (
-          <>
-            <div className="flex items-baseline">
-              <span className="text-lg font-bold mr-2">{stats.monthlyRevenue.toLocaleString('fr-FR')}€</span>
-              <span className={`text-xs flex items-center gap-1 ${stats.monthlyRevenueChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                {stats.monthlyRevenueChange >= 0 ? (
-                  <>
-                    <TrendingUp size={12} />
-                    +{stats.monthlyRevenueChange}%
-                  </>
-                ) : (
-                  <>
-                    <TrendingDown size={12} />
-                    {stats.monthlyRevenueChange}%
-                  </>
-                )}
-              </span>
-            </div>
-            
-            {/* Mini graphique de revenus */}
-            <div className="h-20 mt-1">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart
-                  data={revenueData}
-                  margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
-                >
-                  <defs>
-                    <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={chartColor} stopOpacity={0.8} />
-                      <stop offset="95%" stopColor={chartColor} stopOpacity={0.1} />
-                    </linearGradient>
-                  </defs>
-                  <Tooltip 
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        return (
-                          <div className={`px-2 py-1 ${theme === 'light' ? 'bg-white' : 'bg-zinc-900'} shadow rounded text-xs`}>
-                            Jour {payload[0].payload.day}: {payload[0].value}€
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="value" 
-                    stroke={chartColor} 
-                    strokeWidth={2}
-                    fill="url(#revenueGradient)" 
-                    animationDuration={1000}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </>
-        ) : (
-          <div className="text-center py-4 text-muted-foreground">
-            <p className="text-sm">Revenus masqués</p>
+        {showRevenue && (
+          <div className="h-24 mt-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart
+                data={revenueData}
+                margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+              >
+                <defs>
+                  <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={chartColor} stopOpacity={0.8} />
+                    <stop offset="95%" stopColor={chartColor} stopOpacity={0.1} />
+                  </linearGradient>
+                </defs>
+                <Area 
+                  type="monotone" 
+                  dataKey="value" 
+                  stroke={chartColor} 
+                  strokeWidth={2}
+                  fill="url(#revenueGradient)" 
+                  animationDuration={1000}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         )}
       </div>
