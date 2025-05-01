@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { Play, Pause, Volume2, VolumeX, Heart, Share2, Info } from "lucide-react";
 import { useOptimizedLazyLoading } from "@/hooks/useOptimizedLazyLoading";

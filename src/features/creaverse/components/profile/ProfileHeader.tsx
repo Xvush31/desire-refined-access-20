@@ -31,7 +31,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   const isOwner = currentUser && performer && currentUser.uid === performer.id.toString();
 
   return (
-    <div className="relative">
+    <div className="w-full relative">
       <DynamicHeader
         username={username}
         showBackButton={true}

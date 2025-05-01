@@ -69,7 +69,7 @@ const CreatorProfile: React.FC = () => {
   }
 
   return (
-    <div className={`min-h-screen ${theme === 'light' ? 'bg-gray-50' : 'bg-black/90'}`}>
+    <div className="min-h-screen w-full bg-background">
       {/* Profile Header */}
       <ProfileHeader 
         username={performer.username} 

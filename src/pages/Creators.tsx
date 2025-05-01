@@ -1,6 +1,6 @@
-
 import React, { useState, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
@@ -170,15 +170,15 @@ const Creators: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
       
-      <main className="py-4">
+      <main className="py-4 flex-1">
         <div className="container max-w-md mx-auto px-4">
           <h1 className="text-2xl font-bold mb-4 text-center animated-gradient">Feed des créateurs</h1>
           
           <ScrollArea 
-            className="h-[calc(100vh-130px)]" 
+            className="h-[calc(100vh-170px)]" 
             onScrollCapture={handleScroll}
           >
             <div className="pb-6">
@@ -199,6 +199,8 @@ const Creators: React.FC = () => {
           </ScrollArea>
         </div>
       </main>
+      
+      <Footer />
     </div>
   );
 };

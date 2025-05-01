@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Play } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface TrendingVideo {
   id: number;
@@ -17,6 +18,13 @@ interface TrendingPromoRowProps {
 }
 
 const TrendingPromoRow: React.FC<TrendingPromoRowProps> = ({ videos }) => {
+  const handleVideoClick = (e: React.MouseEvent, video: TrendingVideo) => {
+    e.preventDefault();
+    toast.info(`Redirection vers la vidéo: ${video.title}`);
+    // La vraie redirection serait ici
+    window.location.href = `/video/${video.id}`;
+  };
+
   return (
     <div className="mb-6 w-full">
       <h3 className="text-lg font-semibold mb-2 text-center animated-gradient">Vidéos tendances</h3>
@@ -25,6 +33,7 @@ const TrendingPromoRow: React.FC<TrendingPromoRowProps> = ({ videos }) => {
           <Link 
             key={video.id} 
             to={`/video/${video.id}`}
+            onClick={(e) => handleVideoClick(e, video)}
             className="relative overflow-hidden rounded-lg group"
           >
             <div className="relative aspect-video">

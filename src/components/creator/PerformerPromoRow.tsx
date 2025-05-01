@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { toast } from 'sonner';
 
 interface Performer {
   id: number;
@@ -16,6 +17,13 @@ interface PerformerPromoRowProps {
 }
 
 const PerformerPromoRow: React.FC<PerformerPromoRowProps> = ({ performers }) => {
+  const handleCreatorClick = (e: React.MouseEvent, performer: Performer) => {
+    e.preventDefault();
+    toast.info(`Redirection vers le profil de ${performer.name}`);
+    // La vraie redirection serait ici
+    window.location.href = `/creaverse-app/performer/${performer.id}`;
+  };
+
   return (
     <div className="mb-6 w-full">
       <h3 className="text-lg font-semibold mb-2 text-center animated-gradient">Créateurs populaires</h3>
@@ -24,6 +32,7 @@ const PerformerPromoRow: React.FC<PerformerPromoRowProps> = ({ performers }) => 
           <Link 
             key={performer.id} 
             to={`/creaverse-app/performer/${performer.id}`}
+            onClick={(e) => handleCreatorClick(e, performer)}
             className="relative rounded-lg group bg-card border border-border p-3 flex flex-col items-center"
           >
             <Avatar className="w-16 h-16 mb-2 border-2 border-pink-500">

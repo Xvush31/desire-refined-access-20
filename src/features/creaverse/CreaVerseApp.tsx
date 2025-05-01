@@ -16,7 +16,7 @@ const CreaVerseApp = () => (
   <TooltipProvider>
     <Toaster />
     <Sonner />
-    <div className="creaverse-container">
+    <div className="creaverse-container w-full min-h-screen bg-background">
       <Routes>
         <Route path="/" element={<Navigate to="/creaverse-app/performer/1" replace />} />
         <Route path="/performer/:id" element={<CreatorProfile />} />

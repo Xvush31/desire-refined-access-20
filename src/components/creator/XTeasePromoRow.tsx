@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Play } from 'lucide-react';
 import { useXTeaseInteractivity } from '@/hooks/useXTeaseInteractivity';
+import { toast } from 'sonner';
 
 interface XTeaseVideo {
   id: number;
@@ -32,10 +33,18 @@ const XTeasePromoRow: React.FC<XTeasePromoRowProps> = ({ videos }) => {
 const XTeaseThumb: React.FC<{ video: XTeaseVideo }> = ({ video }) => {
   const { isFavorite } = useXTeaseInteractivity({ videoId: video.id });
   
+  const handleVideoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    toast.info(`Redirection vers XTease: ${video.title}`);
+    // La vraie redirection serait ici
+    window.location.href = `/xtease/${video.id}`;
+  };
+  
   return (
     <Link 
       key={video.id} 
       to={`/xtease/${video.id}`}
+      onClick={handleVideoClick}
       className="relative overflow-hidden rounded-lg group"
     >
       <div className="relative aspect-[9/16]">
