@@ -6,7 +6,11 @@ import { Button } from "@/components/ui/button";
 import NavigationFooter from "./components/NavigationFooter";
 import { toast } from "sonner";
 import RevolutionaryNavigation from "@/components/navigation/RevolutionaryNavigation";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./styles/creaverse.css"; // Import des styles spécifiques à CreaVerse
+
+// Create a client for React Query
+const queryClient = new QueryClient();
 
 /**
  * CreaVerse - L'univers des créateurs de XVush
@@ -56,45 +60,47 @@ const CreaVerse: React.FC = () => {
   }, [currentUser, isPerformerProfilePath]);
   
   return (
-    <RevolutionaryNavigation>
-      <div className="min-h-screen bg-background pb-16 creaverse-container">
-        {isMainCreaversePage && (
-          <div className="container mx-auto px-4 py-8 text-center">
-            <h1 className="text-2xl font-bold mb-4">Bienvenue à CreaVerse</h1>
-            <p className="mb-6">L'univers des créateurs de XVush</p>
-            
-            {showLimitedView ? (
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button asChild variant="default" className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white">
-                  <Link to="/login">Se connecter</Link>
-                </Button>
-                <Button asChild variant="secondary">
-                  <Link to="/">Retourner à l'accueil</Link>
-                </Button>
-              </div>
-            ) : (
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button asChild variant="default" className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white">
-                  <Link to={`/creaverse/performer/${currentUser.uid}`}>Mon profil</Link>
-                </Button>
-                <Button asChild variant="outline">
-                  <Link to={`/creaverse/creator/${currentUser.uid}/dashboard`}>Mon tableau de bord</Link>
-                </Button>
-                <Button asChild variant="secondary">
-                  <Link to="/">Retourner à l'accueil</Link>
-                </Button>
-              </div>
-            )}
-          </div>
-        )}
-        <Outlet />
-        <NavigationFooter 
-          performerId={currentUser?.uid || "visitor"} 
-          performerImage="/placeholder.svg"
-          performerName={currentUser?.uid || "Visiteur"}
-        />
-      </div>
-    </RevolutionaryNavigation>
+    <QueryClientProvider client={queryClient}>
+      <RevolutionaryNavigation>
+        <div className="min-h-screen bg-background pb-16 creaverse-container">
+          {isMainCreaversePage && (
+            <div className="container mx-auto px-4 py-8 text-center">
+              <h1 className="text-2xl font-bold mb-4">Bienvenue à CreaVerse</h1>
+              <p className="mb-6">L'univers des créateurs de XVush</p>
+              
+              {showLimitedView ? (
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button asChild variant="default" className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white">
+                    <Link to="/login">Se connecter</Link>
+                  </Button>
+                  <Button asChild variant="secondary">
+                    <Link to="/">Retourner à l'accueil</Link>
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button asChild variant="default" className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white">
+                    <Link to={`/creaverse/performer/${currentUser.uid}`}>Mon profil</Link>
+                  </Button>
+                  <Button asChild variant="outline">
+                    <Link to={`/creaverse/creator/${currentUser.uid}/dashboard`}>Mon tableau de bord</Link>
+                  </Button>
+                  <Button asChild variant="secondary">
+                    <Link to="/">Retourner à l'accueil</Link>
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+          <Outlet />
+          <NavigationFooter 
+            performerId={currentUser?.uid || "visitor"} 
+            performerImage="/placeholder.svg"
+            performerName={currentUser?.uid || "Visiteur"}
+          />
+        </div>
+      </RevolutionaryNavigation>
+    </QueryClientProvider>
   );
 };
 
