@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import ContentGrid, { Content, ContentCollection } from '@/components/ui/ContentGrid';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -107,7 +106,16 @@ const journeyMilestones = [
   }
 ];
 
-const feedbackMessages = [
+// Properly typed feedback messages
+interface FeedbackMessage {
+  id: string;
+  username: string;
+  message: string;
+  timestamp: string;
+  type: 'comment' | 'request' | 'appreciation';
+}
+
+const feedbackMessages: FeedbackMessage[] = [
   {
     id: '1',
     username: 'dance_lover',
@@ -152,7 +160,16 @@ const feedbackMessages = [
   }
 ];
 
-const premiumContent = [
+// Properly typed premium content
+interface ContentItem {
+  id: string;
+  title: string;
+  type: 'premium' | 'standard' | 'vip';
+  category: string;
+  views: number;
+}
+
+const premiumContent: ContentItem[] = [
   { id: '1', title: 'Tutoriel Danse Contemporaine Vol. 1', type: 'premium', category: 'danse', views: 18500 },
   { id: '2', title: 'Séance Photo Behind The Scenes', type: 'premium', category: 'photo', views: 12700 },
   { id: '3', title: 'Routine d\'Échauffement Pro', type: 'standard', category: 'fitness', views: 9400 },

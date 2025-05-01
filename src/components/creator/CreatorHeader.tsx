@@ -64,10 +64,10 @@ const CreatorHeader: React.FC<CreatorHeaderProps> = ({
         <div className="relative">
           <div className="absolute inset-0 rounded-full bg-gradient-to-br from-pink-400 via-orange-300 to-yellow-300 -z-10 scale-105"></div>
           <ProfileAvatar 
-            image={performer.image}
-            displayName={performer.displayName}
+            src={performer.image}
+            alt={performer.displayName}
             size="xl"
-            status={creatorStatus}
+            status={creatorStatus as "online" | "offline" | "busy"}
             hasStory={hasStory}
           />
         </div>
