@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import { Card, CardContent } from "@/components/ui/card";
 import CreatorCard from "@/components/CreatorCard";
 
+// Données mockées pour les créateurs
 const creators = [
   {
     id: 1,
@@ -14,7 +15,12 @@ const creators = [
     subscriberCount: "124K",
     contentCount: 347,
     tier: "platinum" as const,
-    isOnline: true
+    isOnline: true,
+    category: "Lifestyle",
+    followers: 124000,
+    revenue: "17.8K",
+    trending: true,
+    description: "Créatrice de contenu lifestyle et mode. Partage son quotidien entre Paris et Milan."
   },
   {
     id: 2,
@@ -25,7 +31,12 @@ const creators = [
     subscriberCount: "94K",
     contentCount: 218,
     tier: "gold" as const,
-    isOnline: false
+    isOnline: false,
+    category: "Fitness",
+    followers: 94000,
+    revenue: "12.5K",
+    trending: false,
+    description: "Coach fitness et nutrition. Spécialiste en remise en forme et bien-être."
   },
   {
     id: 3,
@@ -36,7 +47,12 @@ const creators = [
     subscriberCount: "56K",
     contentCount: 192,
     tier: "silver" as const,
-    isOnline: true
+    isOnline: true,
+    category: "Sport",
+    followers: 56000,
+    revenue: "8.3K",
+    trending: false,
+    description: "Athlète professionnel partageant ses entraînements et compétitions internationales."
   },
   {
     id: 4,
@@ -47,7 +63,12 @@ const creators = [
     subscriberCount: "210K",
     contentCount: 415,
     tier: "diamond" as const,
-    isOnline: false
+    isOnline: false,
+    category: "Arts",
+    followers: 210000,
+    revenue: "26.4K",
+    trending: true,
+    description: "Artiste visuelle et photographe. Exposition de ses œuvres et techniques artistiques."
   },
   {
     id: 5,
@@ -58,7 +79,12 @@ const creators = [
     subscriberCount: "78K",
     contentCount: 246,
     tier: "bronze" as const,
-    isOnline: true
+    isOnline: true,
+    category: "Tech",
+    followers: 78000,
+    revenue: "9.1K",
+    trending: false,
+    description: "Expert en nouvelles technologies. Découvrez les dernières innovations technologiques."
   }
 ];
 
@@ -73,16 +99,7 @@ const Creators: React.FC = () => {
           {creators.map(creator => (
             <Card key={creator.id} className="overflow-hidden border border-border hover:border-primary/50 transition-colors">
               <CardContent className="p-0">
-                <CreatorCard 
-                  name={creator.name}
-                  username={creator.username}
-                  avatar={creator.avatar}
-                  coverImage={creator.coverImage}
-                  subscriberCount={creator.subscriberCount}
-                  contentCount={creator.contentCount}
-                  tier={creator.tier}
-                  isOnline={creator.isOnline}
-                />
+                <CreatorCard creator={creator} />
               </CardContent>
             </Card>
           ))}
