@@ -13,7 +13,7 @@ interface UpcomingEventProps {
   onSubscribe?: () => void;
 }
 
-const UpcomingEvent = ({ 
+export const UpcomingEvent = ({ 
   title, 
   time, 
   type, 
@@ -49,5 +49,3 @@ const UpcomingEvent = ({
     </div>
   );
 };
-
-export default UpcomingEvent;

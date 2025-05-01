@@ -1,11 +1,15 @@
 
 import React, { useState } from 'react';
-import CreatorHeader from '../components/creator/CreatorHeader';
 import ContentGrid, { Content, ContentCollection } from '@/components/ui/ContentGrid';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SubscriptionPanel from '../components/subscription/SubscriptionPanel';
 import { toast } from 'sonner';
 import { useRevolutionaryNavigation } from '@/hooks/use-revolutionary-navigation';
+import CreatorHeader from '../components/creator/CreatorHeader';
+import CreatorDNA from '../components/creator/CreatorDNA';
+import CreatorJourney from '../components/creator/CreatorJourney';
+import FeedbackLoop from '../components/creator/FeedbackLoop';
+import ValueVault from '../components/creator/ValueVault';
 
 // Données de test pour le créateur
 const creatorData = {
@@ -26,6 +30,138 @@ const creatorData = {
   },
   isOnline: true
 };
+
+// Données de test pour les compétences
+const creatorSkills = [
+  "Photographie professionnelle", 
+  "Danse moderne", 
+  "Chorégraphies originales", 
+  "Modélisme", 
+  "Direction artistique",
+  "Vidéographie"
+];
+
+const creatorStyle = [
+  "Élégant", 
+  "Artistique", 
+  "Contemporain", 
+  "Sensuel", 
+  "Créatif", 
+  "Expressif",
+  "Coloré"
+];
+
+const creatorAchievements = [
+  "Top 1% Creaverse", 
+  "100k+ abonnés en 3 mois", 
+  "Collaboration avec Prada", 
+  "Vidéo à 1M vues",
+  "Award Creator XVush 2023"
+];
+
+const journeyMilestones = [
+  { 
+    id: '1', 
+    date: 'Jan 2022', 
+    title: 'Début sur Creaverse', 
+    description: 'Premier jour sur la plateforme avec seulement 100 abonnés venant de mes autres réseaux sociaux.',
+    metricBefore: 0,
+    metricAfter: 100,
+    metricLabel: 'Abonnés'
+  },
+  { 
+    id: '2', 
+    date: 'Mars 2022', 
+    title: 'Première publication virale', 
+    description: 'Ma chorégraphie sur "Running Up That Hill" a été partagée par plusieurs influenceurs.',
+    metricBefore: 2500,
+    metricAfter: 15000,
+    metricLabel: 'Vues'
+  },
+  { 
+    id: '3', 
+    date: 'Juin 2022', 
+    title: 'Niveau Argent atteint', 
+    description: 'Franchissement du palier de 10 000 abonnés et qualification pour le programme de monétisation Silver.',
+    metricBefore: 9800,
+    metricAfter: 12000,
+    metricLabel: 'Abonnés'
+  },
+  { 
+    id: '4', 
+    date: 'Sept 2022', 
+    title: 'Collaboration avec XVush', 
+    description: 'Sélection comme ambassadrice pour la nouvelle campagne de danse de la plateforme.',
+    metricBefore: 5000,
+    metricAfter: 18500,
+    metricLabel: 'Revenus ($)'
+  },
+  { 
+    id: '5', 
+    date: 'Déc 2022', 
+    title: 'Niveau Or atteint', 
+    description: 'Franchissement du palier des 20 000 abonnés et qualification pour le programme Gold avec 80% de partage de revenus.',
+    metricBefore: 19500,
+    metricAfter: 23800,
+    metricLabel: 'Abonnés'
+  }
+];
+
+const feedbackMessages = [
+  {
+    id: '1',
+    username: 'dance_lover',
+    message: "Ton dernier tutoriel de danse était incroyable ! J'ai tout de suite réussi les mouvements grâce à tes explications.",
+    timestamp: 'il y a 2 heures',
+    type: 'comment'
+  },
+  {
+    id: '2',
+    username: 'photo_gal',
+    message: "Les couleurs dans ta dernière séance photo sont à tomber. Quel appareil utilises-tu ?",
+    timestamp: 'il y a 5 heures',
+    type: 'comment'
+  },
+  {
+    id: '3',
+    username: 'mike_j',
+    message: "Est-ce que tu pourrais faire un tutoriel sur les techniques de pose en photographie ?",
+    timestamp: 'hier',
+    type: 'request'
+  },
+  {
+    id: '4',
+    username: 'dance_academy',
+    message: "Nous adorerions te voir collaborer avec notre école pour un workshop en ligne !",
+    timestamp: 'il y a 2 jours',
+    type: 'request'
+  },
+  {
+    id: '5',
+    username: 'fashionista',
+    message: "Tu es tellement inspirante ! J'adore chacune de tes publications.",
+    timestamp: 'il y a 3 jours',
+    type: 'appreciation'
+  },
+  {
+    id: '6',
+    username: 'creative_soul',
+    message: "Ta créativité me donne envie de me dépasser chaque jour. Merci pour ton travail !",
+    timestamp: 'il y a 5 jours',
+    type: 'appreciation'
+  }
+];
+
+const premiumContent = [
+  { id: '1', title: 'Tutoriel Danse Contemporaine Vol. 1', type: 'premium', category: 'danse', views: 18500 },
+  { id: '2', title: 'Séance Photo Behind The Scenes', type: 'premium', category: 'photo', views: 12700 },
+  { id: '3', title: 'Routine d\'Échauffement Pro', type: 'standard', category: 'fitness', views: 9400 },
+  { id: '4', title: 'Masterclass Expression Corporelle', type: 'vip', category: 'danse', views: 7600 },
+  { id: '5', title: 'Pack Lightroom Signature', type: 'premium', category: 'photo', views: 15300 },
+  { id: '6', title: 'Interview Exclusive Avec Chorégraphe', type: 'vip', category: 'interviews', views: 6200 },
+  { id: '7', title: 'Tutoriel Effets Spéciaux Photo', type: 'premium', category: 'photo', views: 11800 },
+  { id: '8', title: 'Cours Privé Danse Fusion', type: 'vip', category: 'danse', views: 8900 }
+];
 
 // Données de test pour les contenus
 const mockContents: Content[] = [
@@ -152,11 +288,17 @@ const Creator = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <CreatorHeader 
-        {...creatorData} 
+        name={creatorData.name}
+        username={creatorData.username}
+        avatar={creatorData.avatar}
+        bio={creatorData.bio}
+        tier={creatorData.tier}
+        metrics={creatorData.metrics}
         upcomingEvent={eventData}
         onSubscribeToEvent={handleSubscribeToEvent}
         onFollow={handleFollow}
         isFollowing={isFollowing}
+        isOnline={creatorData.isOnline}
       />
       
       <div className="mt-8">
@@ -164,7 +306,7 @@ const Creator = () => {
           <TabsList className="w-full justify-start overflow-x-auto">
             <TabsTrigger value="gallery">Galerie</TabsTrigger>
             <TabsTrigger value="collections">Collections</TabsTrigger>
-            <TabsTrigger value="about">À propos</TabsTrigger>
+            <TabsTrigger value="profile">Profil</TabsTrigger>
             <TabsTrigger value="subscribe">S'abonner</TabsTrigger>
           </TabsList>
           
@@ -211,36 +353,26 @@ const Creator = () => {
               />
             </TabsContent>
             
-            <TabsContent value="about" className="mt-2">
-              <div className="bg-card p-6 rounded-lg">
-                <h2 className="text-xl font-semibold mb-4">À propos de {creatorData.name}</h2>
-                <p className="mb-4">
-                  {creatorData.bio}
-                </p>
-                <p className="mb-4">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam eget felis euismod, 
-                  aliquam nunc id, tincidunt nisi. Vestibulum ante ipsum primis in faucibus orci 
-                  luctus et ultrices posuere cubilia Curae; Donec vel ante vel nisi faucibus 
-                  facilisis ac nec odio.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h3 className="font-medium mb-2">Spécialités</h3>
-                    <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                      <li>Danse contemporaine</li>
-                      <li>Photographie artistique</li>
-                      <li>Chorégraphies exclusives</li>
-                      <li>Performance live</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h3 className="font-medium mb-2">Langues</h3>
-                    <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                      <li>Français (natif)</li>
-                      <li>Anglais (courant)</li>
-                      <li>Espagnol (notions)</li>
-                    </ul>
-                  </div>
+            <TabsContent value="profile" className="mt-2">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="space-y-6">
+                  <CreatorDNA 
+                    creatorName={creatorData.name}
+                    creatorSkills={creatorSkills}
+                    creatorStyle={creatorStyle}
+                    creatorAchievements={creatorAchievements}
+                  />
+                  
+                  <ValueVault premiumContent={premiumContent} />
+                </div>
+                
+                <div className="space-y-6">
+                  <CreatorJourney milestones={journeyMilestones} />
+                  
+                  <FeedbackLoop 
+                    feedbackMessages={feedbackMessages}
+                    isCreator={false}
+                  />
                 </div>
               </div>
             </TabsContent>
