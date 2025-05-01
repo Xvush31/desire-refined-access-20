@@ -139,56 +139,56 @@ const fetchPerformerProfile = async (username: string) => {
         username: 'martin_23',
         message: 'J\'adore ton contenu, surtout les séries fashion!',
         timestamp: 'Il y a 2 jours',
-        type: 'comment'
+        type: 'comment' as 'comment' | 'request' | 'appreciation'
       },
       {
         id: 'f2',
         username: 'sophie_style',
         message: 'Pourrais-tu faire un tutoriel sur la composition photo?',
         timestamp: 'Il y a 5 jours',
-        type: 'request'
+        type: 'request' as 'comment' | 'request' | 'appreciation'
       },
       {
         id: 'f3',
         username: 'photo_enthousiast',
         message: 'Tes dernières photos m\'ont vraiment inspiré pour mon projet!',
         timestamp: 'Il y a 1 semaine',
-        type: 'appreciation'
+        type: 'appreciation' as 'comment' | 'request' | 'appreciation'
       }
     ],
     premiumContent: [
       {
         id: 'p1',
         title: 'Techniques de retouche avancées',
-        type: 'premium',
+        type: 'premium' as 'premium' | 'standard' | 'vip',
         category: 'tutoriels',
         views: 8700
       },
       {
         id: 'p2',
         title: 'Behind the scenes - Fashion Week',
-        type: 'vip',
+        type: 'vip' as 'premium' | 'standard' | 'vip',
         category: 'exclusif',
         views: 3200
       },
       {
         id: 'p3',
         title: 'Masterclass composition',
-        type: 'premium',
+        type: 'premium' as 'premium' | 'standard' | 'vip',
         category: 'tutoriels',
         views: 6500
       },
       {
         id: 'p4',
         title: 'Shooting day in Paris',
-        type: 'standard',
+        type: 'standard' as 'premium' | 'standard' | 'vip',
         category: 'vlogs',
         views: 12300
       },
       {
         id: 'p5',
         title: 'Collection été - Preview',
-        type: 'premium',
+        type: 'premium' as 'premium' | 'standard' | 'vip',
         category: 'collections',
         views: 9200
       }
