@@ -1,9 +1,9 @@
-
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Image as ImageIcon, Lock, Play, Star, TrendingUp, Video } from "lucide-react";
 import { ContentItem } from "./ContentCard";
 import { getTypeColor, getValueColor } from "./cardUtils";
+import { formatDuration } from "@/utils/formatTime";
 
 interface TypeBadgeProps {
   type: ContentItem['type'];
@@ -73,15 +73,19 @@ export const TrendingBadge: React.FC<TrendingBadgeProps> = ({ trending, trending
 };
 
 interface DurationBadgeProps {
-  duration?: string;
+  duration?: number | string;
 }
 
 export const DurationBadge: React.FC<DurationBadgeProps> = ({ duration }) => {
   if (!duration) return null;
   
+  const formattedDuration = typeof duration === 'string' 
+    ? duration 
+    : formatDuration(duration);
+  
   return (
     <div className="absolute bottom-2 right-2 bg-black/70 px-2 py-0.5 rounded text-xs text-white">
-      {duration}
+      {formattedDuration}
     </div>
   );
 };
