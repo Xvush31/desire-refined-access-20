@@ -1,4 +1,3 @@
-
 import React, { Suspense, useEffect } from "react";
 import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
