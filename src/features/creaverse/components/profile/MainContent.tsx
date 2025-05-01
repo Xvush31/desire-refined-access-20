@@ -172,8 +172,8 @@ const MainContent = ({
                     />
                     <ContentLayout
                       layout={contentLayout}
-                      onLayoutChange={setContentLayout}
-                      items={[]}
+                      onItemClick={(item) => handleContentClick(item)}
+                      items={sampleContentItems || []}
                     />
                   </>
                 )}
