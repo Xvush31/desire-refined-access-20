@@ -19,7 +19,6 @@ const CreaVerseApp = () => (
     <div className="creaverse-container">
       <Routes>
         <Route path="/" element={<Index />} />
-        <Route path="/creator" element={<CreatorProfile />} />
         <Route path="/performer/:id" element={<CreatorProfile />} />
         <Route path="/creator/:performerId/settings" element={<CreatorSettings />} />
         <Route path="/dashboard" element={<Dashboard />} />

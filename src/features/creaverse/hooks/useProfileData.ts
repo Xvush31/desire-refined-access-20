@@ -3,12 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  fetchPerformerData, 
-  fetchPerformerContent, 
-  fetchPerformerCollections, 
-  fetchTrendingContent 
-} from '../api/performers';
+import { fetchPerformerData, fetchPerformerContent, fetchPerformerCollections, fetchTrendingContent } from '../api/performers';
 import { ContentItem } from '../components/content/ContentCard';
 import { PerformerData } from '../types/performer';
 
@@ -48,7 +43,16 @@ export const useProfileData = (performerId: string | undefined) => {
       try {
         setLoading(true);
         setError(null);
+        
+        // Utiliser directement le service
         const data = await fetchPerformerData(performerId);
+        
+        if (!data) {
+          setError("Créateur non trouvé");
+          console.error("Performer not found:", performerId);
+          return;
+        }
+        
         console.log("Performer data loaded:", data);
         setPerformer(data);
       } catch (error) {
@@ -73,7 +77,7 @@ export const useProfileData = (performerId: string | undefined) => {
         console.log("Loading content for performer:", performer.id);
         
         // Load content based on active format
-        const content = await fetchPerformerContent(performerId || "1", activeFormat);
+        const content = await fetchPerformerContent(performer.id.toString(), activeFormat);
         setContentItems(content);
         
         // Load trending content
@@ -81,7 +85,7 @@ export const useProfileData = (performerId: string | undefined) => {
         setTrendingContent(trending);
         
         // Load collections
-        const collections = await fetchPerformerCollections(performerId || "1");
+        const collections = await fetchPerformerCollections(performer.id.toString());
         setCollections(collections);
       } catch (error) {
         console.error("Erreur lors du chargement du contenu:", error);
@@ -92,7 +96,7 @@ export const useProfileData = (performerId: string | undefined) => {
     };
     
     loadContent();
-  }, [performer, performerId, activeFormat, error]);
+  }, [performer, activeFormat, error]);
 
   // Determine owner status
   const isOwner = currentUser && performer && currentUser.uid === performer.id.toString();
