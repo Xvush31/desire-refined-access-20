@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -20,18 +19,18 @@ interface NavigationItem {
 }
 
 const mainNavItems: NavigationItem[] = [
-  { id: 'home', label: 'Accueil', icon: Home, path: '/creaverse' },
-  { id: 'explore', label: 'Découvrir', icon: Grid, path: '/creaverse/explore' },
-  { id: 'collections', label: 'Collections', icon: Bookmark, path: '/creaverse/collections' },
-  { id: 'trending', label: 'Tendances', icon: Zap, path: '/creaverse/trending' },
+  { id: 'home', label: 'Accueil', icon: Home, path: '/creaverse-app/performer/1' },
+  { id: 'explore', label: 'Découvrir', icon: Grid, path: '/creaverse-app/explore' },
+  { id: 'collections', label: 'Collections', icon: Bookmark, path: '/creaverse-app/collections' },
+  { id: 'trending', label: 'Tendances', icon: Zap, path: '/creaverse-app/trending' },
 ];
 
 const creatorNavItems: NavigationItem[] = [
-  { id: 'content', label: 'Contenu', icon: Layers, path: '/creaverse/creator/content' },
-  { id: 'calendar', label: 'Calendrier', icon: Calendar, path: '/creaverse/creator/calendar' },
-  { id: 'community', label: 'Communauté', icon: Users, path: '/creaverse/creator/community' },
-  { id: 'monetization', label: 'Monétisation', icon: Star, path: '/creaverse/creator/monetization' },
-  { id: 'settings', label: 'Paramètres', icon: Settings, path: '/creaverse/creator/settings' },
+  { id: 'content', label: 'Contenu', icon: Layers, path: '/creaverse-app/creator/content' },
+  { id: 'calendar', label: 'Calendrier', icon: Calendar, path: '/creaverse-app/creator/calendar' },
+  { id: 'community', label: 'Communauté', icon: Users, path: '/creaverse-app/creator/community' },
+  { id: 'monetization', label: 'Monétisation', icon: Star, path: '/creaverse-app/creator/monetization' },
+  { id: 'settings', label: 'Paramètres', icon: Settings, path: '/creaverse-app/creator/settings' },
 ];
 
 interface ModernNavigationProps {

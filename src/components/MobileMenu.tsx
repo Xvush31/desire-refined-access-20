@@ -39,6 +39,7 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
   { label: "Accueil", icon: <Home size={18} />, href: "/" },
+  { label: "CreaVerse", icon: <Star size={18} />, href: "/creaverse-app/performer/1", badge: "Nouveau" },
   { label: "Tendances", icon: <TrendingUp size={18} />, href: "/trending" },
   { 
     label: "Catégories", 
@@ -65,7 +66,7 @@ const menuItems: MenuItem[] = [
     ] 
   },
   { label: "Favoris", icon: <Heart size={18} />, href: "/favorites" },
-  { label: "XTease", icon: <Video size={18} />, href: "/xtease", badge: "Nouveau" },
+  { label: "XTease", icon: <Video size={18} />, href: "/xtease" },
   { label: "Tableau de Bord Créateurs", icon: <LayoutGrid size={18} />, href: "/creator-dashboard" },
   { label: "Historique", icon: <Clock size={18} />, href: "/history" },
   { label: "Téléverser", icon: <Upload size={18} />, href: "/upload" },

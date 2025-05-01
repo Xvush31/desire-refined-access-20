@@ -21,7 +21,7 @@ const PerformerProfile: React.FC = () => {
     toast.info("Redirection vers le profil du créateur...");
     
     // Redirection vers CreaVerse avec remplacement pour éviter de pouvoir revenir en arrière
-    navigate(`/creaverse/performer/${targetId}`, { replace: true });
+    navigate(`/creaverse-app/performer/${targetId}`, { replace: true });
   }, [performerId, navigate]);
   
   return (

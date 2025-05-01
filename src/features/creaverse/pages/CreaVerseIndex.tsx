@@ -19,10 +19,10 @@ const CreaVerseIndex = () => {
       
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
         <Button asChild variant="default" className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white">
-          <Link to="/creaverse/creator">Mon profil</Link>
+          <Link to="/creaverse-app/performer/1">Mon profil</Link>
         </Button>
         <Button asChild variant="outline">
-          <Link to="/creaverse/dashboard">Mon tableau de bord</Link>
+          <Link to="/creaverse-app/dashboard">Mon tableau de bord</Link>
         </Button>
       </div>
       
@@ -33,21 +33,21 @@ const CreaVerseIndex = () => {
             <h3 className="text-xl font-medium mb-2">Créateurs</h3>
             <p className="text-sm text-muted-foreground mb-4">Découvrez les créateurs populaires</p>
             <Button asChild variant="secondary" size="sm">
-              <Link to="/creaverse/creator">Explorer</Link>
+              <Link to="/creaverse-app/performer/1">Explorer</Link>
             </Button>
           </div>
           <div className="border border-border rounded-lg p-6 hover:shadow-md transition-shadow">
             <h3 className="text-xl font-medium mb-2">Calendrier</h3>
             <p className="text-sm text-muted-foreground mb-4">Planifiez vos événements</p>
             <Button asChild variant="secondary" size="sm">
-              <Link to="/creaverse/calendar">Consulter</Link>
+              <Link to="/creaverse-app/calendar">Consulter</Link>
             </Button>
           </div>
           <div className="border border-border rounded-lg p-6 hover:shadow-md transition-shadow">
             <h3 className="text-xl font-medium mb-2">Abonnés</h3>
             <p className="text-sm text-muted-foreground mb-4">Gérez vos abonnés</p>
             <Button asChild variant="secondary" size="sm">
-              <Link to="/creaverse/subscribers">Gérer</Link>
+              <Link to="/creaverse-app/subscribers">Gérer</Link>
             </Button>
           </div>
         </div>

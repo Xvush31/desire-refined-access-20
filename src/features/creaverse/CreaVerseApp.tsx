@@ -2,7 +2,7 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import CreatorProfile from "./pages/CreatorProfile";
 import Dashboard from "./pages/Dashboard";
 import CalendarView from "./pages/CalendarView";
@@ -18,7 +18,7 @@ const CreaVerseApp = () => (
     <Sonner />
     <div className="creaverse-container">
       <Routes>
-        <Route path="/" element={<Index />} />
+        <Route path="/" element={<Navigate to="/creaverse-app/performer/1" replace />} />
         <Route path="/performer/:id" element={<CreatorProfile />} />
         <Route path="/creator/:performerId/settings" element={<CreatorSettings />} />
         <Route path="/dashboard" element={<Dashboard />} />

@@ -104,7 +104,7 @@ export const useProfileData = (performerId: string | undefined) => {
   // Handler functions
   const handleSubscribe = () => {
     if (!currentUser) {
-      sessionStorage.setItem('returnTo', `/creaverse/performer/${performer?.id}`);
+      sessionStorage.setItem('returnTo', `/creaverse-app/performer/${performer?.id}`);
       navigate('/login');
       toast.info("Connectez-vous pour vous abonner à ce créateur");
       return;
@@ -115,7 +115,7 @@ export const useProfileData = (performerId: string | undefined) => {
 
   const handleFollowToggle = () => {
     if (!currentUser) {
-      sessionStorage.setItem('returnTo', `/creaverse/performer/${performer?.id}`);
+      sessionStorage.setItem('returnTo', `/creaverse-app/performer/${performer?.id}`);
       navigate('/login');
       toast.info("Connectez-vous pour suivre ce créateur");
       return;

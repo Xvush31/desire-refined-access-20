@@ -34,11 +34,11 @@ const NavigationFooter: React.FC<NavigationFooterProps> = ({
   const ProfileIcon = () => {
     if (currentUser) {
       return (
-        <Link to={`/creaverse/performer/${performerId}`} className={isActive(`/creaverse/performer/${performerId}`) ? "text-rose-500" : "text-primary"}>
+        <Link to={`/creaverse-app/performer/${performerId}`} className={isActive(`/creaverse-app/performer/${performerId}`) ? "text-rose-500" : "text-primary"}>
           <div className="relative">
-            <Avatar className={`w-6 h-6 border transition-all ${isActive(`/creaverse/performer/${performerId}`) ? "border-rose-500 scale-110" : "border-primary"}`}>
+            <Avatar className={`w-6 h-6 border transition-all ${isActive(`/creaverse-app/performer/${performerId}`) ? "border-rose-500 scale-110" : "border-primary"}`}>
               <AvatarImage src={performerImage} />
-              <AvatarFallback className={`bg-pink-500 text-white text-xs ${isActive(`/creaverse/performer/${performerId}`) ? "scale-110" : ""}`}>
+              <AvatarFallback className={`bg-pink-500 text-white text-xs ${isActive(`/creaverse-app/performer/${performerId}`) ? "scale-110" : ""}`}>
                 {(performerName || "").substring(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>

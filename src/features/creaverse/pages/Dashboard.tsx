@@ -45,7 +45,7 @@ const Dashboard = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Tableau de bord</h1>
         <Button asChild variant="outline" size="sm">
-          <Link to="/creaverse-app/">Retour à l'accueil</Link>
+          <Link to="/creaverse-app/performer/1">Retour à l'accueil</Link>
         </Button>
       </div>
       
