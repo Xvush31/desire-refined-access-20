@@ -2,7 +2,7 @@
 import React from "react";
 import { ContentItem } from "./ContentCard";
 import ContentMetrics from "./ContentMetrics";
-import CardBadges from "./CardBadges";
+import * as CardBadges from "./CardBadges";
 import { cn } from "@/lib/utils";
 
 interface FlowCardLayoutProps {
@@ -37,7 +37,11 @@ const FlowCardLayout: React.FC<FlowCardLayoutProps> = ({
             alt={item.title}
             className="h-full w-full object-cover"
           />
-          <CardBadges item={item} />
+          <CardBadges.TypeBadge type={item.type} />
+          {item.format && <CardBadges.FormatBadge format={item.format} />}
+          {item.trending && <CardBadges.TrendingBadge trending={item.trending} trendingRank={item.trendingRank} />}
+          {item.duration && <CardBadges.DurationBadge duration={item.duration} />}
+          {item.valueScore && <CardBadges.ValueIndicator valueScore={item.valueScore} />}
         </div>
         
         {/* Right: Content information */}
