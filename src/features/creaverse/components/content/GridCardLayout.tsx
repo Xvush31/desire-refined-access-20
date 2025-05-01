@@ -13,7 +13,7 @@ interface GridCardLayoutProps {
   layout?: "grid" | "masonry" | "featured";
   isFeatured?: boolean;
   onClick?: () => void;
-  className?: string; // Ajout de className
+  className?: string;
 }
 
 const GridCardLayout: React.FC<GridCardLayoutProps> = ({
@@ -22,7 +22,7 @@ const GridCardLayout: React.FC<GridCardLayoutProps> = ({
   layout = "grid",
   isFeatured = false,
   onClick,
-  className = "" // Initialisation de className
+  className = ""
 }) => {
   // Determine size class based on layout and featured status
   const sizeClass = isFeatured || layout === "featured" 
@@ -36,7 +36,7 @@ const GridCardLayout: React.FC<GridCardLayoutProps> = ({
       className={cn(
         "group relative overflow-hidden rounded-lg bg-muted/20 cursor-pointer transition-transform hover:-translate-y-1 hover:shadow-md",
         sizeClass,
-        className // Utilisation de className
+        className
       )}
       onClick={onClick}
     >
@@ -65,7 +65,7 @@ const GridCardLayout: React.FC<GridCardLayoutProps> = ({
       {/* Trending badge */}
       {item.trending && (
         <div className="absolute top-2 right-2">
-          <TrendingBadge rank={item.trendingRank} />
+          <TrendingBadge trendingRank={item.trendingRank} />
         </div>
       )}
       
@@ -79,7 +79,7 @@ const GridCardLayout: React.FC<GridCardLayoutProps> = ({
       {/* Value indicator */}
       {item.valueScore && (
         <div className="absolute bottom-2 right-2">
-          <ValueIndicator value={item.valueScore} />
+          <ValueIndicator valueScore={item.valueScore} />
         </div>
       )}
       
