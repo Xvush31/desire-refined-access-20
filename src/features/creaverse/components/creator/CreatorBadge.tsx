@@ -5,9 +5,10 @@ import { cn } from '@/lib/utils';
 interface CreatorBadgeProps {
   tier: 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
   className?: string;
+  size?: string; // Added size prop
 }
 
-const CreatorBadge = ({ tier, className }: CreatorBadgeProps) => {
+const CreatorBadge = ({ tier, className, size = 'default' }: CreatorBadgeProps) => {
   const tierConfig = {
     bronze: {
       color: 'bg-gradient-to-r from-amber-700 to-amber-500',
@@ -37,13 +38,24 @@ const CreatorBadge = ({ tier, className }: CreatorBadgeProps) => {
   };
 
   const { color, text, textColor } = tierConfig[tier];
+  
+  const sizeClasses = {
+    small: 'text-[10px] px-1.5 py-0',
+    default: 'text-xs px-2 py-0.5',
+    large: 'text-sm px-2.5 py-1',
+  };
+  
+  const sizeClass = size === 'small' ? sizeClasses.small : 
+                    size === 'large' ? sizeClasses.large : 
+                    sizeClasses.default;
 
   return (
     <span 
       className={cn(
-        'px-2 py-0.5 text-xs font-semibold rounded-full',
+        'font-semibold rounded-full',
         color,
         textColor,
+        sizeClass,
         className
       )}
     >
