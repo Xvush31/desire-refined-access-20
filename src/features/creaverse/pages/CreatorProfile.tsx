@@ -99,6 +99,34 @@ const CreatorProfile: React.FC = () => {
   if (error || !performer) {
     return <NotFoundState errorMessage={error || "Performer not found"} />;
   }
+
+  // Stats data preparation with default values to avoid TypeScript errors
+  const statsData = {
+    followers: parseInt(performer.followers.replace(/[^\d]/g, '') || '0'),
+    following: 0,
+    revenue: 0,
+    growthRate: 0,
+    nextTierProgress: 0,
+    retentionRate: 0,
+    superfans: 0,
+    watchMinutes: '0'
+  };
+
+  if (performer.stats) {
+    if (performer.stats.monthlyRevenue) statsData.revenue = performer.stats.monthlyRevenue;
+    if (performer.stats.monthlyRevenueChange) statsData.growthRate = performer.stats.monthlyRevenueChange;
+    if (performer.stats.retentionRate) statsData.retentionRate = parseFloat(performer.stats.retentionRate);
+    if (performer.stats.superfans) statsData.superfans = performer.stats.superfans;
+    if (performer.stats.watchMinutes) statsData.watchMinutes = performer.stats.watchMinutes;
+  }
+
+  // Mock upcoming event if needed
+  const upcomingEvent = performer.nextEvent ? {
+    title: performer.nextEvent.title || "Prochain live",
+    time: performer.nextEvent.time || "Aujourd'hui, 20:00",
+    type: 'live' as const,
+    countdown: performer.nextEvent.timeRemaining || "2h"
+  } : undefined;
   
   return (
     <div className="min-h-screen bg-background">
@@ -117,25 +145,11 @@ const CreatorProfile: React.FC = () => {
           avatar={performer.image}
           bio={performer.description}
           tier={performer.tier || 'silver'}
-          metrics={{
-            followers: parseInt(performer.followers.replace(/[^\d]/g, '')),
-            following: performer.stats?.following || 120,
-            revenue: isOwner ? performer.stats?.revenue || 0 : undefined,
-            growthRate: performer.stats?.growthRate || 12.5,
-            nextTierProgress: performer.stats?.nextTierProgress || 65,
-            retentionRate: parseFloat(performer.stats?.retentionRate || '0'),
-            superfans: performer.stats?.superfans || 0,
-            watchMinutes: performer.stats?.watchMinutes || '0'
-          }}
-          status={performer.status || 'offline'}
+          metrics={statsData}
+          status={performer.status ? performer.status : 'offline'}
           scheduledTime={performer.nextEvent?.time}
           isCreator={isOwner}
-          upcomingEvent={performer.nextEvent ? {
-            title: performer.nextEvent.title || "Prochain live",
-            time: performer.nextEvent.time || "Aujourd'hui, 20:00",
-            type: 'live',
-            countdown: performer.nextEvent.timeRemaining || "2h"
-          } : undefined}
+          upcomingEvent={upcomingEvent}
           onEventSubscribe={handleEventSubscribe}
         />
         

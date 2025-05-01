@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Heart, MessageSquare, Eye, Clock, TrendingUp, Flame, Play } from 'lucide-react';
 import { ContentItem } from './ContentCard';
-import { formatDuration } from '@/utils/formatTime';
+import { formatDuration, formatNumber } from '@/utils/formatTime';
 import { Badge } from "@/components/ui/badge";
 
 interface EnhancedContentCardProps {
@@ -41,15 +41,6 @@ const EnhancedContentCard: React.FC<EnhancedContentCardProps> = ({
       default:
         return null;
     }
-  };
-
-  const formatNumber = (num: number) => {
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + 'M';
-    } else if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'K';
-    }
-    return num.toString();
   };
   
   const renderFormatIndicator = () => {

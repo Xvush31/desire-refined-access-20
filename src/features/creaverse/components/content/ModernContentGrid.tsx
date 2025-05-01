@@ -146,19 +146,20 @@ const ModernContentGrid: React.FC<ModernContentGridProps> = ({
   }
 
   // Collections layout
+  // Correction de l'erreur: Object.entries() au lieu de entries()
   return (
     <div className={cn("space-y-8", className)}>
       {/* Group by collections */}
-      {items.reduce((collections, item) => {
-        const collectionName = item.collections?.[0] || 'Non classé';
-        if (!collections[collectionName]) {
-          collections[collectionName] = [];
-        }
-        collections[collectionName].push(item);
-        return collections;
-      }, {} as Record<string, ContentItem[]>)
-      .entries()
-      .map(([collectionName, collectionItems], collectionIdx) => (
+      {Object.entries(
+        items.reduce((collections, item) => {
+          const collectionName = item.collections?.[0] || 'Non classé';
+          if (!collections[collectionName]) {
+            collections[collectionName] = [];
+          }
+          collections[collectionName].push(item);
+          return collections;
+        }, {} as Record<string, ContentItem[]>)
+      ).map(([collectionName, collectionItems], collectionIdx) => (
         <motion.div 
           key={collectionName}
           initial={{ opacity: 0, y: 20 }}

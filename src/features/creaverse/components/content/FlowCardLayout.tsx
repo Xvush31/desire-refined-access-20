@@ -1,89 +1,107 @@
 
 import React from "react";
-import { ContentItem } from "./ContentCard";
-import ContentMetrics from "./ContentMetrics";
-import * as CardBadges from "./CardBadges";
 import { cn } from "@/lib/utils";
+import { Eye, Heart, MessageSquare, Play } from "lucide-react";
+import { ContentItem } from "./ContentCard";
+import { formatNumber, formatDuration } from "./cardUtils";
 
-interface FlowCardLayoutProps {
+export interface FlowCardLayoutProps {
   item: ContentItem;
   showMetrics?: boolean;
   onClick?: () => void;
   isActive?: boolean;
+  className?: string; // Ajout de className
 }
 
-const FlowCardLayout: React.FC<FlowCardLayoutProps> = ({ 
-  item, 
-  showMetrics = false, 
+const FlowCardLayout: React.FC<FlowCardLayoutProps> = ({
+  item,
+  showMetrics = false,
   onClick,
-  isActive = false
+  isActive = false,
+  className = "" // Initialisation de className
 }) => {
-  // Calculate appropriate class names
-  const containerClasses = cn(
-    "cursor-pointer flex flex-col items-stretch overflow-hidden rounded-lg border transition-all duration-200",
-    isActive ? "shadow-lg ring-1 ring-primary" : "hover:shadow-md hover:border-muted"
-  );
-
   return (
     <div 
-      className={containerClasses}
+      className={cn(
+        "flow-card relative flex gap-4 p-3 rounded-lg transition-colors cursor-pointer", 
+        isActive ? "bg-muted/60" : "hover:bg-muted/30",
+        className // Utilisation de className
+      )}
       onClick={onClick}
     >
-      <div className="flex items-stretch">
-        {/* Left: Thumbnail with badges */}
-        <div className="relative aspect-video min-w-[180px] w-1/3">
-          <img 
-            src={item.thumbnail} 
-            alt={item.title}
-            className="h-full w-full object-cover"
-          />
-          <CardBadges.TypeBadge type={item.type} />
-          {item.format && <CardBadges.FormatBadge format={item.format} />}
-          {item.trending && <CardBadges.TrendingBadge trending={item.trending} trendingRank={item.trendingRank} />}
-          {item.duration && <CardBadges.DurationBadge duration={item.duration} />}
-          {item.valueScore && <CardBadges.ValueIndicator valueScore={item.valueScore} />}
-        </div>
-        
-        {/* Right: Content information */}
-        <div className="flex-1 p-4 flex flex-col justify-between">
-          <div>
-            <h3 className="font-medium mb-1 line-clamp-2">{item.title}</h3>
-            
-            {/* Format, type, and collection tags */}
-            <div className="flex flex-wrap gap-2 mb-2">
-              {item.format && (
-                <span className="bg-secondary text-secondary-foreground text-xs rounded px-2 py-0.5">
-                  {item.format}
-                </span>
-              )}
-              
-              {item.type !== "standard" && (
-                <span className={`text-xs rounded px-2 py-0.5 ${
-                  item.type === "premium" ? "bg-amber-500 text-white" : "bg-purple-500 text-white"
-                }`}>
-                  {item.type}
-                </span>
-              )}
-              
-              {item.collections && item.collections.length > 0 && (
-                <span className="bg-muted text-muted-foreground text-xs rounded px-2 py-0.5">
-                  {item.collections[0]}
-                </span>
-              )}
+      {/* Thumbnail container */}
+      <div className="relative w-20 h-20 md:w-28 md:h-28 flex-shrink-0 rounded-md overflow-hidden">
+        <img 
+          src={item.thumbnail} 
+          alt={item.title} 
+          className="w-full h-full object-cover"
+        />
+        {item.format === 'video' && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+            <div className="w-8 h-8 rounded-full bg-black/50 flex items-center justify-center">
+              <Play className="w-4 h-4 text-white" />
             </div>
           </div>
-          
-          {/* Metrics */}
-          {showMetrics && (
-            <div className="mt-auto">
-              <ContentMetrics 
-                metrics={item.metrics} 
-                revenue={showMetrics ? item.revenue : undefined}
-                variant="inline"
-              />
-            </div>
-          )}
+        )}
+        {item.duration && item.format === 'video' && (
+          <div className="absolute bottom-1 right-1 bg-black/70 text-white text-[10px] px-1 py-0.5 rounded">
+            {formatDuration(item.duration)}
+          </div>
+        )}
+      </div>
+      
+      {/* Content info */}
+      <div className="flex flex-col justify-between flex-grow">
+        <div>
+          <h3 className="text-sm font-medium line-clamp-2">{item.title}</h3>
+          <div className="flex items-center gap-2 mt-1">
+            {item.type !== 'standard' && (
+              <span className={cn(
+                "px-1.5 py-0.5 rounded text-[10px]",
+                item.type === 'premium' ? 'bg-amber-400/90 text-amber-900' : 'bg-purple-500/90 text-white'
+              )}>
+                {item.type.toUpperCase()}
+              </span>
+            )}
+            
+            {item.format && (
+              <span className="px-1.5 py-0.5 rounded text-[10px] bg-muted text-muted-foreground">
+                {item.format}
+              </span>
+            )}
+            
+            {item.trending && (
+              <span className="px-1.5 py-0.5 rounded text-[10px] bg-red-500/80 text-white">
+                TRENDING
+              </span>
+            )}
+          </div>
         </div>
+        
+        {showMetrics && item.metrics && (
+          <div className="flex items-center text-xs text-muted-foreground gap-3 mt-auto">
+            {item.metrics.views !== undefined && (
+              <span className="flex items-center gap-1">
+                <Eye className="w-3 h-3" />
+                {formatNumber(item.metrics.views)}
+              </span>
+            )}
+            
+            {item.metrics.likes !== undefined && (
+              <span className="flex items-center gap-1">
+                <Heart className="w-3 h-3" />
+                {formatNumber(item.metrics.likes)}
+              </span>
+            )}
+            
+            {item.metrics.comments !== undefined && (
+              <span className="flex items-center gap-1">
+                <MessageSquare className="w-3 h-3" />
+                {formatNumber(item.metrics.comments)}
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

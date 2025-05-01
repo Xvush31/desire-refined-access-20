@@ -2,7 +2,6 @@
 import React from "react";
 import FlowCardLayout from "./FlowCardLayout";
 import GridCardLayout from "./GridCardLayout";
-import { Badge } from "@/components/ui/badge";
 
 export interface ContentItem {
   id: string;

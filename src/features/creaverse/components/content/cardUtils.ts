@@ -32,3 +32,34 @@ export const getFormatIcon = (format: string) => {
       return 'file';
   }
 };
+
+// Ajout de la fonction manquante getLayoutClasses
+export const getLayoutClasses = (layout: 'grid' | 'masonry' | 'featured') => {
+  switch (layout) {
+    case 'grid':
+      return 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4';
+    case 'masonry':
+      return 'grid grid-cols-2 md:grid-cols-3 auto-rows-max gap-4';
+    case 'featured':
+      return 'space-y-8';
+    default:
+      return 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4';
+  }
+};
+
+export const formatDuration = (seconds: number | string): string => {
+  if (typeof seconds === 'string') return seconds;
+  
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds % 60);
+  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+};
+
+export const formatNumber = (num: number) => {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'M';
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'K';
+  }
+  return num.toString();
+};
