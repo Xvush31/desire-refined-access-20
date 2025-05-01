@@ -19,26 +19,30 @@ export const useXTeaseNavigation = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRefs = useRef<Record<number, HTMLDivElement | null>>({});
   
-  // Setup Intersection Observer for autoplay
+  // Enhanced intersection observer for more reliable detection
   useEffect(() => {
     if (!autoPlayEnabled) return;
     
     const options = {
       root: containerRef.current,
       rootMargin: '0px',
-      threshold: 0.7 // Video must be 70% visible to trigger
+      threshold: [0.5, 0.7, 0.9] // Multiple thresholds for better detection
     };
     
     const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const index = parseInt(entry.target.getAttribute('data-index') || '0', 10);
-          if (index !== currentIndex) {
-            onChangeIndex(index);
-            onActivatePlayer();
-          }
+      // Sort by intersection ratio in descending order to get the most visible video
+      const sortedEntries = [...entries].sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+      
+      // Only consider entries with at least 50% visibility
+      const mostVisibleEntry = sortedEntries.find(entry => entry.intersectionRatio >= 0.5);
+      
+      if (mostVisibleEntry && mostVisibleEntry.isIntersecting) {
+        const index = parseInt(mostVisibleEntry.target.getAttribute('data-index') || '0', 10);
+        if (index !== currentIndex) {
+          onChangeIndex(index);
+          onActivatePlayer();
         }
-      });
+      }
     }, options);
     
     // Observe all video elements
