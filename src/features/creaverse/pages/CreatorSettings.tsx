@@ -15,6 +15,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { fetchPerformerData } from "../api/performers";
 import { PerformerData } from "../types/performer";
 import ProfileAvatar from "../components/creator/ProfileAvatar";
+import ProfileSettingsModal from "../components/charts/modals/ProfileSettingsModal";
 
 const CreatorSettings: React.FC = () => {
   const { performerId } = useParams<{ performerId: string }>();
@@ -23,6 +24,7 @@ const CreatorSettings: React.FC = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const { currentUser } = useAuth();
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
   
   // Form states
   const [formData, setFormData] = useState({
@@ -46,7 +48,7 @@ const CreatorSettings: React.FC = () => {
         setFormData({
           displayName: data.displayName,
           username: data.username,
-          description: data.description,
+          description: data.description || "",
           showRevenue: true,
           allowMessages: true,
           contentLayout: "grid",
@@ -91,6 +93,17 @@ const CreatorSettings: React.FC = () => {
     toast.success("Paramètres sauvegardés avec succès");
     // Implémenter la sauvegarde des données
   };
+
+  const handleProfileSave = (data: any) => {
+    console.log("Saving profile data:", data);
+    setFormData(prev => ({
+      ...prev,
+      displayName: data.name,
+      username: data.username,
+      description: data.bio
+    }));
+    toast.success("Profil mis à jour avec succès");
+  };
   
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">Chargement...</div>;
@@ -120,8 +133,14 @@ const CreatorSettings: React.FC = () => {
       <div className="container mx-auto p-4 md:p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Profil</CardTitle>
+              <Button 
+                variant="outline" 
+                onClick={() => setProfileModalOpen(true)}
+              >
+                Modifier le profil
+              </Button>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-center mb-6">
@@ -245,6 +264,20 @@ const CreatorSettings: React.FC = () => {
           </div>
         </form>
       </div>
+
+      {/* Modal de paramètres de profil */}
+      <ProfileSettingsModal
+        open={profileModalOpen}
+        onOpenChange={setProfileModalOpen}
+        initialData={{
+          name: formData.displayName,
+          username: formData.username,
+          bio: formData.description,
+          avatar: performer.image || "",
+          coverImage: performer.coverImage || "",
+        }}
+        onSave={handleProfileSave}
+      />
     </div>
   );
 };

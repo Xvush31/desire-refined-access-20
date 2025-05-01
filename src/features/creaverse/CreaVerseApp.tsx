@@ -9,6 +9,7 @@ import CalendarView from "./pages/CalendarView";
 import NotFound from "@/pages/NotFound";
 import SubscribersManagement from "./pages/SubscribersManagement";
 import Index from "./pages/CreaVerseIndex";
+import CreatorSettings from "./pages/CreatorSettings";
 import "./styles/creaverse.css";  // Import des styles spécifiques à CreaVerse
 
 const CreaVerseApp = () => (
@@ -20,6 +21,7 @@ const CreaVerseApp = () => (
         <Route path="/" element={<Index />} />
         <Route path="/creator" element={<CreatorProfile />} />
         <Route path="/performer/:id" element={<CreatorProfile />} />
+        <Route path="/creator/:performerId/settings" element={<CreatorSettings />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/calendar" element={<CalendarView />} />
         <Route path="/subscribers" element={<SubscribersManagement />} />
