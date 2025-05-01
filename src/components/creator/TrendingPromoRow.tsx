@@ -21,7 +21,9 @@ interface TrendingPromoRowProps {
 const TrendingPromoRow: React.FC<TrendingPromoRowProps> = ({ videos }) => {
   return (
     <div className="mb-6 w-full">
-      <h3 className="text-lg font-semibold mb-3 text-center animated-gradient">Vidéos tendances</h3>
+      <div className="text-center mb-4">
+        <h3 className="text-lg font-semibold inline-block animated-gradient">Vidéos tendances</h3>
+      </div>
       
       <Carousel
         opts={{

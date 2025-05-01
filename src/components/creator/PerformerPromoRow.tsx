@@ -20,7 +20,9 @@ interface PerformerPromoRowProps {
 const PerformerPromoRow: React.FC<PerformerPromoRowProps> = ({ performers }) => {
   return (
     <div className="mb-6 w-full">
-      <h3 className="text-lg font-semibold mb-3 text-center animated-gradient">Créateurs populaires</h3>
+      <div className="text-center mb-4">
+        <h3 className="text-lg font-semibold inline-block animated-gradient">Créateurs populaires</h3>
+      </div>
       
       <Carousel
         opts={{
