@@ -33,19 +33,21 @@ export function useRevolutionaryNavigation() {
     enableIntelligentFilters: true
   });
   
-  // Customized gesture actions
+  // Customized gesture actions - don't show toasts on mobile for better UX
   const [gestureActions, setGestureActions] = useState<GestureAction[]>([
     {
       type: "swipe-up",
       handler: () => {
         setIsImmersiveMode(true);
-        toast.info("Mode immersif activé", {
-          style: { 
-            background: "rgba(0, 0, 0, 0.85)",
-            color: "#ffffff",
-            border: "1px solid rgba(255, 255, 255, 0.2)"
-          }
-        });
+        if (!isMobile) {
+          toast.info("Mode immersif activé", {
+            style: { 
+              background: "rgba(0, 0, 0, 0.85)",
+              color: "#ffffff",
+              border: "1px solid rgba(255, 255, 255, 0.2)"
+            }
+          });
+        }
       },
       description: "Mode immersif activé"
     },
@@ -53,13 +55,15 @@ export function useRevolutionaryNavigation() {
       type: "swipe-down",
       handler: () => {
         setIsImmersiveMode(false);
-        toast.info("Mode immersif désactivé", {
-          style: { 
-            background: "rgba(0, 0, 0, 0.85)",
-            color: "#ffffff",
-            border: "1px solid rgba(255, 255, 255, 0.2)"
-          }
-        });
+        if (!isMobile) {
+          toast.info("Mode immersif désactivé", {
+            style: { 
+              background: "rgba(0, 0, 0, 0.85)",
+              color: "#ffffff",
+              border: "1px solid rgba(255, 255, 255, 0.2)"
+            }
+          });
+        }
       },
       description: "Mode immersif désactivé"
     },
@@ -67,13 +71,15 @@ export function useRevolutionaryNavigation() {
       type: "double-tap",
       handler: () => {
         setZoomLevel(1);
-        toast.info("Zoom réinitialisé", {
-          style: { 
-            background: "rgba(0, 0, 0, 0.85)",
-            color: "#ffffff", 
-            border: "1px solid rgba(255, 255, 255, 0.2)"
-          }
-        });
+        if (!isMobile) {
+          toast.info("Zoom réinitialisé", {
+            style: { 
+              background: "rgba(0, 0, 0, 0.85)",
+              color: "#ffffff", 
+              border: "1px solid rgba(255, 255, 255, 0.2)"
+            }
+          });
+        }
       },
       description: "Zoom réinitialisé"
     },
@@ -81,13 +87,15 @@ export function useRevolutionaryNavigation() {
       type: "long-press",
       handler: () => {
         setIsRadialOpen(true);
-        toast.info("Menu radial ouvert", {
-          style: { 
-            background: "rgba(0, 0, 0, 0.85)",
-            color: "#ffffff",
-            border: "1px solid rgba(255, 255, 255, 0.2)"
-          }
-        });
+        if (!isMobile) {
+          toast.info("Menu radial ouvert", {
+            style: { 
+              background: "rgba(0, 0, 0, 0.85)",
+              color: "#ffffff",
+              border: "1px solid rgba(255, 255, 255, 0.2)"
+            }
+          });
+        }
       },
       description: "Menu radial ouvert"
     },
@@ -95,13 +103,15 @@ export function useRevolutionaryNavigation() {
       type: "pinch",
       handler: () => {
         setZoomLevel(zoomLevel > 0.8 ? 0.6 : 1);
-        toast.info(zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant", {
-          style: { 
-            background: "rgba(0, 0, 0, 0.85)",
-            color: "#ffffff",
-            border: "1px solid rgba(255, 255, 255, 0.2)"
-          }
-        });
+        if (!isMobile) {
+          toast.info(zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant", {
+            style: { 
+              background: "rgba(0, 0, 0, 0.85)",
+              color: "#ffffff",
+              border: "1px solid rgba(255, 255, 255, 0.2)"
+            }
+          });
+        }
       },
       description: zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant"
     }
@@ -116,20 +126,22 @@ export function useRevolutionaryNavigation() {
               ...action, 
               handler: () => {
                 setZoomLevel(zoomLevel > 0.8 ? 0.6 : 1);
-                toast.info(zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant", {
-                  style: { 
-                    background: "rgba(0, 0, 0, 0.85)", 
-                    color: "#ffffff",
-                    border: "1px solid rgba(255, 255, 255, 0.2)"
-                  }
-                });
+                if (!isMobile) {
+                  toast.info(zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant", {
+                    style: { 
+                      background: "rgba(0, 0, 0, 0.85)", 
+                      color: "#ffffff",
+                      border: "1px solid rgba(255, 255, 255, 0.2)"
+                    }
+                  });
+                }
               },
               description: zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant" 
             }
           : action
       )
     );
-  }, [zoomLevel]);
+  }, [zoomLevel, isMobile]);
   
   // Load settings from localStorage
   useEffect(() => {
@@ -152,8 +164,10 @@ export function useRevolutionaryNavigation() {
     }
   }, [settings]);
   
-  // Handle keyboard shortcuts
+  // Handle keyboard shortcuts - only for desktop
   useEffect(() => {
+    if (isMobile) return;
+    
     const handleKeyDown = (e: KeyboardEvent) => {
       // Alt+R to toggle radial menu
       if (e.altKey && e.key === 'r') {
@@ -209,7 +223,7 @@ export function useRevolutionaryNavigation() {
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isRadialOpen, isImmersiveMode, zoomLevel, currentLayout]);
+  }, [isRadialOpen, isImmersiveMode, zoomLevel, currentLayout, isMobile]);
   
   // Update a specific setting
   const updateSetting = useCallback((key: keyof NavigationSettings, value: boolean) => {

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ImmersiveModeProps {
   children: React.ReactNode;
@@ -15,29 +16,25 @@ const ImmersiveMode: React.FC<ImmersiveModeProps> = ({
   isImmersive,
   onToggleImmersive,
 }) => {
-  const [showControls, setShowControls] = useState(true);
+  const [showControls, setShowControls] = useState(false);
   const [mouseMovement, setMouseMovement] = useState({ x: 0, y: 0 });
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
   const [controlsTimer, setControlsTimer] = useState<NodeJS.Timeout | null>(null);
+  const [longPressTimer, setLongPressTimer] = useState<NodeJS.Timeout | null>(null);
+  const [isTouching, setIsTouching] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (isImmersive) {
-      document.body.classList.add("overflow-hidden");
+      // Don't block scrolling anymore
+      // Only add the class for visual styling but not overflow behavior
+      document.body.classList.add("immersive-mode-active");
       
-      // Show controls on initial immersive mode entry
-      setShowControls(true);
-      
-      // Hide controls after 3 seconds of inactivity
-      const timer = setTimeout(() => {
-        setShowControls(false);
-      }, 3000);
-      
-      setControlsTimer(timer);
-      
-      // Clean up the timer when exiting immersive mode
+      // Clean up when exiting immersive mode
       return () => {
-        document.body.classList.remove("overflow-hidden");
+        document.body.classList.remove("immersive-mode-active");
         if (controlsTimer) clearTimeout(controlsTimer);
+        if (longPressTimer) clearTimeout(longPressTimer);
       };
     }
   }, [isImmersive]);
@@ -75,12 +72,57 @@ const ImmersiveMode: React.FC<ImmersiveModeProps> = ({
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [isImmersive, lastMousePosition, controlsTimer]);
   
+  // Handle touch events for mobile
+  const handleTouchStart = () => {
+    setIsTouching(true);
+    
+    // Clear any existing timer
+    if (longPressTimer) clearTimeout(longPressTimer);
+    
+    // Set a new timer for 1.5 seconds
+    const timer = setTimeout(() => {
+      setShowControls(true);
+      
+      // Auto-hide controls after 3 seconds
+      const hideTimer = setTimeout(() => {
+        setShowControls(false);
+      }, 3000);
+      
+      setControlsTimer(hideTimer);
+    }, 1500);
+    
+    setLongPressTimer(timer);
+  };
+  
+  const handleTouchEnd = () => {
+    setIsTouching(false);
+    
+    // Clear the long press timer
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      setLongPressTimer(null);
+    }
+  };
+  
+  const handleTouchMove = () => {
+    // If user is dragging/scrolling, cancel the long press action
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      setLongPressTimer(null);
+    }
+  };
+  
   if (!isImmersive) {
     return <>{children}</>;
   }
   
   return (
-    <div className="immersive-mode">
+    <div 
+      className="immersive-mode"
+      onTouchStart={isMobile ? handleTouchStart : undefined}
+      onTouchEnd={isMobile ? handleTouchEnd : undefined}
+      onTouchMove={isMobile ? handleTouchMove : undefined}
+    >
       <div className="immersive-container">
         {children}
         
@@ -88,9 +130,10 @@ const ImmersiveMode: React.FC<ImmersiveModeProps> = ({
           {showControls && (
             <>
               <motion.button
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
                 onClick={onToggleImmersive}
                 className="fixed top-4 right-4 z-50 rounded-full bg-black/80 hover:bg-black/90 text-white border border-white/20 p-2 shadow-xl"
                 aria-label="Quitter le mode immersif"
@@ -98,14 +141,18 @@ const ImmersiveMode: React.FC<ImmersiveModeProps> = ({
                 <X size={24} />
               </motion.button>
               
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 bg-black/80 text-white py-2 px-4 rounded-full border border-white/20 shadow-xl"
-              >
-                Déplacez la souris pour afficher les contrôles
-              </motion.div>
+              {isMobile && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none"
+                >
+                  <div className="bg-black/80 text-white font-medium py-1 px-4 rounded-full text-sm border border-white/20 shadow-lg">
+                    Mode immersif
+                  </div>
+                </motion.div>
+              )}
             </>
           )}
         </AnimatePresence>
