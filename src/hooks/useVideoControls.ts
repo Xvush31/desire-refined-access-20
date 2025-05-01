@@ -62,16 +62,29 @@ export const useVideoControls = ({ videoRef, hlsRef, duration }: UseVideoControl
     video.muted = newMutedState;
   };
 
-  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+  // Update handleSeek to accept either a mouse event or a direct time value
+  const handleSeek = (
+    eventOrTime: React.MouseEvent<HTMLDivElement> | number
+  ) => {
     const video = videoRef.current;
-    const progressBar = e.currentTarget;
-    if (!video || !progressBar) return;
+    if (!video) return;
 
-    const rect = progressBar.getBoundingClientRect();
-    const clickPosition = e.clientX - rect.left;
-    const percentClicked = clickPosition / rect.width;
-    const newTime = duration * percentClicked;
+    let newTime: number;
     
+    if (typeof eventOrTime === 'number') {
+      // If we received a direct time value
+      newTime = eventOrTime;
+    } else {
+      // If we received a mouse event
+      const progressBar = eventOrTime.currentTarget;
+      const rect = progressBar.getBoundingClientRect();
+      const clickPosition = eventOrTime.clientX - rect.left;
+      const percentClicked = clickPosition / rect.width;
+      newTime = duration * percentClicked;
+    }
+    
+    // Ensure time is within valid range
+    newTime = Math.max(0, Math.min(newTime, duration));
     video.currentTime = newTime;
   };
 
