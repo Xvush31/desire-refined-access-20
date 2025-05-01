@@ -1,36 +1,17 @@
 
 import React from "react";
-import { PerformerData } from "../../types/performer";
-import ProfileInfo from "../creator/ProfileInfo";
-import ProfileActions from "../creator/ProfileActions";
-import ProfileContent from "./ProfileContent";
-import TabNavigationMenu from "./TabNavigationMenu";
-import { ContentItem } from "../content/ContentCard";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { RelationshipLevel } from "../../api/services/relationshipService";
-import { Users } from "lucide-react";
+import { Heart, MessageCircle, UserPlus, UserMinus, Star } from "lucide-react";
+import ContentGrid from "../content/ContentGrid";
+import ContentFlow from "../content/ContentFlow";
+import ContentFormatFilter from "../content/ContentFormatFilter";
+import ProfileInfo from "../creator/ProfileInfo";
+import ProfileStats from "../creator/ProfileStats";
+import ContentLayout from "../content/ContentLayout";
+import MessagingButton from "../messaging/MessagingButton";
 
-interface MainContentProps {
-  performer: PerformerData;
-  isOwner: boolean;
-  showRevenue: boolean;
-  isFollowing: boolean;
-  contentLayout: "grid" | "masonry" | "featured" | "flow";
-  activeTab: string;
-  sampleContentItems: ContentItem[];
-  onToggleRevenue: () => void;
-  onToggleFollow: () => void;
-  onSubscribe: () => void;
-  onSendMessage: () => void;
-  onViewRelationship?: () => void;
-  setActiveTab: (tab: string) => void;
-  setContentLayout: (layout: "grid" | "masonry" | "featured" | "flow") => void;
-  handleContentClick: (contentItem: any) => void;
-  filterByFormat?: (format: "all" | "video" | "image" | "audio" | "text") => void;
-  relationshipLevel?: RelationshipLevel;
-}
-
-const MainContent: React.FC<MainContentProps> = ({
+const MainContent = ({
   performer,
   isOwner,
   showRevenue,
@@ -47,79 +28,130 @@ const MainContent: React.FC<MainContentProps> = ({
   setContentLayout,
   handleContentClick,
   filterByFormat,
-  relationshipLevel = RelationshipLevel.None
 }) => {
   return (
-    <div className="bg-card rounded-lg max-w-screen-xl mx-auto shadow-sm mb-4">
-      {/* Profile Info & Actions */}
-      <div className="px-4 pt-4 pb-2">
-        <ProfileInfo
-          image={performer.image}
-          displayName={performer.displayName}
-          description={performer.description}
-          followers={performer.followers}
-          stats={performer.stats}
-          nextEvent={performer.nextEvent}
-          relationshipLevel={relationshipLevel}
-        />
-        
-        <div className="flex flex-wrap items-center justify-between gap-2 mt-4">
-          <div className="flex flex-wrap gap-2">
-            <ProfileActions
-              isFollowing={isFollowing}
-              onToggleFollow={onToggleFollow}
-              onSubscribe={onSubscribe}
-              onSendMessage={onSendMessage}
-              relationshipLevel={relationshipLevel}
-            />
-            
-            {relationshipLevel && relationshipLevel > RelationshipLevel.None && onViewRelationship && (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={onViewRelationship}
-              >
-                <Users size={16} className="mr-1" />
-                Relation
-              </Button>
+    <div className="container px-4 lg:px-8 py-6 -mt-12 z-20 relative">
+      <div className="bg-card rounded-xl p-6 shadow-sm border border-border">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-6">
+          <ProfileInfo
+            name={performer.name}
+            username={performer.username}
+            bio={performer.bio}
+            tier={performer.tier}
+            isVerified={performer.isVerified}
+            isOnline={performer.isOnline}
+          />
+          
+          <div className="flex flex-col xs:flex-row gap-3 justify-end">
+            {!isOwner ? (
+              <>
+                <Button
+                  onClick={onSubscribe}
+                  className="flex items-center gap-2 animated-gradient-bg text-white min-w-[120px] justify-center"
+                >
+                  <Star className="h-4 w-4" />
+                  S'abonner
+                </Button>
+
+                <MessagingButton
+                  performerId={performer.id.toString()}
+                  performerName={performer.name}
+                  performerAvatar={performer.avatar}
+                  variant="outline"
+                />
+
+                <Button
+                  variant="outline"
+                  onClick={onToggleFollow}
+                  className="flex items-center gap-2 min-w-[120px] justify-center"
+                >
+                  {isFollowing ? (
+                    <>
+                      <UserMinus className="h-4 w-4" />
+                      Suivi
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="h-4 w-4" />
+                      Suivre
+                    </>
+                  )}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={onViewRelationship}
+                  className="flex items-center gap-2"
+                >
+                  <Heart className="h-4 w-4" />
+                  Relations
+                </Button>
+                {showRevenue !== undefined && (
+                  <Button
+                    variant="outline"
+                    onClick={onToggleRevenue}
+                  >
+                    {showRevenue ? "Masquer revenus" : "Afficher revenus"}
+                  </Button>
+                )}
+              </>
             )}
           </div>
-          
-          {/* Revenue Toggle for Owner */}
-          {isOwner && (
-            <div>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={onToggleRevenue} 
-                className={showRevenue ? "bg-muted" : ""}
-              >
-                {showRevenue ? 'Masquer revenus' : 'Voir revenus'}
-              </Button>
+        </div>
+        
+        <ProfileStats
+          followers={performer.metrics.followers}
+          following={performer.metrics.following}
+          contentCount={performer.metrics.contentCount || 120}
+          views={performer.metrics.views || 45600}
+          tier={performer.tier}
+        />
+
+        <div className="mt-6">
+          <Tabs
+            defaultValue="content"
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
+            <div className="flex justify-between items-center border-b border-border">
+              <TabsList className="bg-transparent">
+                <TabsTrigger value="content">Contenu</TabsTrigger>
+                <TabsTrigger value="collections">Collections</TabsTrigger>
+                <TabsTrigger value="journey">Parcours</TabsTrigger>
+              </TabsList>
+              
+              <div className="flex items-center">
+                {activeTab === "content" && (
+                  <>
+                    <ContentFormatFilter onFilterChange={filterByFormat} />
+                    <ContentLayout
+                      layout={contentLayout}
+                      onLayoutChange={setContentLayout}
+                    />
+                  </>
+                )}
+              </div>
             </div>
-          )}
+
+            <TabsContent value="content" className="mt-6">
+              {contentLayout === "grid" ? (
+                <ContentGrid
+                  items={sampleContentItems}
+                  onContentClick={handleContentClick}
+                />
+              ) : (
+                <ContentFlow
+                  items={sampleContentItems}
+                  onContentClick={handleContentClick}
+                />
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
-      
-      {/* Navigation Tabs */}
-      <TabNavigationMenu 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
-        isOwner={isOwner}
-      />
-      
-      {/* Content Area */}
-      <ProfileContent 
-        activeTab={activeTab}
-        contentLayout={contentLayout}
-        setContentLayout={setContentLayout}
-        isOwner={isOwner}
-        performerId={performer.id}
-        handleSubscribe={onSubscribe}
-        handleContentClick={handleContentClick}
-        sampleContentItems={sampleContentItems}
-        filterByFormat={filterByFormat}
-      />
     </div>
   );
 };
