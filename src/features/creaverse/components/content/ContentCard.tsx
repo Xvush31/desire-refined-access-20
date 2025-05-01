@@ -9,7 +9,7 @@ export interface ContentItem {
   thumbnail: string;
   type: "standard" | "premium" | "vip";
   format?: "video" | "image" | "audio" | "text";
-  duration?: string;
+  duration?: number | string;  // Updated to allow both number and string
   publishDate?: string;
   metrics?: {
     views: number;

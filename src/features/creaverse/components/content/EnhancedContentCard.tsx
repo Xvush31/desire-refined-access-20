@@ -56,7 +56,7 @@ const EnhancedContentCard: React.FC<EnhancedContentCardProps> = ({
       return (
         <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-0.5 rounded-md flex items-center">
           <Clock size={12} className="mr-1" />
-          {formatDuration(item.duration)}
+          {formatDuration(typeof item.duration === 'string' ? parseInt(item.duration, 10) : item.duration)}
         </div>
       );
     }
