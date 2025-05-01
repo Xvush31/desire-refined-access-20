@@ -8,17 +8,12 @@
   height: 100%;
 }
 
-/* Immersive mode styles */
+/* Immersive mode styles - modified for scrolling */
 .immersive-mode {
   position: relative; /* Changed from fixed to relative to allow scrolling */
   width: 100%;
   height: 100%;
   z-index: 50;
-  background-color: var(--background);
-}
-
-.immersive-mode-active {
-  /* Visual styles only, no overflow-hidden */
   background-color: var(--background);
 }
 
@@ -132,8 +127,8 @@
   .filter-item {
     flex-shrink: 0;
   }
-
-  /* Better immersive mode for mobile */
+  
+  /* Better immersive mode for mobile - ensure scroll works */
   .immersive-mode {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -225,4 +220,3 @@ html[data-theme="light"] .navigation-indicator {
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
-

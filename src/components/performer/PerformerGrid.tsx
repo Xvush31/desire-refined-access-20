@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Play } from 'lucide-react';
 import { useTheme } from '@/hooks/use-theme';
+import { useRevolutionaryNavigation } from '@/hooks/use-revolutionary-navigation';
 
 interface PerformerGridProps {
   type: 'photos' | 'videos';
@@ -29,8 +30,18 @@ const generateMockPosts = (type: 'photos' | 'videos', count: number = 9) => {
 
 const PerformerGrid: React.FC<PerformerGridProps> = ({ type, performerId }) => {
   const { theme } = useTheme();
+  const { setIsImmersiveMode } = useRevolutionaryNavigation();
   const posts = generateMockPosts(type, 12);
   const bgClass = theme === 'light' ? 'bg-white' : 'bg-zinc-900';
+  
+  // Activer automatiquement le mode immersif lorsque ce composant est monté
+  React.useEffect(() => {
+    setIsImmersiveMode(true);
+    return () => {
+      // Désactiver le mode immersif lors du démontage
+      setIsImmersiveMode(false);
+    };
+  }, [setIsImmersiveMode]);
   
   return (
     <div className={`${bgClass}`}>

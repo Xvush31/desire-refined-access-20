@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { GestureType } from "@/components/navigation/CustomGestures";
 import { useIsMobile } from "./use-mobile";
 import { toast } from "sonner";
+import { useLocation } from "react-router-dom";
 
 interface NavigationSettings {
   enableRadialMenu: boolean;
@@ -20,6 +21,7 @@ interface GestureAction {
 
 export function useRevolutionaryNavigation() {
   const isMobile = useIsMobile();
+  const location = useLocation();
   
   const [isRadialOpen, setIsRadialOpen] = useState(false);
   const [isImmersiveMode, setIsImmersiveMode] = useState(false);
@@ -33,20 +35,40 @@ export function useRevolutionaryNavigation() {
     enableIntelligentFilters: true
   });
   
+  // Vérifier si nous sommes sur une page de galerie photo ou vidéo
+  const isGalleryPage = useCallback(() => {
+    const path = location.pathname;
+    return path.includes('/photos') || path.includes('/videos') || 
+           path.includes('gallery') || path.includes('collections');
+  }, [location]);
+
+  // Auto-active le mode immersif seulement pour les pages de galerie
+  useEffect(() => {
+    // Seulement activer automatiquement le mode immersif sur les pages de galerie
+    if (isGalleryPage()) {
+      setIsImmersiveMode(true);
+    } else {
+      setIsImmersiveMode(false);
+    }
+  }, [isGalleryPage, location]);
+  
   // Customized gesture actions - don't show toasts on mobile for better UX
   const [gestureActions, setGestureActions] = useState<GestureAction[]>([
     {
       type: "swipe-up",
       handler: () => {
-        setIsImmersiveMode(true);
-        if (!isMobile) {
-          toast.info("Mode immersif activé", {
-            style: { 
-              background: "rgba(0, 0, 0, 0.85)",
-              color: "#ffffff",
-              border: "1px solid rgba(255, 255, 255, 0.2)"
-            }
-          });
+        // Seulement activer le mode immersif si nous sommes sur une page de galerie
+        if (isGalleryPage()) {
+          setIsImmersiveMode(true);
+          if (!isMobile) {
+            toast.info("Mode immersif activé", {
+              style: { 
+                background: "rgba(0, 0, 0, 0.85)",
+                color: "#ffffff",
+                border: "1px solid rgba(255, 255, 255, 0.2)"
+              }
+            });
+          }
         }
       },
       description: "Mode immersif activé"
@@ -86,15 +108,18 @@ export function useRevolutionaryNavigation() {
     {
       type: "long-press",
       handler: () => {
-        setIsRadialOpen(true);
-        if (!isMobile) {
-          toast.info("Menu radial ouvert", {
-            style: { 
-              background: "rgba(0, 0, 0, 0.85)",
-              color: "#ffffff",
-              border: "1px solid rgba(255, 255, 255, 0.2)"
-            }
-          });
+        // Seulement ouvrir le menu radial si nous sommes sur une page de galerie
+        if (isGalleryPage()) {
+          setIsRadialOpen(true);
+          if (!isMobile) {
+            toast.info("Menu radial ouvert", {
+              style: { 
+                background: "rgba(0, 0, 0, 0.85)",
+                color: "#ffffff",
+                border: "1px solid rgba(255, 255, 255, 0.2)"
+              }
+            });
+          }
         }
       },
       description: "Menu radial ouvert"
@@ -102,15 +127,18 @@ export function useRevolutionaryNavigation() {
     {
       type: "pinch",
       handler: () => {
-        setZoomLevel(zoomLevel > 0.8 ? 0.6 : 1);
-        if (!isMobile) {
-          toast.info(zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant", {
-            style: { 
-              background: "rgba(0, 0, 0, 0.85)",
-              color: "#ffffff",
-              border: "1px solid rgba(255, 255, 255, 0.2)"
-            }
-          });
+        // Seulement changer le zoom si nous sommes sur une page de galerie
+        if (isGalleryPage()) {
+          setZoomLevel(zoomLevel > 0.8 ? 0.6 : 1);
+          if (!isMobile) {
+            toast.info(zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant", {
+              style: { 
+                background: "rgba(0, 0, 0, 0.85)",
+                color: "#ffffff",
+                border: "1px solid rgba(255, 255, 255, 0.2)"
+              }
+            });
+          }
         }
       },
       description: zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant"
@@ -125,15 +153,18 @@ export function useRevolutionaryNavigation() {
           ? { 
               ...action, 
               handler: () => {
-                setZoomLevel(zoomLevel > 0.8 ? 0.6 : 1);
-                if (!isMobile) {
-                  toast.info(zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant", {
-                    style: { 
-                      background: "rgba(0, 0, 0, 0.85)", 
-                      color: "#ffffff",
-                      border: "1px solid rgba(255, 255, 255, 0.2)"
-                    }
-                  });
+                // Seulement changer le zoom si nous sommes sur une page de galerie
+                if (isGalleryPage()) {
+                  setZoomLevel(zoomLevel > 0.8 ? 0.6 : 1);
+                  if (!isMobile) {
+                    toast.info(zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant", {
+                      style: { 
+                        background: "rgba(0, 0, 0, 0.85)", 
+                        color: "#ffffff",
+                        border: "1px solid rgba(255, 255, 255, 0.2)"
+                      }
+                    });
+                  }
                 }
               },
               description: zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant" 
@@ -141,7 +172,7 @@ export function useRevolutionaryNavigation() {
           : action
       )
     );
-  }, [zoomLevel, isMobile]);
+  }, [zoomLevel, isMobile, isGalleryPage]);
   
   // Load settings from localStorage
   useEffect(() => {
@@ -183,26 +214,32 @@ export function useRevolutionaryNavigation() {
       
       // Alt+I to toggle immersive mode
       if (e.altKey && e.key === 'i') {
-        setIsImmersiveMode(prev => !prev);
-        toast.info(isImmersiveMode ? "Mode normal" : "Mode immersif activé", {
-          style: { 
-            background: "rgba(0, 0, 0, 0.85)", 
-            color: "#ffffff",
-            border: "1px solid rgba(255, 255, 255, 0.2)"
-          }
-        });
+        // Seulement activer automatiquement le mode immersif sur les pages de galerie
+        if (isGalleryPage()) {
+          setIsImmersiveMode(prev => !prev);
+          toast.info(isImmersiveMode ? "Mode normal" : "Mode immersif activé", {
+            style: { 
+              background: "rgba(0, 0, 0, 0.85)", 
+              color: "#ffffff",
+              border: "1px solid rgba(255, 255, 255, 0.2)"
+            }
+          });
+        }
       }
       
       // Alt+Z to toggle zoom level
       if (e.altKey && e.key === 'z') {
-        setZoomLevel(prev => prev > 0.8 ? 0.6 : 1);
-        toast.info(zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant", {
-          style: { 
-            background: "rgba(0, 0, 0, 0.85)", 
-            color: "#ffffff",
-            border: "1px solid rgba(255, 255, 255, 0.2)"
-          }
-        });
+        // Seulement changer le zoom si nous sommes sur une page de galerie
+        if (isGalleryPage()) {
+          setZoomLevel(prev => prev > 0.8 ? 0.6 : 1);
+          toast.info(zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant", {
+            style: { 
+              background: "rgba(0, 0, 0, 0.85)", 
+              color: "#ffffff",
+              border: "1px solid rgba(255, 255, 255, 0.2)"
+            }
+          });
+        }
       }
       
       // Alt+G to cycle through layouts
@@ -223,7 +260,7 @@ export function useRevolutionaryNavigation() {
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isRadialOpen, isImmersiveMode, zoomLevel, currentLayout, isMobile]);
+  }, [isRadialOpen, isImmersiveMode, zoomLevel, currentLayout, isMobile, isGalleryPage]);
   
   // Update a specific setting
   const updateSetting = useCallback((key: keyof NavigationSettings, value: boolean) => {
@@ -257,6 +294,7 @@ export function useRevolutionaryNavigation() {
     updateSetting,
     gestureActions,
     updateGestureAction,
-    isMobile
+    isMobile,
+    isGalleryPage
   };
 }

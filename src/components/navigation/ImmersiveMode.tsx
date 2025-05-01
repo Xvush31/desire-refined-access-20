@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ImmersiveModeProps {
@@ -23,20 +22,14 @@ const ImmersiveMode: React.FC<ImmersiveModeProps> = ({
   const [longPressTimer, setLongPressTimer] = useState<NodeJS.Timeout | null>(null);
   const [isTouching, setIsTouching] = useState(false);
   const isMobile = useIsMobile();
-
+  
+  // Ne plus ajouter la classe au body pour éviter de bloquer le scroll
   useEffect(() => {
-    if (isImmersive) {
-      // Don't block scrolling anymore
-      // Only add the class for visual styling but not overflow behavior
-      document.body.classList.add("immersive-mode-active");
-      
-      // Clean up when exiting immersive mode
-      return () => {
-        document.body.classList.remove("immersive-mode-active");
-        if (controlsTimer) clearTimeout(controlsTimer);
-        if (longPressTimer) clearTimeout(longPressTimer);
-      };
-    }
+    // Clean up when exiting immersive mode
+    return () => {
+      if (controlsTimer) clearTimeout(controlsTimer);
+      if (longPressTimer) clearTimeout(longPressTimer);
+    };
   }, [isImmersive]);
   
   useEffect(() => {
@@ -128,32 +121,17 @@ const ImmersiveMode: React.FC<ImmersiveModeProps> = ({
         
         <AnimatePresence>
           {showControls && (
-            <>
-              <motion.button
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.2 }}
-                onClick={onToggleImmersive}
-                className="fixed top-4 right-4 z-50 rounded-full bg-black/80 hover:bg-black/90 text-white border border-white/20 p-2 shadow-xl"
-                aria-label="Quitter le mode immersif"
-              >
-                <X size={24} />
-              </motion.button>
-              
-              {isMobile && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none"
-                >
-                  <div className="bg-black/80 text-white font-medium py-1 px-4 rounded-full text-sm border border-white/20 shadow-lg">
-                    Mode immersif
-                  </div>
-                </motion.div>
-              )}
-            </>
+            <motion.button
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.2 }}
+              onClick={onToggleImmersive}
+              className="fixed top-4 right-4 z-50 rounded-full bg-black/80 hover:bg-black/90 text-white border border-white/20 p-2 shadow-xl"
+              aria-label="Quitter le mode immersif"
+            >
+              <X size={24} />
+            </motion.button>
           )}
         </AnimatePresence>
       </div>

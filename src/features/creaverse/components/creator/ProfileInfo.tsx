@@ -37,13 +37,13 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
   return (
     <div className="flex items-start">
       <div className="mr-4">
-        <Avatar className="w-20 h-20 md:w-24 md:h-24 border-2 border-pink-500 p-0.5 bg-gradient-to-br from-pink-500 to-purple-600">
+        <Avatar className="w-20 h-20 md:w-24 md:h-24 border border-border p-0.5 bg-gradient-to-br from-muted/60 to-muted">
           <AvatarImage 
             src={image} 
             alt={displayName} 
             className="object-cover rounded-full" 
           />
-          <AvatarFallback className="bg-gradient-to-br from-pink-500 to-purple-600 text-white">
+          <AvatarFallback className="bg-gradient-to-br from-muted/80 to-muted/40 text-foreground">
             {displayName.substring(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>

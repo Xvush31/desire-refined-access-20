@@ -87,7 +87,7 @@ const CreatorProfile: React.FC = () => {
   }
   
   return (
-    <div className={`min-h-screen pt-0 ${isImmersiveMode ? 'pb-0' : 'pb-20'}`}>
+    <div className="min-h-screen pt-0 pb-20">
       <DynamicHeader 
         username={performer.username}
         displayName={performer.displayName}
