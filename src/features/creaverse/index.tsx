@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import NavigationFooter from "./components/NavigationFooter";
 import { toast } from "sonner";
 import RevolutionaryNavigation from "@/components/navigation/RevolutionaryNavigation";
+import "./styles/creaverse.css"; // Import des styles spécifiques à CreaVerse
 
 /**
  * CreaVerse - L'univers des créateurs de XVush
@@ -56,7 +57,7 @@ const CreaVerse: React.FC = () => {
   
   return (
     <RevolutionaryNavigation>
-      <div className="min-h-screen bg-background pb-16">
+      <div className="min-h-screen bg-background pb-16 creaverse-container">
         {isMainCreaversePage && (
           <div className="container mx-auto px-4 py-8 text-center">
             <h1 className="text-2xl font-bold mb-4">Bienvenue à CreaVerse</h1>
