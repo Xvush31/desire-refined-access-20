@@ -29,17 +29,30 @@ const MainContent = ({
   handleContentClick,
   filterByFormat,
 }) => {
+  // Default empty metrics - to satisfy TypeScript requirements
+  const defaultMetrics = {
+    video: 0,
+    image: 0,
+    audio: 0,
+    text: 0
+  };
+
   return (
     <div className="container px-4 lg:px-8 py-6 -mt-12 z-20 relative">
       <div className="bg-card rounded-xl p-6 shadow-sm border border-border">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-6">
           <ProfileInfo
+            image={performer.avatar || "/placeholder.svg"}
             displayName={performer.name}
-            username={performer.username}
-            bio={performer.bio}
-            tier={performer.tier}
-            isVerified={performer.isVerified}
-            isOnline={performer.isOnline}
+            description={performer.bio}
+            followers={performer.metrics?.followers?.toLocaleString() || "0"}
+            stats={{
+              retentionRate: performer.metrics?.retentionRate || "0%",
+              watchMinutes: performer.metrics?.watchMinutes || "0",
+              superfans: performer.metrics?.superfans || 0
+            }}
+            relationshipLevel={performer.relationshipLevel}
+            nextEvent={performer.nextEvent}
           />
           
           <div className="flex flex-col xs:flex-row gap-3 justify-end">
@@ -102,11 +115,30 @@ const MainContent = ({
         </div>
         
         <ProfileStats
-          followers={performer.metrics.followers}
-          following={performer.metrics.following}
-          content={performer.metrics.contentCount || 120}
-          views={performer.metrics.views || 45600}
-          tier={performer.tier}
+          isOwner={isOwner}
+          showRevenue={showRevenue}
+          onToggleRevenue={onToggleRevenue}
+          stats={{
+            monthlyRevenue: performer.metrics?.monthlyRevenue || 0,
+            monthlyRevenueChange: performer.metrics?.monthlyRevenueChange || 0,
+            watchMinutes: performer.metrics?.watchMinutes || "0",
+            retentionRate: performer.metrics?.retentionRate || "0%",
+            superfans: performer.metrics?.superfans || 0,
+            subscriptions: performer.metrics?.subscriptions || 0,
+            engagementRate: performer.metrics?.engagementRate || "0%",
+            completionRate: performer.metrics?.completionRate || "0%",
+            averageWatchTime: performer.metrics?.averageWatchTime || "0",
+            trendingScore: performer.metrics?.trendingScore || 0
+          }}
+          content={{
+            total: performer.metrics?.contentCount || 0,
+            premium: performer.metrics?.premiumCount || 0,
+            trending: performer.metrics?.trendingCount || 0
+          }}
+          tier={performer.tier || "bronze"}
+          nextTier={performer.nextTier || "silver"}
+          tierProgress={performer.tierProgress || 0}
+          tierColor={performer.tierColor || "#cd7f32"}
         />
 
         <div className="mt-6">
@@ -126,10 +158,15 @@ const MainContent = ({
               <div className="flex items-center">
                 {activeTab === "content" && (
                   <>
-                    <ContentFormatFilter onFormatChange={filterByFormat} />
+                    <ContentFormatFilter 
+                      activeFormat="all" 
+                      onFormatChange={filterByFormat}
+                      metrics={defaultMetrics}
+                    />
                     <ContentLayout
+                      items={[]}
                       layout={contentLayout}
-                      onLayoutChange={setContentLayout}
+                      onItemClick={() => {}}
                     />
                   </>
                 )}
@@ -140,7 +177,10 @@ const MainContent = ({
               {contentLayout === "grid" ? (
                 <ContentGrid
                   items={sampleContentItems}
+                  layout={contentLayout}
+                  onLayoutChange={setContentLayout}
                   onItemClick={handleContentClick}
+                  filterByFormat={filterByFormat}
                 />
               ) : (
                 <ContentFlow
