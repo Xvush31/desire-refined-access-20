@@ -71,11 +71,11 @@ const CreatorHeader: React.FC<CreatorHeaderProps> = ({
       
       {/* Statistiques du créateur */}
       <CreatorStatsDisplay 
-        followers={performer.followers}
-        subscriptions={performer.stats.subscriptions}
+        followers={parseInt(performer.followers.replace(/,/g, ''))}
+        subscriptions={performer.stats.subscriptions || 0}
         superfans={performer.stats.superfans}
         retentionRate={performer.stats.retentionRate}
-        watchMinutes={performer.stats.watchMinutes}
+        watchMinutes={parseInt(performer.stats.watchMinutes.replace(/,/g, ''))}
       />
       
       {/* Barre de progression du palier */}

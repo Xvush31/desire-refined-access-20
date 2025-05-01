@@ -5,7 +5,7 @@ import CreatorBadge from "@/features/creaverse/components/creator/CreatorBadge";
 interface CreatorProfileInfoProps {
   displayName: string;
   username: string;
-  tier: string;
+  tier: "bronze" | "silver" | "gold" | "platinum" | "diamond";
   description: string;
   isOwner: boolean;
   isFollowing: boolean;

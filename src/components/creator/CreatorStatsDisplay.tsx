@@ -23,14 +23,14 @@ const CreatorStatsDisplay: React.FC<CreatorStatsDisplayProps> = ({
         <div className="text-center flex items-center gap-2">
           <span className="text-rose-400 text-lg">●</span>
           <div className="flex flex-col items-start">
-            <span className="font-bold text-xl">{followers}</span>
+            <span className="font-bold text-xl">{followers.toLocaleString('fr-FR')}</span>
             <span className="text-muted-foreground text-sm">abonnés</span>
           </div>
         </div>
         
         <div className="text-center flex items-center gap-2">
           <div className="flex flex-col items-start">
-            <span className="font-bold text-xl">{subscriptions}</span>
+            <span className="font-bold text-xl">{subscriptions.toLocaleString('fr-FR')}</span>
             <span className="text-muted-foreground text-sm">abonnements</span>
           </div>
         </div>
@@ -57,7 +57,7 @@ const CreatorStatsDisplay: React.FC<CreatorStatsDisplayProps> = ({
 
       {/* Troisième ligne: minutes regardées */}
       <div className="text-center">
-        <span className="font-bold text-xl">{watchMinutes}</span>
+        <span className="font-bold text-xl">{watchMinutes.toLocaleString('fr-FR')}</span>
         <span className="text-muted-foreground text-sm ml-1">min regardées</span>
       </div>
     </div>
