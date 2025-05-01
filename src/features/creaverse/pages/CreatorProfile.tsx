@@ -13,6 +13,10 @@ import CreatorBadge from '@/features/creaverse/components/ui/CreatorBadge';
 import ProfileNav from '@/features/creaverse/components/ui/ProfileNav';
 import EnhancedContentGrid from '@/features/creaverse/components/content/EnhancedContentGrid';
 import { ContentItem } from '@/features/creaverse/components/content/ContentCard';
+import CreatorDNA from '@/features/creaverse/components/creator/CreatorDNA';
+import CreatorJourney from '@/features/creaverse/components/creator/CreatorJourney';
+import FeedbackLoop from '@/features/creaverse/components/creator/FeedbackLoop';
+import ValueVault from '@/features/creaverse/components/creator/ValueVault';
 
 interface CreatorProfileProps {
   // Define any props if needed
@@ -93,7 +97,102 @@ const fetchPerformerProfile = async (username: string) => {
           engagement: 0.88
         }
       }
-    ] as ContentItem[]
+    ] as ContentItem[],
+    // Additional mock data for new components
+    creatorDNA: {
+      skills: ['Photographie', 'Vidéo', 'Direction artistique', 'Fashion', 'Montage', 'Social Media'],
+      style: ['Minimaliste', 'Coloré', 'Urbain', 'High Fashion', 'Lifestyle'],
+      achievements: ['100K Followers', 'Brand Partnership', 'Magazine Feature', 'Awards Nomination']
+    },
+    journey: [
+      {
+        id: 'j1',
+        date: 'Jan 2023',
+        title: 'Premier contenu premium',
+        description: 'Lancement de la première série de contenu premium qui a révolutionné ma présence digitale.',
+        metricBefore: 5000,
+        metricAfter: 12000,
+        metricLabel: 'Followers'
+      },
+      {
+        id: 'j2',
+        date: 'Mar 2023',
+        title: 'Collaboration majeure',
+        description: 'Partenariat avec une marque internationale qui a grandement augmenté ma visibilité.',
+        metricBefore: 15000,
+        metricAfter: 22000,
+        metricLabel: 'Portée'
+      },
+      {
+        id: 'j3',
+        date: 'Jun 2023',
+        title: 'Lancement de ma collection',
+        description: 'Création et lancement de ma première collection qui a connu un succès immédiat.',
+        metricBefore: 8500,
+        metricAfter: 15200,
+        metricLabel: 'Ventes'
+      }
+    ],
+    feedback: [
+      {
+        id: 'f1',
+        username: 'martin_23',
+        message: 'J\'adore ton contenu, surtout les séries fashion!',
+        timestamp: 'Il y a 2 jours',
+        type: 'comment'
+      },
+      {
+        id: 'f2',
+        username: 'sophie_style',
+        message: 'Pourrais-tu faire un tutoriel sur la composition photo?',
+        timestamp: 'Il y a 5 jours',
+        type: 'request'
+      },
+      {
+        id: 'f3',
+        username: 'photo_enthousiast',
+        message: 'Tes dernières photos m\'ont vraiment inspiré pour mon projet!',
+        timestamp: 'Il y a 1 semaine',
+        type: 'appreciation'
+      }
+    ],
+    premiumContent: [
+      {
+        id: 'p1',
+        title: 'Techniques de retouche avancées',
+        type: 'premium',
+        category: 'tutoriels',
+        views: 8700
+      },
+      {
+        id: 'p2',
+        title: 'Behind the scenes - Fashion Week',
+        type: 'vip',
+        category: 'exclusif',
+        views: 3200
+      },
+      {
+        id: 'p3',
+        title: 'Masterclass composition',
+        type: 'premium',
+        category: 'tutoriels',
+        views: 6500
+      },
+      {
+        id: 'p4',
+        title: 'Shooting day in Paris',
+        type: 'standard',
+        category: 'vlogs',
+        views: 12300
+      },
+      {
+        id: 'p5',
+        title: 'Collection été - Preview',
+        type: 'premium',
+        category: 'collections',
+        views: 9200
+      }
+    ]
   };
 };
 
@@ -155,8 +254,6 @@ const CreatorProfile: React.FC<CreatorProfileProps> = () => {
     superfans: performer.stats.superfans || 0,
     watchMinutes: performer.stats.watchMinutes || 0,
   };
-
-  const status = performer.stats.isOnline ? 'online' : 'offline';
 
   return (
     <div className="container py-10">
@@ -228,7 +325,33 @@ const CreatorProfile: React.FC<CreatorProfileProps> = () => {
         </Card>
       </div>
 
+      {/* New Creator Components Integration */}
+      <div className="grid gap-6 md:grid-cols-2 mb-8">
+        <CreatorDNA
+          creatorName={performer.displayName}
+          creatorSkills={performer.creatorDNA?.skills || []}
+          creatorStyle={performer.creatorDNA?.style || []}
+          creatorAchievements={performer.creatorDNA?.achievements || []}
+        />
+        
+        <ValueVault
+          premiumContent={performer.premiumContent || []}
+        />
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2 mb-8">
+        <CreatorJourney
+          milestones={performer.journey || []}
+        />
+        
+        <FeedbackLoop
+          feedbackMessages={performer.feedback || []}
+          isCreator={false}
+        />
+      </div>
+
       {/* Content Grid */}
+      <h2 className="text-2xl font-semibold mb-4">Contenu récent</h2>
       <EnhancedContentGrid
         items={performer.content}
         onItemClick={handleContentClick}
