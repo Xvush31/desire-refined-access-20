@@ -143,12 +143,8 @@ const Header = () => {
             </div>
           </div>
         </div>
-
-        <div className={`w-full h-[125px] flex items-center justify-center text-muted-foreground rounded-lg mb-4 ${
-          isLight ? 'sexy-glass' : 'bg-secondary/30 dark:bg-gray-200'
-        }`}>
-          Espace publicitaire
-        </div>
+        
+        {/* Suppression de l'espace publicitaire */}
       </div>
 
       <MobileMenu isOpen={showMobileMenu} onClose={() => setShowMobileMenu(false)} />

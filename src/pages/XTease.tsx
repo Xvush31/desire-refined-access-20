@@ -1,11 +1,11 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
 import XTeaseVideoList from "@/components/XTeaseVideoList";
 import { toast } from "@/hooks/use-toast";
 
-// Données statiques pour les vidéos XTease
-const xteaseVideos = [
+// Données statiques pour les vidéos XTease - augmenté pour démontrer l'infinite scrolling
+const allXTeaseVideos = [
   {
     id: 1,
     title: "Moment intime en soirée",
@@ -56,6 +56,56 @@ const xteaseVideos = [
     isPremium: true,
     isPreview: false,
   },
+  {
+    id: 6,
+    title: "Week-end romantique à Paris",
+    performer: "ParisianCouple",
+    views: "487K vues",
+    thumbnail: "https://picsum.photos/seed/xtease6/1080/1920",
+    streamUrl: "https://d38s5lp2g9pf7s.cloudfront.net/video-3/playlist.m3u8",
+    isPremium: false,
+    isPreview: true,
+  },
+  {
+    id: 7,
+    title: "Dîner aux chandelles qui s'enflamme",
+    performer: "RomanticDuo",
+    views: "632K vues",
+    thumbnail: "https://picsum.photos/seed/xtease7/1080/1920",
+    streamUrl: "https://d38s5lp2g9pf7s.cloudfront.net/video-1/playlist.m3u8",
+    isPremium: true,
+    isPreview: false,
+  },
+  {
+    id: 8,
+    title: "Découverte sensuelle en backstage",
+    performer: "BackstageModel",
+    views: "712K vues",
+    thumbnail: "https://picsum.photos/seed/xtease8/1080/1920",
+    streamUrl: "https://d38s5lp2g9pf7s.cloudfront.net/video-2/playlist.m3u8",
+    isPremium: true,
+    isPreview: false,
+  },
+  {
+    id: 9,
+    title: "Détente au spa qui dérape",
+    performer: "SpaCouple",
+    views: "543K vues",
+    thumbnail: "https://picsum.photos/seed/xtease9/1080/1920",
+    streamUrl: "https://d38s5lp2g9pf7s.cloudfront.net/video-3/playlist.m3u8",
+    isPremium: false,
+    isPreview: true,
+  },
+  {
+    id: 10,
+    title: "Soirée privée entre amis spéciaux",
+    performer: "PrivateParty",
+    views: "821K vues",
+    thumbnail: "https://picsum.photos/seed/xtease10/1080/1920",
+    streamUrl: "https://d38s5lp2g9pf7s.cloudfront.net/video-1/playlist.m3u8",
+    isPremium: true,
+    isPreview: false,
+  }
 ];
 
 // Données statiques pour suggestions IA
@@ -105,6 +155,12 @@ const XTease: React.FC = () => {
   const [showSecurityIncident, setShowSecurityIncident] = useState(false);
   const [settings, setSettings] = useState<XTeaseSettings>(defaultSettings);
   
+  // Infinite Scrolling avec chargement paginé
+  const [displayedVideos, setDisplayedVideos] = useState(allXTeaseVideos.slice(0, 5));
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
+  
   // Load settings from localStorage
   useEffect(() => {
     const savedSettings = localStorage.getItem('xtease-settings');
@@ -128,12 +184,36 @@ const XTease: React.FC = () => {
     localStorage.setItem('xtease-settings', JSON.stringify(settings));
   }, [settings]);
 
+  // Fonction pour charger plus de vidéos (infinite scrolling)
+  const loadMoreVideos = useCallback(() => {
+    if (loading) return;
+    
+    setLoading(true);
+    
+    // Simuler un délai de chargement
+    setTimeout(() => {
+      const nextPage = page + 1;
+      const startIndex = page * 5;
+      const endIndex = startIndex + 5;
+      const nextVideos = allXTeaseVideos.slice(startIndex, endIndex);
+      
+      if (nextVideos.length === 0) {
+        setHasMore(false);
+      } else {
+        setDisplayedVideos(prev => [...prev, ...nextVideos]);
+        setPage(nextPage);
+      }
+      
+      setLoading(false);
+    }, 800);
+  }, [page, loading]);
+
   const handleVideoComplete = () => {
-    console.log("Vidéo terminée:", xteaseVideos[currentVideoIndex].title);
+    console.log("Vidéo terminée:", displayedVideos[currentVideoIndex].title);
     
     // Add to watch history
     const updatedHistory = [...settings.watchHistory];
-    const videoId = xteaseVideos[currentVideoIndex].id;
+    const videoId = displayedVideos[currentVideoIndex].id;
     const existingIndex = updatedHistory.findIndex(h => h.videoId === videoId);
     
     if (existingIndex !== -1) {
@@ -156,7 +236,7 @@ const XTease: React.FC = () => {
     });
     
     // Auto-advance to next video if available
-    if (settings.autoPlayEnabled && currentVideoIndex < xteaseVideos.length - 1) {
+    if (settings.autoPlayEnabled && currentVideoIndex < displayedVideos.length - 1) {
       setTimeout(() => {
         setCurrentVideoIndex(currentVideoIndex + 1);
       }, 1000);
@@ -210,7 +290,7 @@ const XTease: React.FC = () => {
     <div className="min-h-screen bg-background text-foreground">
       <Header />
       <XTeaseVideoList
-        videos={xteaseVideos}
+        videos={displayedVideos}
         aiSuggestions={aiSuggestions}
         currentVideoIndex={currentVideoIndex}
         setCurrentVideoIndex={setCurrentVideoIndex}
@@ -223,6 +303,8 @@ const XTease: React.FC = () => {
         toggleDataSavingMode={toggleDataSavingMode}
         toggleAutoPlay={toggleAutoPlay}
         updateWatchProgress={updateWatchProgress}
+        loadMoreVideos={loadMoreVideos}
+        hasMoreVideos={hasMore}
       />
     </div>
   );

@@ -51,30 +51,14 @@ export const useXTeaseNavigation = ({
     };
   }, [autoPlayEnabled, currentIndex, totalVideos, onChangeIndex, onActivatePlayer]);
   
-  // Touch navigation handling
+  // Touch navigation handling - permettre le scrolling libre
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStartY(e.touches[0].clientY);
   };
   
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartY === null) return;
-    
-    const touchEndY = e.changedTouches[0].clientY;
-    const diffY = touchEndY - touchStartY;
-    
-    // Swipe threshold
-    if (Math.abs(diffY) > 50) {
-      if (diffY > 0 && currentIndex > 0) {
-        // Swipe down -> previous video
-        onChangeIndex(currentIndex - 1);
-        onActivatePlayer();
-      } else if (diffY < 0 && currentIndex < totalVideos - 1) {
-        // Swipe up -> next video
-        onChangeIndex(currentIndex + 1);
-        onActivatePlayer();
-      }
-    }
-    
+    // Maintenant le scrolling est libre, nous utilisons seulement la détection d'intersection
+    // pour changer la vidéo active, donc nous n'interférons plus avec les événements tactiles
     setTouchStartY(null);
   };
   

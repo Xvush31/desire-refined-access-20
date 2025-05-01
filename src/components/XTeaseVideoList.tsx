@@ -32,6 +32,8 @@ interface XTeaseVideoListProps {
   toggleDataSavingMode: () => void;
   toggleAutoPlay: () => boolean;
   updateWatchProgress: (videoId: number, progress: number) => void;
+  loadMoreVideos?: () => void; // Nouvelle prop pour charger plus de vidéos
+  hasMoreVideos?: boolean;     // Nouvelle prop pour indiquer s'il y a plus de vidéos
 }
 
 const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
@@ -47,15 +49,20 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
   settings,
   toggleDataSavingMode,
   toggleAutoPlay,
-  updateWatchProgress
+  updateWatchProgress,
+  loadMoreVideos = () => {}, // Valeur par défaut
+  hasMoreVideos = false     // Valeur par défaut
 }) => {
-  const [displayedVideos, setDisplayedVideos] = useState(videos.slice(0, 3));
-  const [hasMore, setHasMore] = useState(true);
+  const [displayedVideos, setDisplayedVideos] = useState(videos);
+
+  // Mettre à jour les vidéos affichées lorsque la prop videos change
+  useEffect(() => {
+    setDisplayedVideos(videos);
+  }, [videos]);
 
   const {
     containerRef,
     registerVideoRef,
-    scrollToVideo,
     handleTouchStart,
     handleTouchEnd,
     autoPlayEnabled,
@@ -67,20 +74,6 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
     onActivatePlayer: () => setIsPlayerActive(true)
   });
 
-  const fetchMoreData = () => {
-    const currentLength = displayedVideos.length;
-    const moreVideos = videos.slice(currentLength, currentLength + 2);
-    
-    if (displayedVideos.length >= videos.length) {
-      setHasMore(false);
-      return;
-    }
-    
-    setTimeout(() => {
-      setDisplayedVideos([...displayedVideos, ...moreVideos]);
-    }, 1000);
-  };
-
   useEffect(() => {
     // Sync autoplay settings
     if (autoPlayEnabled !== settings.autoPlayEnabled) {
@@ -88,23 +81,18 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
     }
   }, [settings.autoPlayEnabled, autoPlayEnabled, toggleAutoPlayNavigation]);
 
-  useEffect(() => {
-    // Scroll to the current video when index changes
-    scrollToVideo(currentVideoIndex);
-  }, [currentVideoIndex, scrollToVideo]);
-
   return (
     <div
       ref={containerRef}
       id="scrollableDiv"
-      className="h-[calc(100vh-80px)] overflow-y-auto snap-y snap-mandatory"
+      className="h-[calc(100vh-80px)] overflow-y-auto"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
       <InfiniteScroll
         dataLength={displayedVideos.length}
-        next={fetchMoreData}
-        hasMore={hasMore}
+        next={loadMoreVideos}
+        hasMore={hasMoreVideos}
         loader={
           <div className="flex justify-center items-center py-4">
             <Loader className="animate-spin w-6 h-6 text-pink-500" />
@@ -117,14 +105,14 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
             key={video.id}
             ref={(ref) => registerVideoRef(index, ref)}
             data-index={index}
-            className="min-h-full w-full snap-start snap-always flex items-center justify-center p-2 sm:p-4"
+            className="min-h-full w-full flex items-center justify-center p-2 sm:p-4"
             style={{ minHeight: 'calc(100vh - 80px)' }}
           >
             <XTeaseVideoCard
               video={video}
               index={index}
               currentVideoIndex={currentVideoIndex}
-              isPlayerActive={isPlayerActive}
+              isPlayerActive={isPlayerActive && currentVideoIndex === index}
               showSecurityIncident={showSecurityIncident}
               dataSavingMode={settings.dataSavingMode}
               onPlay={() => {
