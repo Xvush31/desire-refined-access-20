@@ -9,6 +9,7 @@ export const mockPerformers: MockPerformersMap = {
     displayName: "Julie Sky",
     description: "Créatrice de contenu lifestyle et voyage 🌍✨",
     image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3",
+    coverImage: "https://images.unsplash.com/photo-1678389502661-cf9d9489f9cf?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3",
     followers: "64.4K",
     tier: "gold",
     tierProgress: 73,
@@ -56,6 +57,7 @@ export const mockPerformers: MockPerformersMap = {
     displayName: "Marcus Creative",
     description: "Photographie et art digital 📷🎨",
     image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3",
+    coverImage: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3",
     followers: "215K",
     tier: "silver",
     tierProgress: 40,
@@ -102,6 +104,7 @@ export const mockPerformers: MockPerformersMap = {
     displayName: "Elena Fitness",
     description: "Coach fitness et nutrition 💪🥗",
     image: "https://images.unsplash.com/photo-1499952127939-9bbf5af6c51c?q=80&w=2076&auto=format&fit=crop&ixlib=rb-4.0.3",
+    coverImage: "https://images.unsplash.com/photo-1594737625785-a6cbdabd333c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3",
     followers: "678K",
     tier: "platinum",
     tierProgress: 85,
@@ -127,7 +130,7 @@ export const mockPerformers: MockPerformersMap = {
       rating: 4.9,
       engagementRate: "32.1%",
       completionRate: "89%",
-      averageWatchTime: "18m 20s",
+      averageWatchTime: "18m 32s",
       trendingScore: 94
     },
     content: {

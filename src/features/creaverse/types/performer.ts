@@ -13,6 +13,7 @@ export interface PerformerData {
   isLive?: boolean;
   isActive?: boolean;
   lastActive?: string;
+  coverImage?: string; // Added coverImage property
   nextEvent?: {
     type: string;
     title: string;
