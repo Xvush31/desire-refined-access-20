@@ -15,6 +15,7 @@ import { PerformerData } from '../types/performer';
 export const useProfileData = (performerId: string | undefined) => {
   const [performer, setPerformer] = useState<PerformerData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [contentLoading, setContentLoading] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
   const [showRevenue, setShowRevenue] = useState(true);
@@ -30,15 +31,29 @@ export const useProfileData = (performerId: string | undefined) => {
   const navigate = useNavigate();
   const { currentUser } = useAuth() || { currentUser: null };
   
+  // Logs for debugging
+  console.log("useProfileData hook initialized with performerId:", performerId);
+  
   // Load performer data
   useEffect(() => {
     const loadPerformerData = async () => {
+      if (!performerId) {
+        console.error("No performerId provided");
+        setError("Identifiant de créateur manquant");
+        setLoading(false);
+        return;
+      }
+
+      console.log("Loading performer data for ID:", performerId);
       try {
         setLoading(true);
-        const data = await fetchPerformerData(performerId || "1");
+        setError(null);
+        const data = await fetchPerformerData(performerId);
+        console.log("Performer data loaded:", data);
         setPerformer(data);
       } catch (error) {
         console.error("Erreur lors du chargement des données:", error);
+        setError("Impossible de charger les données du créateur");
         toast.error("Impossible de charger les données du créateur");
       } finally {
         setLoading(false);
@@ -51,10 +66,11 @@ export const useProfileData = (performerId: string | undefined) => {
   // Load content data
   useEffect(() => {
     const loadContent = async () => {
-      if (!performer) return;
+      if (!performer || error) return;
       
       try {
         setContentLoading(true);
+        console.log("Loading content for performer:", performer.id);
         
         // Load content based on active format
         const content = await fetchPerformerContent(performerId || "1", activeFormat);
@@ -76,7 +92,7 @@ export const useProfileData = (performerId: string | undefined) => {
     };
     
     loadContent();
-  }, [performer, performerId, activeFormat]);
+  }, [performer, performerId, activeFormat, error]);
 
   // Determine owner status
   const isOwner = currentUser && performer && currentUser.uid === performer.id.toString();
@@ -114,6 +130,7 @@ export const useProfileData = (performerId: string | undefined) => {
   return {
     performer,
     loading,
+    error,
     contentLoading,
     isFollowing,
     showRevenue,

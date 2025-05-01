@@ -141,6 +141,20 @@ const ProfileSettingsModal = ({
               
               <FormField
                 control={form.control}
+                name="coverImage"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Image de couverture (URL)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://..." {...field} value={field.value || ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
                 name="bio"
                 render={({ field }) => (
                   <FormItem>
