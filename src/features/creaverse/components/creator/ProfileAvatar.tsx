@@ -13,7 +13,7 @@ interface ProfileAvatarProps {
 
 const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
   image,
-  displayName,
+  displayName = "", // Provide default empty string
   size = "md",
   status = "offline",
   hasStory = false
@@ -39,9 +39,10 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
   };
 
   const getInitials = (name: string) => {
+    if (!name) return ""; // Return empty string if name is falsy
     return name
       .split(' ')
-      .map(part => part[0])
+      .map(part => part[0] || '')
       .join('')
       .toUpperCase()
       .substring(0, 2);
@@ -67,7 +68,7 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
       )}
       
       <Avatar className={`${getSizeClass()} border-2 ${hasStory ? 'border-transparent' : 'border-background'}`}>
-        <AvatarImage src={image} alt={displayName} className="object-cover" />
+        <AvatarImage src={image} alt={displayName || "Profile"} className="object-cover" />
         <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
       </Avatar>
       

@@ -9,8 +9,9 @@ interface ProfileSectionProps {
 }
 
 const ProfileSection = ({ avatar, isOnline = false, name = '' }: ProfileSectionProps) => {
+  // Safely generate initials even if name is empty
   const initials = name
-    ? name.split(' ').map(part => part[0]).join('')
+    ? name.split(' ').map(part => part[0] || '').join('')
     : '';
     
   return (
@@ -18,7 +19,7 @@ const ProfileSection = ({ avatar, isOnline = false, name = '' }: ProfileSectionP
       <div className="relative">
         <div className="creaverse-story-ring">
           <Avatar className="w-20 h-20">
-            <AvatarImage src={avatar} alt={name} />
+            <AvatarImage src={avatar} alt={name || "Profile"} />
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
         </div>

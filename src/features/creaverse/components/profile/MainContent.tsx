@@ -37,22 +37,29 @@ const MainContent = ({
     text: 0
   };
 
+  // Make sure performer has all required properties for ProfileInfo with fallbacks
+  const safeDisplayName = performer?.name || "";
+  const safeBio = performer?.bio || "";
+  const safeAvatar = performer?.avatar || "/placeholder.svg";
+  const safeFollowers = performer?.metrics?.followers?.toLocaleString() || "0";
+  const safeStats = {
+    retentionRate: performer?.metrics?.retentionRate || "0%",
+    watchMinutes: performer?.metrics?.watchMinutes || "0",
+    superfans: performer?.metrics?.superfans || 0
+  };
+
   return (
     <div className="container px-4 lg:px-8 py-6 -mt-12 z-20 relative">
       <div className="bg-card rounded-xl p-6 shadow-sm border border-border">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-6">
           <ProfileInfo
-            image={performer.avatar || "/placeholder.svg"}
-            displayName={performer.name}
-            description={performer.bio}
-            followers={performer.metrics?.followers?.toLocaleString() || "0"}
-            stats={{
-              retentionRate: performer.metrics?.retentionRate || "0%",
-              watchMinutes: performer.metrics?.watchMinutes || "0",
-              superfans: performer.metrics?.superfans || 0
-            }}
-            relationshipLevel={performer.relationshipLevel}
-            nextEvent={performer.nextEvent}
+            image={safeAvatar}
+            displayName={safeDisplayName}
+            description={safeBio}
+            followers={safeFollowers}
+            stats={safeStats}
+            relationshipLevel={performer?.relationshipLevel}
+            nextEvent={performer?.nextEvent}
           />
           
           <div className="flex flex-col xs:flex-row gap-3 justify-end">
@@ -67,9 +74,9 @@ const MainContent = ({
                 </Button>
 
                 <MessagingButton
-                  performerId={performer.id.toString()}
-                  performerName={performer.name}
-                  performerAvatar={performer.avatar}
+                  performerId={performer?.id?.toString()}
+                  performerName={safeDisplayName}
+                  performerAvatar={safeAvatar}
                   variant="outline"
                 />
 
@@ -119,26 +126,26 @@ const MainContent = ({
           showRevenue={showRevenue}
           onToggleRevenue={onToggleRevenue}
           stats={{
-            monthlyRevenue: performer.metrics?.monthlyRevenue || 0,
-            monthlyRevenueChange: performer.metrics?.monthlyRevenueChange || 0,
-            watchMinutes: performer.metrics?.watchMinutes || "0",
-            retentionRate: performer.metrics?.retentionRate || "0%",
-            superfans: performer.metrics?.superfans || 0,
-            subscriptions: performer.metrics?.subscriptions || 0,
-            engagementRate: performer.metrics?.engagementRate || "0%",
-            completionRate: performer.metrics?.completionRate || "0%",
-            averageWatchTime: performer.metrics?.averageWatchTime || "0",
-            trendingScore: performer.metrics?.trendingScore || 0
+            monthlyRevenue: performer?.metrics?.monthlyRevenue || 0,
+            monthlyRevenueChange: performer?.metrics?.monthlyRevenueChange || 0,
+            watchMinutes: performer?.metrics?.watchMinutes || "0",
+            retentionRate: performer?.metrics?.retentionRate || "0%",
+            superfans: performer?.metrics?.superfans || 0,
+            subscriptions: performer?.metrics?.subscriptions || 0,
+            engagementRate: performer?.metrics?.engagementRate || "0%",
+            completionRate: performer?.metrics?.completionRate || "0%",
+            averageWatchTime: performer?.metrics?.averageWatchTime || "0",
+            trendingScore: performer?.metrics?.trendingScore || 0
           }}
           content={{
-            total: performer.metrics?.contentCount || 0,
-            premium: performer.metrics?.premiumCount || 0,
-            trending: performer.metrics?.trendingCount || 0
+            total: performer?.metrics?.contentCount || 0,
+            premium: performer?.metrics?.premiumCount || 0,
+            trending: performer?.metrics?.trendingCount || 0
           }}
-          tier={performer.tier || "bronze"}
-          nextTier={performer.nextTier || "silver"}
-          tierProgress={performer.tierProgress || 0}
-          tierColor={performer.tierColor || "#cd7f32"}
+          tier={performer?.tier || "bronze"}
+          nextTier={performer?.nextTier || "silver"}
+          tierProgress={performer?.tierProgress || 0}
+          tierColor={performer?.tierColor || "#cd7f32"}
         />
 
         <div className="mt-6">
@@ -164,9 +171,9 @@ const MainContent = ({
                       metrics={defaultMetrics}
                     />
                     <ContentLayout
-                      items={[]}
                       layout={contentLayout}
-                      onItemClick={() => {}}
+                      onLayoutChange={setContentLayout}
+                      items={[]}
                     />
                   </>
                 )}
