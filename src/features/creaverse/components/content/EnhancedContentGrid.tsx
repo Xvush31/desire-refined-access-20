@@ -2,9 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import ContentNavigationWrapper from './ContentNavigationWrapper';
 import ContentGrid from './ContentGrid';
-import { useRevolutionaryNavigation } from '@/hooks/use-revolutionary-navigation';
+import { useRevolutionaryNavigation } from '@/features/creaverse/hooks/use-revolutionary-navigation';
 import { ContentItem } from './ContentCard';
 import { useIsMobile } from '@/hooks/use-mobile';
+
+// Extend ContentItem to include missing properties
+interface ExtendedContentItem extends ContentItem {
+  createdAt?: Date | string;
+  type?: 'standard' | 'premium' | 'vip';
+}
 
 interface EnhancedContentGridProps {
   items: ContentItem[];
@@ -26,7 +32,7 @@ const EnhancedContentGrid: React.FC<EnhancedContentGridProps> = ({
   // Handle content filter changes from navigation
   const handleContentFilterChange = (filterId: string) => {
     // Apply different sorting/filtering based on the selected filter
-    let filtered = [...items];
+    let filtered = [...items] as ExtendedContentItem[];
     
     switch(filterId) {
       case 'trending':
@@ -35,10 +41,11 @@ const EnhancedContentGrid: React.FC<EnhancedContentGridProps> = ({
           .sort((a, b) => ((b.metrics?.views || 0) - (a.metrics?.views || 0)));
         break;
       case 'recent':
-        filtered = items.sort((a, b) => 
-          new Date(b.createdAt || Date.now()).getTime() - 
-          new Date(a.createdAt || Date.now()).getTime()
-        );
+        filtered = (items as ExtendedContentItem[]).sort((a, b) => {
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : Date.now();
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : Date.now();
+          return dateB - dateA;
+        });
         break;
       case 'popular':
         filtered = items
@@ -58,8 +65,8 @@ const EnhancedContentGrid: React.FC<EnhancedContentGridProps> = ({
         break;
       case 'fastestGrowing':
         filtered = items
-          .filter(item => item.metrics && item.metrics.growthRate > 0)
-          .sort((a, b) => ((b.metrics?.growthRate || 0) - (a.metrics?.growthRate || 0)));
+          .filter(item => item.metrics && (item.metrics as any).growthRate > 0)
+          .sort((a, b) => (((b.metrics as any)?.growthRate || 0) - ((a.metrics as any)?.growthRate || 0)));
         break;
       case 'forYou':
         // This would typically use a recommendation algorithm
@@ -67,10 +74,10 @@ const EnhancedContentGrid: React.FC<EnhancedContentGridProps> = ({
         filtered = [...items].sort(() => Math.random() - 0.5);
         break;
       case 'premium':
-        filtered = items.filter(item => item.type === 'premium');
+        filtered = (items as ExtendedContentItem[]).filter(item => item.type === 'premium');
         break;
       case 'vip':
-        filtered = items.filter(item => item.type === 'vip');
+        filtered = (items as ExtendedContentItem[]).filter(item => item.type === 'vip');
         break;
       case 'grid':
         setLayout('grid');
@@ -83,7 +90,7 @@ const EnhancedContentGrid: React.FC<EnhancedContentGridProps> = ({
         break;
     }
     
-    setFilteredItems(filtered);
+    setFilteredItems(filtered as ContentItem[]);
   };
   
   // Update filtered items when base items change

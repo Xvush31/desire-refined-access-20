@@ -2,7 +2,7 @@
 import React from 'react';
 import { ContentItem } from './ContentCard';
 import EnhancedContentGrid from './EnhancedContentGrid';
-import { useRevolutionaryNavigation } from '@/hooks/use-revolutionary-navigation';
+import { useRevolutionaryNavigation } from '@/features/creaverse/hooks/use-revolutionary-navigation';
 
 interface CreatorContentViewProps {
   items: ContentItem[];
