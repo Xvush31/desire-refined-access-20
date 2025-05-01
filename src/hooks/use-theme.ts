@@ -1,26 +1,44 @@
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+
+type Theme = 'light' | 'dark' | 'system';
 
 export function useTheme() {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window === 'undefined') return 'system';
+    
+    const savedTheme = localStorage.getItem('theme') as Theme;
+    return savedTheme || 'system';
+  });
 
   useEffect(() => {
-    const rootEl = document.documentElement;
-    const currentTheme = rootEl.getAttribute('data-theme') as 'light' | 'dark';
-    setTheme(currentTheme);
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    const handleSystemThemeChange = () => {
+      if (theme === 'system') {
+        document.documentElement.classList.toggle('dark', mediaQuery.matches);
+      }
+    };
+    
+    mediaQuery.addEventListener('change', handleSystemThemeChange);
+    
+    // Apply theme
+    if (theme === 'dark' || (theme === 'system' && mediaQuery.matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('theme', theme);
+    
+    return () => mediaQuery.removeEventListener('change', handleSystemThemeChange);
+  }, [theme]);
 
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'data-theme') {
-          const newTheme = rootEl.getAttribute('data-theme') as 'light' | 'dark';
-          setTheme(newTheme);
-        }
-      });
-    });
-
-    observer.observe(rootEl, { attributes: true });
-    return () => observer.disconnect();
-  }, []);
-
-  return { theme };
+  return {
+    theme,
+    setTheme: (newTheme: Theme) => {
+      setTheme(newTheme);
+    }
+  };
 }

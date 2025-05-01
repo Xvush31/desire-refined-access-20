@@ -1,8 +1,8 @@
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useTheme } from "@/hooks/use-theme";
-import { useIsMobile } from "@/hooks/use-mobile";
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useTheme } from '@/hooks/use-theme';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface RadialNavItem {
   id: string;

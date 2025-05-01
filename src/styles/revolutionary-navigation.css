@@ -8,9 +8,9 @@
   height: 100%;
 }
 
-/* Immersive mode styles - modified for scrolling */
+/* Immersive mode styles */
 .immersive-mode {
-  position: relative; /* Changed from fixed to relative to allow scrolling */
+  position: relative;
   width: 100%;
   height: 100%;
   z-index: 50;
@@ -28,12 +28,6 @@
   padding: 0;
   margin: 0;
   border-radius: 0;
-}
-
-/* Semantic zoom styles */
-.semantic-zoom-container {
-  overflow: hidden;
-  position: relative;
 }
 
 /* Custom gestures feedback */
@@ -58,65 +52,8 @@
   100% { opacity: 0; }
 }
 
-/* Radial menu styles */
-.radial-menu-item {
-  position: absolute;
-  transform-origin: center;
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-}
-
-.radial-menu-item:hover {
-  transform: scale(1.1);
-}
-
-.radial-menu-center {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background-color: rgba(0, 0, 0, 0.85);
-}
-
-/* Intelligent filter styles */
-.filter-badge {
-  display: inline-flex;
-  align-items: center;
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  font-size: 0.75rem;
-  padding: 0.25rem 0.75rem;
-  border-radius: 1rem;
-  margin: 0.25rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.filter-reset {
-  font-size: 0.75rem;
-  color: hsl(var(--primary));
-  cursor: pointer;
-  padding: 0.25rem 0.5rem;
-  background-color: transparent;
-  border-radius: 0.5rem;
-}
-
-.filter-reset:hover {
-  background-color: hsl(var(--primary) / 0.1);
-}
-
 /* Mobile optimizations */
 @media (max-width: 768px) {
-  .radial-menu-item {
-    width: 3rem;
-    height: 3rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-  }
-  
-  .radial-menu-label {
-    display: none;
-  }
-  
   .filter-container {
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -135,88 +72,12 @@
   }
 }
 
-/* Enhanced touch interactions */
-@media (hover: none) {
-  .touch-area {
-    min-height: 44px;
-    min-width: 44px;
-  }
+/* Hide scrollbar utility */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
-/* 3D touch effect */
-.press-effect {
-  transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.press-effect:active {
-  transform: scale(0.95);
-}
-
-/* Improved navigation text contrast */
-.nav-text {
-  color: hsl(var(--foreground));
-  text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.nav-btn-primary {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  border: 1px solid transparent;
-}
-
-.nav-btn-secondary {
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* Better feedback message for gestures */
-.gesture-message {
-  background-color: rgba(0, 0, 0, 0.85);
-  color: white;
-  padding: 0.75rem 1.25rem;
-  border-radius: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-}
-
-/* Better contrast for navigation elements */
-.navigation-tab {
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-}
-
-.navigation-tab.active {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-}
-
-.navigation-tab:not(.active) {
-  background-color: transparent;
-  color: hsl(var(--foreground));
-}
-
-/* Dark mode optimized navigation */
-html[data-theme="dark"] .navigation-indicator {
-  background-color: hsl(var(--primary));
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-/* Light mode optimized navigation */
-html[data-theme="light"] .navigation-indicator {
-  background-color: hsl(var(--primary));
-  border-color: rgba(0, 0, 0, 0.2);
-}
-
-/* Improve contrast for text elements */
-.immersive-mode .text-white {
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
-}
-
-/* Improve the controls visibility */
-.immersive-controls {
-  background-color: rgba(0, 0, 0, 0.85);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
