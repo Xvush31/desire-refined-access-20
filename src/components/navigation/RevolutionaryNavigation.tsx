@@ -1,21 +1,24 @@
-
 import React, { useState, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTheme } from "@/hooks/use-theme";
 import RadialNavigation from "./RadialNavigation";
-import ContentFilters from "./ContentFilters";
-import ZoomControls from "./ZoomControls";
-import ImmersiveView from "./ImmersiveView";
+import IntelligentFilters from "./IntelligentFilters";
+import SemanticZoom from "./SemanticZoom";
+import ImmersiveMode from "./ImmersiveMode";
 import CustomGestures, { GestureType } from "./CustomGestures";
 import { 
-  Home, 
+  Layout, 
+  Layers, 
   Search, 
-  User, 
+  Filter, 
   Heart, 
-  Calendar,
   Settings, 
-  MessageSquare
+  Home, 
+  User, 
+  Video, 
+  Grid, 
+  Maximize
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -32,34 +35,9 @@ const RevolutionaryNavigation: React.FC<RevolutionaryNavigationProps> = ({ child
   const [isRadialOpen, setIsRadialOpen] = useState(false);
   const [radialPosition, setRadialPosition] = useState({ x: 0, y: 0 });
   const [isImmersive, setIsImmersive] = useState(false);
-  const [activeFilter, setActiveFilter] = useState('trending');
-  const [zoomLevel, setZoomLevel] = useState(50);
-  const [isImmersiveViewOpen, setIsImmersiveViewOpen] = useState(false);
-  
-  // Mock content for immersive view
-  const [immersiveContent] = useState([
-    {
-      id: 1,
-      title: "Summer Fashion Collection",
-      imageUrl: "https://picsum.photos/id/25/1200/800",
-      format: "image",
-      metrics: { views: 12500, likes: 835, comments: 124 }
-    },
-    {
-      id: 2,
-      title: "Behind the Scenes",
-      videoUrl: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4",
-      format: "video",
-      metrics: { views: 8700, likes: 612, comments: 78, revenue: 320 }
-    },
-    {
-      id: 3,
-      title: "Paris Photoshoot Highlights",
-      imageUrl: "https://picsum.photos/id/42/1200/800",
-      format: "image",
-      metrics: { views: 15800, likes: 1254, comments: 97 }
-    }
-  ]);
+  const [currentLayout, setCurrentLayout] = useState<"grid" | "masonry" | "featured" | "flow">("grid");
+  const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
+  const [zoomLevel, setZoomLevel] = useState(1);
   
   // Refs
   const containerRef = useRef<HTMLDivElement>(null);
@@ -77,17 +55,7 @@ const RevolutionaryNavigation: React.FC<RevolutionaryNavigationProps> = ({ child
       label: "Accueil",
       icon: <Home size={isMobile ? 20 : 24} />,
       onClick: () => {
-        window.location.href = "/";
         toast.info("Navigation vers l'accueil");
-      }
-    },
-    {
-      id: "profile",
-      label: "Profil",
-      icon: <User size={isMobile ? 20 : 24} />,
-      onClick: () => {
-        window.location.href = "/creator";
-        toast.info("Navigation vers le profil");
       }
     },
     {
@@ -96,6 +64,14 @@ const RevolutionaryNavigation: React.FC<RevolutionaryNavigationProps> = ({ child
       icon: <Search size={isMobile ? 20 : 24} />,
       onClick: () => {
         toast.info("Recherche activée");
+      }
+    },
+    {
+      id: "profile",
+      label: "Profil",
+      icon: <User size={isMobile ? 20 : 24} />,
+      onClick: () => {
+        toast.info("Navigation vers le profil");
       }
     },
     {
@@ -108,20 +84,20 @@ const RevolutionaryNavigation: React.FC<RevolutionaryNavigationProps> = ({ child
       color: "text-rose-500"
     },
     {
-      id: "messages",
-      label: "Messages",
-      icon: <MessageSquare size={isMobile ? 20 : 24} />,
+      id: "videos",
+      label: "Vidéos",
+      icon: <Video size={isMobile ? 20 : 24} />,
       onClick: () => {
-        toast.info("Navigation vers les messages");
+        toast.info("Navigation vers les vidéos");
       }
     },
     {
-      id: "calendar",
-      label: "Calendrier",
-      icon: <Calendar size={isMobile ? 20 : 24} />,
+      id: "grid",
+      label: "Grid",
+      icon: <Grid size={isMobile ? 20 : 24} />,
       onClick: () => {
-        window.location.href = "/calendar";
-        toast.info("Navigation vers le calendrier");
+        setCurrentLayout("grid");
+        toast.info("Affichage en grille");
       }
     },
     {
@@ -131,9 +107,58 @@ const RevolutionaryNavigation: React.FC<RevolutionaryNavigationProps> = ({ child
       onClick: () => {
         toast.info("Navigation vers les paramètres");
       }
+    },
+    {
+      id: "immersive",
+      label: "Immersif",
+      icon: <Maximize size={isMobile ? 20 : 24} />,
+      onClick: () => {
+        setIsImmersive(!isImmersive);
+        toast.info(isImmersive ? "Mode normal" : "Mode immersif activé");
+      }
     }
   ];
-
+  
+  // Filter categories
+  const filterCategories = [
+    {
+      id: "type",
+      name: "Type",
+      options: [
+        { id: "video", label: "Vidéos" },
+        { id: "image", label: "Images" },
+        { id: "audio", label: "Audio" },
+        { id: "text", label: "Textes" }
+      ]
+    },
+    {
+      id: "access",
+      name: "Accès",
+      options: [
+        { id: "free", label: "Gratuit" },
+        { id: "premium", label: "Premium" }
+      ]
+    },
+    {
+      id: "duration",
+      name: "Durée",
+      options: [
+        { id: "short", label: "Court (<5min)" },
+        { id: "medium", label: "Moyen (5-15min)" },
+        { id: "long", label: "Long (>15min)" }
+      ]
+    },
+    {
+      id: "rating",
+      name: "Notation",
+      options: [
+        { id: "5-stars", label: "5 étoiles" },
+        { id: "4-stars", label: "4+ étoiles" },
+        { id: "3-stars", label: "3+ étoiles" }
+      ]
+    }
+  ];
+  
   // Handle custom gesture actions
   const gestureActions = [
     {
@@ -153,9 +178,10 @@ const RevolutionaryNavigation: React.FC<RevolutionaryNavigationProps> = ({ child
     {
       type: "double-tap" as GestureType,
       handler: () => {
-        setIsImmersiveViewOpen(true);
+        // Reset zoom level on double tap
+        setZoomLevel(1);
       },
-      description: "Vue immersive ouverte"
+      description: "Zoom réinitialisé"
     },
     {
       type: "long-press" as GestureType,
@@ -174,9 +200,9 @@ const RevolutionaryNavigation: React.FC<RevolutionaryNavigationProps> = ({ child
       type: "pinch" as GestureType,
       handler: () => {
         // Toggle zoom level on pinch
-        setZoomLevel(zoomLevel > 50 ? 25 : 75);
+        setZoomLevel(zoomLevel > 0.8 ? 0.6 : 1);
       },
-      description: zoomLevel > 50 ? "Zoom arrière" : "Zoom avant"
+      description: zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant"
     }
   ];
 
@@ -189,9 +215,22 @@ const RevolutionaryNavigation: React.FC<RevolutionaryNavigationProps> = ({ child
   };
 
   // Handle filter changes
-  const handleFilterChange = (filterId: string) => {
-    setActiveFilter(filterId);
-    toast.info(`Filtre "${filterId}" appliqué`);
+  const handleFilterChange = (filters: Record<string, string[]>) => {
+    setSelectedFilters(filters);
+    
+    // Count total selected filters
+    const totalSelected = Object.values(filters).reduce(
+      (sum, filterValues) => sum + filterValues.length, 0
+    );
+    
+    if (totalSelected > 0) {
+      toast.info(`${totalSelected} filtres appliqués`);
+    }
+  };
+  
+  // Handle zoom level change
+  const handleZoomChange = (zoom: number) => {
+    setZoomLevel(zoom);
   };
 
   return (
@@ -201,34 +240,91 @@ const RevolutionaryNavigation: React.FC<RevolutionaryNavigationProps> = ({ child
       onClick={handleContainerClick}
     >
       <CustomGestures actions={gestureActions}>
-        <div className={`transition-all duration-300 ${isImmersive ? "p-0" : "p-4"}`}>
-          {/* Content filters */}
-          {!isImmersive && (
-            <div className={`sticky top-0 z-30 mb-4 ${
-              isDark ? "bg-background" : "bg-background/80 backdrop-blur-md"
-            }`}>
-              <ContentFilters 
-                activeFilter={activeFilter}
-                onFilterChange={handleFilterChange}
-              />
+        <ImmersiveMode 
+          isImmersive={isImmersive} 
+          onToggleImmersive={() => setIsImmersive(!isImmersive)}
+        >
+          <SemanticZoom 
+            minZoom={0.6} 
+            maxZoom={1.0}
+            onZoomChange={handleZoomChange}
+            className="w-full h-full"
+          >
+            <div className={`transition-all duration-300 ${isImmersive ? "p-0" : "p-4"}`}>
+              {/* Filters bar */}
+              {!isImmersive && (
+                <div className={`sticky top-0 z-30 mb-4 ${
+                  isDark ? "bg-background" : "bg-background/80 backdrop-blur-md"
+                }`}>
+                  <IntelligentFilters 
+                    categories={filterCategories}
+                    onFilterChange={handleFilterChange}
+                  />
+                </div>
+              )}
+              
+              {/* Layout controls */}
+              {!isImmersive && (
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-2">
+                    <button 
+                      className={`p-2 rounded-md ${
+                        currentLayout === "grid" 
+                          ? "bg-primary text-primary-foreground" 
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                      onClick={() => setCurrentLayout("grid")}
+                    >
+                      <Grid size={18} />
+                    </button>
+                    <button 
+                      className={`p-2 rounded-md ${
+                        currentLayout === "masonry" 
+                          ? "bg-primary text-primary-foreground" 
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                      onClick={() => setCurrentLayout("masonry")}
+                    >
+                      <Layout size={18} />
+                    </button>
+                    <button 
+                      className={`p-2 rounded-md ${
+                        currentLayout === "featured" 
+                          ? "bg-primary text-primary-foreground" 
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                      onClick={() => setCurrentLayout("featured")}
+                    >
+                      <Layers size={18} />
+                    </button>
+                    <button 
+                      className={`p-2 rounded-md ${
+                        currentLayout === "flow" 
+                          ? "bg-primary text-primary-foreground" 
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                      onClick={() => setCurrentLayout("flow")}
+                    >
+                      <Filter size={18} />
+                    </button>
+                  </div>
+                  
+                  <div className="text-sm text-muted-foreground">
+                    {zoomLevel < 1 && (
+                      <span>Zoom: {Math.round(zoomLevel * 100)}%</span>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {/* Main content */}
+              <div className={`${isImmersive ? "immersive-content" : ""}`}>
+                {children}
+              </div>
             </div>
-          )}
-          
-          {/* Main content */}
-          <div className={isImmersive ? "immersive-content" : ""}>
-            {children}
-          </div>
-        </div>
+          </SemanticZoom>
+        </ImmersiveMode>
       </CustomGestures>
-      
-      {/* Zoom controls */}
-      <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 z-30">
-        <ZoomControls
-          zoomLevel={zoomLevel}
-          onZoomChange={setZoomLevel}
-          onEnterImmersiveMode={() => setIsImmersiveViewOpen(true)}
-        />
-      </div>
       
       {/* Radial navigation menu */}
       <RadialNavigation 
@@ -263,13 +359,21 @@ const RevolutionaryNavigation: React.FC<RevolutionaryNavigationProps> = ({ child
         </motion.button>
       )}
       
-      {/* Immersive View */}
-      <ImmersiveView 
-        isOpen={isImmersiveViewOpen}
-        onClose={() => setIsImmersiveViewOpen(false)}
-        content={immersiveContent}
-        initialIndex={0}
-      />
+      {/* Instructions tooltip */}
+      <AnimatePresence>
+        {!isMobile && !isRadialOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className={`fixed bottom-24 left-1/2 transform -translate-x-1/2 mb-20 px-4 py-2 rounded-lg z-40 text-sm ${
+              isDark ? "bg-zinc-800 text-white" : "bg-white text-black"
+            } shadow-lg border border-muted`}
+          >
+            <p>Ctrl+Click ou Alt+Click pour ouvrir le menu radial</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

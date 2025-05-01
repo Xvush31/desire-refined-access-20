@@ -1,55 +1,36 @@
 
-import React from 'react';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { Badge } from "@/components/ui/badge";
 
 interface CreatorBadgeProps {
-  tier: 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
+  tier: "bronze" | "silver" | "gold" | "platinum" | "diamond";
   className?: string;
   size?: "sm" | "md" | "lg";
   showLabel?: boolean;
 }
 
-const CreatorBadge = ({ 
+const CreatorBadge: React.FC<CreatorBadgeProps> = ({ 
   tier, 
   className = "",
   size = "md",
   showLabel = true
-}: CreatorBadgeProps) => {
-  const tierConfig = {
-    bronze: {
-      color: 'from-amber-700 to-amber-500',
-      text: 'Bronze',
-      textColor: 'text-white',
-    },
-    silver: {
-      color: 'from-gray-400 to-gray-300',
-      text: 'Silver',
-      textColor: 'text-gray-800',
-    },
-    gold: {
-      color: 'from-yellow-500 to-amber-300',
-      text: 'Gold',
-      textColor: 'text-gray-800',
-    },
-    platinum: {
-      color: 'from-gray-300 to-gray-100',
-      text: 'Platinum',
-      textColor: 'text-gray-800',
-    },
-    diamond: {
-      color: 'from-blue-400 to-purple-500',
-      text: 'Diamond',
-      textColor: 'text-white',
-    },
+}) => {
+  const getTierColor = () => {
+    switch (tier) {
+      case "bronze": return "from-amber-600 to-amber-500";
+      case "silver": return "from-gray-400 to-gray-300";
+      case "gold": return "from-yellow-400 to-yellow-300";
+      case "platinum": return "from-blue-400 to-blue-300";
+      case "diamond": return "from-purple-400 to-purple-300";
+      default: return "from-gray-400 to-gray-300";
+    }
   };
-
-  const { color, text, textColor } = tierConfig[tier];
   
   const getSizeClasses = () => {
-    switch(size) {
+    switch (size) {
       case "sm": return "text-xs px-1.5 py-0.5";
-      case "lg": return "text-sm px-3 py-1";
+      case "lg": return "text-sm px-3 py-1.5";
+      case "md":
       default: return "text-xs px-2 py-0.5";
     }
   };
@@ -57,15 +38,9 @@ const CreatorBadge = ({
   return (
     <Badge
       variant="outline"
-      className={cn(
-        'bg-gradient-to-r uppercase font-medium',
-        color,
-        textColor,
-        getSizeClasses(),
-        className
-      )}
+      className={`bg-gradient-to-r ${getTierColor()} text-white uppercase font-medium ${getSizeClasses()} ${className}`}
     >
-      {showLabel ? text : ""}
+      {showLabel ? tier : ""}
     </Badge>
   );
 };

@@ -1,5 +1,4 @@
-
-import type { Config } from "tailwindcss";
+import type { Config } from "tailwindcss"
 
 const config = {
   darkMode: ["class"],
@@ -8,7 +7,8 @@ const config = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
-	],
+  ],
+  prefix: "",
   theme: {
     container: {
       center: true,
@@ -52,19 +52,8 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        "xvush-pink": "#EC4899",
-        "xvush-pink-dark": "#BE185D",
-        "xvush-gold": "#FFD700",
-        sidebar: {
-          background: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
-        },
+        "brand-dark": "#1A1F2C",
+        "brand-accent": "#ea384c",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -73,21 +62,26 @@ const config = {
       },
       keyframes: {
         "accordion-down": {
-          from: { height: 0 },
+          from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: 0 },
+          to: { height: "0" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      variants: {
+        extend: {
+          backgroundColor: ['brand']
+        }
+      }
     },
   },
   plugins: [require("tailwindcss-animate")],
-} satisfies Config;
+}
 
-export default config;
+export default config
