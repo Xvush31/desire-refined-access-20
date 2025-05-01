@@ -1,11 +1,6 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import Header from "@/components/Header";
-import SubscriptionTiers from "@/components/SubscriptionTiers";
-import XTeaseSection from "@/components/XTeaseSection";
-import TrendingSection from "@/components/TrendingSection";
-import HomeCategoriesSection from "@/components/HomeCategoriesSection";
-import PopularPerformersSection from "@/components/PopularPerformersSection";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocale } from "@/contexts/LocaleContext";
 import { Link } from "react-router-dom";
@@ -105,6 +100,34 @@ const xteaseVideos = [
     views: "628K vues",
     thumbnail: "https://picsum.photos/seed/xtease3/600/1067",
   },
+  {
+    id: 4,
+    title: "Dîner romantique qui s'intensifie",
+    performer: "DinnerDate",
+    views: "517K vues",
+    thumbnail: "https://picsum.photos/seed/xtease4/600/1067",
+  },
+  {
+    id: 5,
+    title: "Escapade sensuelle au bord de la mer",
+    performer: "BeachLover",
+    views: "892K vues",
+    thumbnail: "https://picsum.photos/seed/xtease5/600/1067",
+  },
+  {
+    id: 6,
+    title: "Surprise après une longue journée",
+    performer: "AfterWork",
+    views: "378K vues",
+    thumbnail: "https://picsum.photos/seed/xtease6/600/1067",
+  },
+  {
+    id: 7,
+    title: "Aventure spontanée dans un ascenseur",
+    performer: "SpontaneousLife",
+    views: "745K vues",
+    thumbnail: "https://picsum.photos/seed/xtease7/600/1067",
+  }
 ];
 
 // Données mockées pour les créateurs populaires
@@ -129,6 +152,34 @@ const popularCreators = [
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&w=256&h=256&q=80",
     category: "Danseuse & Coach",
     followers: 45100
+  },
+  {
+    id: 6,
+    name: "Max Power",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=facearea&w=256&h=256&q=80",
+    category: "Fitness & Wellness",
+    followers: 41300
+  },
+  {
+    id: 7,
+    name: "Sophia Dreams",
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=facearea&w=256&h=256&q=80",
+    category: "Mode & Beauté",
+    followers: 63200
+  },
+  {
+    id: 8,
+    name: "Thomas Night",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=facearea&w=256&h=256&q=80",
+    category: "Lifestyle & Voyage",
+    followers: 32800
+  },
+  {
+    id: 9,
+    name: "Laura Moon",
+    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=facearea&w=256&h=256&q=80",
+    category: "Art & Photographie",
+    followers: 27500
   }
 ];
 
@@ -157,6 +208,38 @@ const trendingVideos = [
     duration: "22:15",
     views: "1.5M",
     performer: "OfficeLover"
+  },
+  {
+    id: 4,
+    title: "Aventure improvisée dans un taxi pendant la nuit",
+    thumbnail: "https://picsum.photos/seed/video4/640/360",
+    duration: "15:47",
+    views: "921K",
+    performer: "NightRider"
+  },
+  {
+    id: 5,
+    title: "Rencontre passionnée à l'hôtel après une soirée",
+    thumbnail: "https://picsum.photos/seed/video5/640/360",
+    duration: "24:18",
+    views: "1.7M",
+    performer: "PartyCouple"
+  },
+  {
+    id: 6,
+    title: "Session d'entraînement qui prend une tournure inattendue",
+    thumbnail: "https://picsum.photos/seed/video6/640/360",
+    duration: "19:56",
+    views: "756K",
+    performer: "FitCoach"
+  },
+  {
+    id: 7,
+    title: "Séance photo érotique dans un loft artistique",
+    thumbnail: "https://picsum.photos/seed/video7/640/360",
+    duration: "27:32",
+    views: "1.1M",
+    performer: "ArtisticSoul"
   }
 ];
 
