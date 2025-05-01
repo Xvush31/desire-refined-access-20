@@ -6,14 +6,33 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
+interface ImmersiveContentItem {
+  id: string;
+  title?: string;
+  imageUrl: string;
+  videoUrl?: string;
+  format?: 'video' | 'image' | 'audio' | 'text';
+  metrics?: {
+    views?: number;
+    likes?: number;
+    comments?: number;
+    revenue?: number;
+  };
+}
+
 interface ImmersiveViewProps {
   isOpen: boolean;
   onClose: () => void;
-  content: any[];
+  content: ImmersiveContentItem[];
   initialIndex: number;
 }
 
-const ImmersiveView = ({ isOpen, onClose, content, initialIndex = 0 }: ImmersiveViewProps) => {
+const ImmersiveView: React.FC<ImmersiveViewProps> = ({ 
+  isOpen, 
+  onClose, 
+  content, 
+  initialIndex = 0 
+}) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isInfoVisible, setIsInfoVisible] = useState(true);
   const [isScrollLocked, setIsScrollLocked] = useState(false);
@@ -43,7 +62,7 @@ const ImmersiveView = ({ isOpen, onClose, content, initialIndex = 0 }: Immersive
         window.removeEventListener('keydown', handleKeydown);
       };
     }
-  }, [isOpen, currentIndex]);
+  }, [isOpen, currentIndex, onClose]);
 
   useEffect(() => {
     if (!isOpen && isScrollLocked) {
@@ -53,7 +72,11 @@ const ImmersiveView = ({ isOpen, onClose, content, initialIndex = 0 }: Immersive
     }
   }, [isOpen, isScrollLocked]);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setCurrentIndex(initialIndex);
+  }, [initialIndex]);
+
+  if (!isOpen || content.length === 0) return null;
   
   const currentContent = content[currentIndex];
   
@@ -63,6 +86,16 @@ const ImmersiveView = ({ isOpen, onClose, content, initialIndex = 0 }: Immersive
   
   const goToPrevious = () => {
     setCurrentIndex((prev) => (prev - 1 + content.length) % content.length);
+  };
+
+  const formatNumber = (num?: number) => {
+    if (!num) return '0';
+    if (num >= 1000000) {
+      return (num / 1000000).toFixed(1) + 'M';
+    } else if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'K';
+    }
+    return num.toString();
   };
 
   return (
@@ -99,10 +132,10 @@ const ImmersiveView = ({ isOpen, onClose, content, initialIndex = 0 }: Immersive
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
             style={{ willChange: 'transform, opacity' }}
           >
-            {currentContent.format === 'video' ? (
+            {currentContent.format === 'video' && currentContent.videoUrl ? (
               <div className="w-full max-w-4xl aspect-video relative">
                 <video 
-                  src={currentContent.videoUrl || 'https://samplelib.com/lib/preview/mp4/sample-5s.mp4'} 
+                  src={currentContent.videoUrl} 
                   controls 
                   autoPlay 
                   className="w-full h-full object-contain"
@@ -120,23 +153,27 @@ const ImmersiveView = ({ isOpen, onClose, content, initialIndex = 0 }: Immersive
           </motion.div>
           
           {/* Navigation controls */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 rounded-full h-12 w-12"
-            onClick={goToPrevious}
-          >
-            <ChevronLeft size={36} />
-          </Button>
-          
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 rounded-full h-12 w-12"
-            onClick={goToNext}
-          >
-            <ChevronRight size={36} />
-          </Button>
+          {content.length > 1 && (
+            <>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 rounded-full h-12 w-12"
+                onClick={goToPrevious}
+              >
+                <ChevronLeft size={36} />
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 rounded-full h-12 w-12"
+                onClick={goToNext}
+              >
+                <ChevronRight size={36} />
+              </Button>
+            </>
+          )}
           
           {/* Info panel - use ScrollArea for smooth scrolling when needed */}
           <AnimatePresence>
@@ -151,17 +188,17 @@ const ImmersiveView = ({ isOpen, onClose, content, initialIndex = 0 }: Immersive
                   <h2 className="text-xl font-medium mb-2 text-white">{currentContent.title}</h2>
                   {currentContent.metrics && (
                     <div className="flex items-center gap-4 text-sm text-white/80">
-                      {currentContent.metrics.views && (
-                        <span>{currentContent.metrics.views.toLocaleString()} vues</span>
+                      {currentContent.metrics.views !== undefined && (
+                        <span>{formatNumber(currentContent.metrics.views)} views</span>
                       )}
-                      {currentContent.metrics.likes && (
-                        <span>{currentContent.metrics.likes.toLocaleString()} likes</span>
+                      {currentContent.metrics.likes !== undefined && (
+                        <span>{formatNumber(currentContent.metrics.likes)} likes</span>
                       )}
-                      {currentContent.metrics.comments && (
-                        <span>{currentContent.metrics.comments.toLocaleString()} commentaires</span>
+                      {currentContent.metrics.comments !== undefined && (
+                        <span>{formatNumber(currentContent.metrics.comments)} comments</span>
                       )}
-                      {currentContent.metrics.revenue && (
-                        <span className="text-green-400">${currentContent.metrics.revenue} générés</span>
+                      {currentContent.metrics.revenue !== undefined && (
+                        <span className="text-green-400">${currentContent.metrics.revenue} generated</span>
                       )}
                     </div>
                   )}
@@ -171,19 +208,21 @@ const ImmersiveView = ({ isOpen, onClose, content, initialIndex = 0 }: Immersive
           </AnimatePresence>
           
           {/* Page indicator */}
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-1">
-            {content.map((_, index) => (
-              <div 
-                key={index}
-                className={cn(
-                  "h-1 rounded-full transition-all",
-                  index === currentIndex 
-                    ? "w-8 bg-white" 
-                    : "w-2 bg-white/50"
-                )}
-              />
-            ))}
-          </div>
+          {content.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-1">
+              {content.map((_, index) => (
+                <div 
+                  key={index}
+                  className={cn(
+                    "h-1 rounded-full transition-all",
+                    index === currentIndex 
+                      ? "w-8 bg-white" 
+                      : "w-2 bg-white/50"
+                  )}
+                />
+              ))}
+            </div>
+          )}
         </motion.div>
       )}
     </AnimatePresence>

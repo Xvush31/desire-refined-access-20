@@ -9,12 +9,24 @@ export interface GestureHandlers {
   onSwipeLeft?: () => void;
   onSwipeRight?: () => void;
   onPinch?: (scale: number) => void;
-  onDoubleTap?: (position: {x: number, y: number}) => void;
-  onLongPress?: (position: {x: number, y: number}) => void;
+  onDoubleTap?: (position: Position) => void;
+  onLongPress?: (position: Position) => void;
 }
 
 // Define common position interface
 export interface Position {
   x: number;
   y: number;
+}
+
+// Extended content metrics type for integration with enhanced UI
+export interface ContentMetrics {
+  views: number;
+  likes: number;
+  engagement: number;
+  completionRate?: number;
+  watchTime?: string;
+  comments?: number;
+  rating?: number;
+  growth?: number;
 }

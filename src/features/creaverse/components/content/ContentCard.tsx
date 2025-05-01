@@ -17,12 +17,16 @@ export interface ContentItem {
     engagement: number;
     completionRate?: number;
     watchTime?: string;
+    comments?: number;
+    rating?: number;
+    growth?: number;
   };
   revenue?: number;
   trending?: boolean;
   trendingRank?: number;
   collections?: string[];
   valueScore?: number; // Value indicator (1-100)
+  createdAt?: Date | string;
 }
 
 interface ContentCardProps {
@@ -31,6 +35,7 @@ interface ContentCardProps {
   layout?: "grid" | "masonry" | "featured" | "flow";
   isFeatured?: boolean;
   onClick?: () => void;
+  isActive?: boolean;
 }
 
 const ContentCard: React.FC<ContentCardProps> = ({
@@ -38,7 +43,8 @@ const ContentCard: React.FC<ContentCardProps> = ({
   showMetrics = false,
   layout = "grid",
   isFeatured = false,
-  onClick
+  onClick,
+  isActive = false
 }) => {
   // Determine which layout component to use
   if (layout === "flow") {
@@ -47,6 +53,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
         item={item} 
         showMetrics={showMetrics} 
         onClick={onClick}
+        isActive={isActive}
       />
     );
   }

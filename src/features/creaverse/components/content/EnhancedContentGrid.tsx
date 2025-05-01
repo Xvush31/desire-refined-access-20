@@ -6,10 +6,10 @@ import { useRevolutionaryNavigation } from '@/features/creaverse/hooks/use-revol
 import { ContentItem } from './ContentCard';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-// Extend ContentItem to include missing properties
-interface ExtendedContentItem extends ContentItem {
-  createdAt?: Date | string;
+// Extend ContentItem to include additional properties
+interface ExtendedContentItem extends Omit<ContentItem, 'type'> {
   type?: 'standard' | 'premium' | 'vip';
+  createdAt?: Date | string;
 }
 
 interface EnhancedContentGridProps {
@@ -56,12 +56,22 @@ const EnhancedContentGrid: React.FC<EnhancedContentGridProps> = ({
           .sort((a, b) => ((b.metrics?.views || 0) - (a.metrics?.views || 0)));
         break;
       case 'mostCommented':
+        // Use optional chaining to safely access potentially missing properties
         filtered = items
-          .sort((a, b) => ((b.metrics?.comments || 0) - (a.metrics?.comments || 0)));
+          .sort((a, b) => {
+            const aComments = a.metrics?.comments || 0;
+            const bComments = b.metrics?.comments || 0;
+            return bComments - aComments;
+          });
         break;
       case 'highestRated':
+        // Use optional chaining to safely access potentially missing properties
         filtered = items
-          .sort((a, b) => ((b.metrics?.rating || 0) - (a.metrics?.rating || 0)));
+          .sort((a, b) => {
+            const aRating = a.metrics?.rating || 0;
+            const bRating = b.metrics?.rating || 0;
+            return bRating - aRating;
+          });
         break;
       case 'fastestGrowing':
         filtered = items

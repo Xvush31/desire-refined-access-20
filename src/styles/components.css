@@ -113,6 +113,59 @@ html, body {
   overscroll-behavior-y: contain; /* Prevents pull-to-refresh and overscroll glow */
 }
 
+/* CreaVerse specific styles */
+.story-ring {
+  @apply relative rounded-full p-1;
+  background: linear-gradient(45deg, #ff8ba7 0%, #ffc6c7 50%, #9b87f5 100%);
+}
+
+.animate-pulse-subtle {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.glass-card {
+  @apply bg-background/90 backdrop-blur-sm border border-border/50 shadow-sm;
+}
+
+.progress-bar {
+  @apply w-full bg-muted/50 rounded-full overflow-hidden;
+}
+
+.progress-fill {
+  @apply h-full rounded-full;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Content card specific styles */
+.content-card:hover .content-hover-show {
+  @apply opacity-100;
+}
+
+.content-hover-show {
+  @apply opacity-0 transition-opacity duration-300;
+}
+
+.premium-badge, .vip-badge {
+  @apply shadow-sm;
+}
+
 /* Styles spécifiques pour la vue mobile */
 @media (max-width: 640px) {
   .golden-grid,
@@ -170,4 +223,27 @@ html, body {
 @keyframes smoothAppear {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Touch manipulation for better mobile experience */
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+/* CreaVerse-specific color variables */
+:root {
+  --color-xvush-pink: #ff8ba7;
+  --color-xvush-pink-dark: #ff6a8d;
+}
+
+.text-xvush-pink {
+  color: var(--color-xvush-pink);
+}
+
+.bg-xvush-pink {
+  background-color: var(--color-xvush-pink);
+}
+
+.hover\:bg-xvush-pink-dark:hover {
+  background-color: var(--color-xvush-pink-dark);
 }
