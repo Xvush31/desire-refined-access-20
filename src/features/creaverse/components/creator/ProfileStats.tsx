@@ -8,10 +8,10 @@ interface ProfileStatsProps {
   viewCount?: number;
   tier?: string;
   stats?: {
-    followers: number;
-    following: number;
-    contentCount: number;
-    views: number;
+    followers?: number;
+    following?: number;
+    contentCount?: number;
+    views?: number;
   };
 }
 
@@ -23,11 +23,11 @@ const ProfileStats: React.FC<ProfileStatsProps> = ({
   tier,
   stats
 }) => {
-  // Use either direct props or stats object
-  const followers = followerCount || (stats?.followers || 0);
-  const following = followingCount || (stats?.following || 0);
-  const content = contentCount || (stats?.contentCount || 0);
-  const views = viewCount || (stats?.views || 0);
+  // Use either direct props or stats object with safer fallbacks
+  const followers = followerCount ?? stats?.followers ?? 0;
+  const following = followingCount ?? stats?.following ?? 0;
+  const content = contentCount ?? stats?.contentCount ?? 0;
+  const views = viewCount ?? stats?.views ?? 0;
 
   return (
     <div className="flex flex-wrap gap-6 justify-between mt-4 pt-4 border-t border-border">

@@ -56,11 +56,21 @@ const MainContent: React.FC<MainContentProps> = ({
   const performerIsVerified = performer?.isVerified || false;
   const performerIsOnline = performer?.isOnline || false;
   
-  // Safely access metrics with fallbacks
-  const followerCount = performer?.metrics?.followers || performer?.stats?.followers || 0;
-  const followingCount = performer?.metrics?.following || performer?.stats?.following || 0;
-  const contentCount = performer?.metrics?.contentCount || performer?.content?.total || performer?.stats?.contentCount || 0;
-  const viewCount = performer?.metrics?.views || performer?.stats?.views || 0;
+  // More robust fallbacks for metrics
+  const metrics = performer?.metrics || performer?.stats || {};
+  const content = performer?.content || {};
+  
+  // Safely access metrics with multiple fallback paths
+  const followerCount = metrics?.followers || performer?.followers || 0;
+  const followingCount = metrics?.following || 0;
+  const contentCount = metrics?.contentCount || content?.total || 0;
+  const viewCount = metrics?.views || 0;
+
+  // Get performer avatar with fallbacks
+  const performerAvatar = performer?.avatar || performer?.image || "";
+  
+  // Get performer ID safely
+  const performerId = performer?.id?.toString() || "0";
 
   return (
     <div className="container px-4 lg:px-8 py-6 -mt-12 z-20 relative">
@@ -87,9 +97,9 @@ const MainContent: React.FC<MainContentProps> = ({
                 </Button>
 
                 <MessagingButton
-                  performerId={performer.id.toString()}
+                  performerId={performerId}
                   performerName={performerName}
-                  performerAvatar={performer.avatar || performer.image}
+                  performerAvatar={performerAvatar}
                   variant="outline"
                 />
 
