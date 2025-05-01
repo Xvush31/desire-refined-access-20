@@ -107,11 +107,6 @@ const Header = () => {
                       Créateurs
                     </Link>
                   </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <Link to="/performer/1" className={navigationMenuTriggerStyle()}>
-                      CreaVerse Demo
-                    </Link>
-                  </NavigationMenuItem>
                 </NavigationMenuList>
               </NavigationMenu>
             )}

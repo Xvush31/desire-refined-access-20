@@ -20,7 +20,7 @@ interface PerformerPromoRowProps {
 const PerformerPromoRow: React.FC<PerformerPromoRowProps> = ({ performers }) => {
   return (
     <div className="mb-6 w-full">
-      <h3 className="text-lg font-semibold mb-2 text-center animated-gradient">Créateurs populaires</h3>
+      <h3 className="text-lg font-semibold mb-3 text-center animated-gradient">Créateurs populaires</h3>
       
       <Carousel
         opts={{
@@ -42,7 +42,7 @@ const PerformerPromoRow: React.FC<PerformerPromoRowProps> = ({ performers }) => 
                   <Avatar className="w-16 h-16 mb-2 border-2 border-pink-500">
                     <AvatarImage src={performer.avatar} alt={performer.name} />
                     <AvatarFallback className="bg-gradient-to-br from-pink-500 to-purple-500 text-white">
-                      {performer.name.substring(0, 2).toUpperCase()}
+                      {performer.name ? performer.name.substring(0, 2).toUpperCase() : ""}
                     </AvatarFallback>
                   </Avatar>
                   <div className="text-center">
