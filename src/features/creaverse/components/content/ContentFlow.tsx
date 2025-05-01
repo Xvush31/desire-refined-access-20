@@ -1,69 +1,80 @@
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useRef } from "react";
 import { ContentItem } from "./ContentCard";
+import { useXTeaseNavigation } from "@/hooks/useXTeaseNavigation";
 import { motion } from "framer-motion";
-import { Badge } from "@/components/ui/badge";
-import { TrendingUp, Star, Users, Video, Image as ImageIcon, Play, Clock, Lock } from "lucide-react";
-import FlowCardLayout from "./FlowCardLayout";
 
 interface ContentFlowProps {
   items: ContentItem[];
+  contentItems?: ContentItem[];
   onItemClick: (item: ContentItem) => void;
 }
 
-const ContentFlow: React.FC<ContentFlowProps> = ({ items, onItemClick }) => {
-  const [activeItem, setActiveItem] = useState<number | null>(null);
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+const ContentFlow: React.FC<ContentFlowProps> = ({ 
+  items, 
+  contentItems, 
+  onItemClick 
+}) => {
+  // Use items or contentItems prop, whichever is available
+  const displayItems = items?.length ? items : contentItems || [];
   
-  // Effect to monitor scroll position and determine active item
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const index = itemRefs.current.findIndex((ref) => ref === entry.target);
-            if (index !== -1) {
-              setActiveItem(index);
-            }
-          }
-        });
-      },
-      { threshold: 0.7 } // 70% of item needs to be visible
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+  
+  const {
+    containerRef,
+    registerVideoRef,
+    handleTouchStart,
+    handleTouchEnd,
+    scrollToVideo,
+    autoPlayEnabled,
+    toggleAutoPlay
+  } = useXTeaseNavigation({
+    currentIndex,
+    totalVideos: displayItems.length,
+    onChangeIndex: setCurrentIndex,
+    onActivatePlayer: () => console.log("Player activated")
+  });
+
+  if (!displayItems.length) {
+    return (
+      <div className="flex flex-col items-center justify-center p-10 text-center">
+        <p className="text-muted-foreground">Aucun contenu à afficher</p>
+      </div>
     );
-    
-    itemRefs.current.forEach((ref) => {
-      if (ref) observer.observe(ref);
-    });
-    
-    return () => {
-      itemRefs.current.forEach((ref) => {
-        if (ref) observer.unobserve(ref);
-      });
-    };
-  }, [items]);
-  
-  if (!items.length) return null;
-  
+  }
+
   return (
-    <div className="space-y-8 py-4">
-      <h3 className="text-xl font-semibold mb-6">Flux de contenu</h3>
-      
-      {items.map((item, index) => (
-        <motion.div 
+    <div 
+      ref={containerRef}
+      className="h-[calc(100vh-240px)] overflow-y-scroll snap-y snap-mandatory scrollbar-hide"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+      {displayItems.map((item, index) => (
+        <div
           key={item.id}
-          ref={(el) => itemRefs.current[index] = el}
-          initial={{ opacity: 0.7, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          viewport={{ once: false, amount: 0.3 }}
-          className={`relative w-full ${index === activeItem ? 'scale-100' : 'scale-95'} transition-transform duration-500`}
+          ref={el => registerVideoRef(index, el)}
+          className="h-full w-full snap-start snap-always flex items-center justify-center"
+          data-index={index}
+          onClick={() => onItemClick(item)}
         >
-          <FlowCardLayout 
-            item={item}
-            isActive={index === activeItem}
-            onClick={() => onItemClick(item)}
-          />
-        </motion.div>
+          <motion.div 
+            className="w-full max-w-md aspect-[9/16] bg-muted rounded-xl overflow-hidden relative"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <img 
+              src={item.thumbnail || "https://picsum.photos/seed/" + item.id + "/640/1280"} 
+              alt={item.title}
+              className="w-full h-full object-cover" 
+            />
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+              <h3 className="text-white font-bold">{item.title}</h3>
+              {item.author && <p className="text-white/80 text-sm">{item.author}</p>}
+            </div>
+          </motion.div>
+        </div>
       ))}
     </div>
   );

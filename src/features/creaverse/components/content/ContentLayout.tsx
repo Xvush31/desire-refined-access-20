@@ -1,3 +1,4 @@
+
 import React from "react";
 import { ContentItem } from "./ContentCard";
 import ContentCard from "./ContentCard";
@@ -5,14 +6,25 @@ import { motion } from "framer-motion";
 
 interface ContentLayoutProps {
   items: ContentItem[];
-  layout: "grid" | "masonry" | "featured" | "flow";
-  onItemClick: (item: ContentItem) => void;
+  layout?: "grid" | "masonry" | "featured" | "flow";
+  currentLayout?: "grid" | "masonry" | "featured" | "flow";
+  onItemClick?: (item: ContentItem) => void;
+  onChange?: (layout: "grid" | "masonry" | "featured" | "flow") => void;
 }
 
-const ContentLayout: React.FC<ContentLayoutProps> = ({ items, layout, onItemClick }) => {
+const ContentLayout: React.FC<ContentLayoutProps> = ({ 
+  items, 
+  layout = "grid", 
+  currentLayout,
+  onItemClick = () => {}, 
+  onChange 
+}) => {
+  // Use either layout or currentLayout
+  const activeLayout = currentLayout || layout;
+  
   // Configuration based on layout type
   const getLayoutClass = () => {
-    switch (layout) {
+    switch (activeLayout) {
       case "masonry":
         return "columns-1 sm:columns-2 md:columns-3 gap-4";
       case "featured":
@@ -35,12 +47,12 @@ const ContentLayout: React.FC<ContentLayoutProps> = ({ items, layout, onItemClic
 
   // If flow layout is selected, this component doesn't render
   // as it's handled by ContentFlow component
-  if (layout === "flow") {
+  if (activeLayout === "flow") {
     return null;
   }
 
   // For featured layout, show the first item larger
-  if (layout === "featured" && items.length > 0) {
+  if (activeLayout === "featured" && items.length > 0) {
     const [featuredItem, ...restItems] = items;
     
     return (
@@ -88,7 +100,7 @@ const ContentLayout: React.FC<ContentLayoutProps> = ({ items, layout, onItemClic
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: index * 0.05 }}
-          className={layout === "masonry" ? "mb-4 break-inside-avoid" : ""}
+          className={activeLayout === "masonry" ? "mb-4 break-inside-avoid" : ""}
         >
           <ContentCard 
             item={item}

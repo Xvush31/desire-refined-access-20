@@ -5,9 +5,10 @@ import { FileVideo, FileImage, Play, FileText, Grid2X2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface ContentFormatFilterProps {
-  activeFormat: "all" | "video" | "image" | "audio" | "text";
-  onFormatChange: (format: "all" | "video" | "image" | "audio" | "text") => void;
-  metrics: {
+  activeFormat?: "all" | "video" | "image" | "audio" | "text";
+  onFormatChange?: (format: "all" | "video" | "image" | "audio" | "text") => void;
+  onChange?: (format: "all" | "video" | "image" | "audio" | "text") => void;
+  metrics?: {
     video: number;
     image: number;
     audio: number;
@@ -16,13 +17,20 @@ interface ContentFormatFilterProps {
 }
 
 const ContentFormatFilter: React.FC<ContentFormatFilterProps> = ({
-  activeFormat,
+  activeFormat = "all",
   onFormatChange,
-  metrics
+  onChange,
+  metrics = { video: 0, image: 0, audio: 0, text: 0 }
 }) => {
+  // Use either onFormatChange or onChange prop
+  const handleFormatChange = (format: "all" | "video" | "image" | "audio" | "text") => {
+    if (onFormatChange) onFormatChange(format);
+    if (onChange) onChange(format);
+  };
+
   return (
     <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pt-2 pb-2">
-      <Tabs value={activeFormat} onValueChange={(value) => onFormatChange(value as any)} className="w-full">
+      <Tabs value={activeFormat} onValueChange={handleFormatChange} className="w-full">
         <TabsList className="w-full overflow-x-auto flex justify-start bg-transparent p-0">
           <TabsTrigger 
             value="all" 

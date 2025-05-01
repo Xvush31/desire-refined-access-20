@@ -11,43 +11,26 @@ import ProfileStats from "../creator/ProfileStats";
 import ContentLayout from "../content/ContentLayout";
 import MessagingButton from "../messaging/MessagingButton";
 
-interface ProfileInfoProps {
-  displayName: string;
-  username: string;
-  bio: string;
-  tier: string;
-  isVerified: boolean;
-  isOnline: boolean;
+interface MainContentProps {
+  performer: any;
+  isOwner: boolean;
+  showRevenue?: boolean;
+  isFollowing: boolean;
+  contentLayout: "grid" | "masonry" | "featured" | "flow";
+  activeTab: string;
+  sampleContentItems: any[];
+  onToggleRevenue: () => void;
+  onToggleFollow: () => void;
+  onSubscribe: () => void;
+  onSendMessage: () => void;
+  onViewRelationship: () => void;
+  setActiveTab: (tab: string) => void;
+  setContentLayout: (layout: "grid" | "masonry" | "featured" | "flow") => void;
+  handleContentClick: (item: any) => void;
+  filterByFormat: (format: "all" | "video" | "image" | "audio" | "text") => void;
 }
 
-interface ProfileStatsProps {
-  followerCount: number;
-  followingCount: number;
-  contentCount: number;
-  viewCount: number;
-  tier: string;
-}
-
-interface ContentFormatFilterProps {
-  onChange: (format: "all" | "video" | "image" | "audio" | "text") => void;
-}
-
-interface ContentLayoutProps {
-  currentLayout: "grid" | "masonry" | "featured" | "flow";
-  onChange: (layout: "grid" | "masonry" | "featured" | "flow") => void;
-}
-
-interface ContentGridProps {
-  contentItems: any[];
-  onItemClick: (item: any) => void;
-}
-
-interface ContentFlowProps {
-  contentItems: any[];
-  onItemClick: (item: any) => void;
-}
-
-const MainContent = ({
+const MainContent: React.FC<MainContentProps> = ({
   performer,
   isOwner,
   showRevenue,
@@ -166,6 +149,7 @@ const MainContent = ({
                     <ContentLayout
                       currentLayout={contentLayout}
                       onChange={setContentLayout}
+                      items={[]} // Empty array just to satisfy the type
                     />
                   </>
                 )}
@@ -175,12 +159,14 @@ const MainContent = ({
             <TabsContent value="content" className="mt-6">
               {contentLayout === "grid" ? (
                 <ContentGrid
-                  contentItems={sampleContentItems}
+                  items={sampleContentItems}
+                  layout={contentLayout}
+                  onLayoutChange={setContentLayout}
                   onItemClick={handleContentClick}
                 />
               ) : (
                 <ContentFlow
-                  contentItems={sampleContentItems}
+                  items={sampleContentItems}
                   onItemClick={handleContentClick}
                 />
               )}

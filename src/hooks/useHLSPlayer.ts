@@ -10,6 +10,21 @@ interface UseHLSPlayerProps {
   dataSavingMode?: boolean;
 }
 
+// Define a type for NetworkInformation which doesn't exist in standard lib.dom.d.ts
+interface NetworkInformation extends EventTarget {
+  downlink: number;
+  effectiveType: string;
+  rtt: number;
+  saveData: boolean;
+  addEventListener(type: string, listener: EventListener): void;
+  removeEventListener(type: string, listener: EventListener): void;
+}
+
+// Extend Navigator to include connection property
+interface NavigatorWithConnection extends Navigator {
+  connection?: NetworkInformation;
+}
+
 export const useHLSPlayer = ({ 
   src, 
   autoPlay = false, 
@@ -30,18 +45,15 @@ export const useHLSPlayer = ({
   
   // Detect network quality
   useEffect(() => {
-    if (!navigator.connection) return;
+    const nav = navigator as NavigatorWithConnection;
+    if (!nav.connection) return;
     
-    // @ts-ignore - navigator.connection exists but TypeScript doesn't have types for it
-    const connection = navigator.connection;
+    const connection = nav.connection;
     
     const updateConnectionQuality = () => {
-      // @ts-ignore
       if (connection.downlink) {
-        // @ts-ignore
         if (connection.downlink < 1) {
           setConnectionQuality('low');
-        // @ts-ignore
         } else if (connection.downlink < 5) {
           setConnectionQuality('medium');
         } else {
@@ -51,11 +63,9 @@ export const useHLSPlayer = ({
     };
     
     updateConnectionQuality();
-    // @ts-ignore
     connection.addEventListener('change', updateConnectionQuality);
     
     return () => {
-      // @ts-ignore
       connection.removeEventListener('change', updateConnectionQuality);
     };
   }, []);
@@ -98,17 +108,22 @@ export const useHLSPlayer = ({
           maxBufferSize: dataSavingMode ? 30 * 1000 * 1000 : 60 * 1000 * 1000,
           startLevel: dataSavingMode ? 0 : -1, // Force lowest quality in data saving mode
           debug: false,
-          // Auto level capping based on network quality
-          autoLevelCapping: dataSavingMode ? 0 : 
-                            connectionQuality === 'low' ? 1 : 
-                            connectionQuality === 'medium' ? 3 : -1,
-          // Disable preloading in data saving mode
+          // Preloading settings
           preloadSegments: dataSavingMode ? 0 : 2
         });
         
         hlsRef.current = hls;
         hls.loadSource(src);
         hls.attachMedia(video);
+        
+        // Set current level based on connection quality
+        if (dataSavingMode) {
+          hls.nextLevel = 0; // Force lowest quality in data saving mode
+        } else if (connectionQuality === 'low') {
+          hls.nextLevel = 1;
+        } else if (connectionQuality === 'medium') {
+          hls.nextLevel = 3;
+        }
         
         hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
           console.log("Manifest parsed, found quality levels:", data.levels);
@@ -204,10 +219,17 @@ export const useHLSPlayer = ({
     if (hlsRef.current) {
       const newDataSavingMode = !dataSavingMode;
       hlsRef.current.config.startLevel = newDataSavingMode ? 0 : -1;
-      hlsRef.current.config.autoLevelCapping = newDataSavingMode ? 0 : 
-                            connectionQuality === 'low' ? 1 : 
-                            connectionQuality === 'medium' ? 3 : -1;
-      hlsRef.current.nextLevel = newDataSavingMode ? 0 : -1;
+      
+      if (newDataSavingMode) {
+        hlsRef.current.nextLevel = 0; // Force lowest quality
+      } else if (connectionQuality === 'low') {
+        hlsRef.current.nextLevel = 1;
+      } else if (connectionQuality === 'medium') {
+        hlsRef.current.nextLevel = 3;
+      } else {
+        hlsRef.current.nextLevel = -1; // Auto
+      }
+      
       return newDataSavingMode;
     }
     return dataSavingMode;

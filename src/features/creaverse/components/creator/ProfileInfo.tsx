@@ -7,11 +7,16 @@ import RelationshipBadge from "../relationship/RelationshipBadge";
 import { RelationshipLevel } from "../../api/services/relationshipService";
 
 interface ProfileInfoProps {
-  image: string;
   displayName: string;
-  description: string;
-  followers: string;
-  stats: {
+  username?: string;
+  bio?: string;
+  description?: string;
+  image?: string;
+  tier?: string;
+  isVerified?: boolean;
+  isOnline?: boolean;
+  followers?: string;
+  stats?: {
     retentionRate: string;
     watchMinutes: string;
     superfans: number;
@@ -25,15 +30,23 @@ interface ProfileInfoProps {
 }
 
 const ProfileInfo: React.FC<ProfileInfoProps> = ({ 
+  displayName,
+  username,
+  bio,
+  description,
   image, 
-  displayName, 
-  description, 
-  followers, 
-  stats, 
+  tier, 
+  isVerified,
+  isOnline,
+  followers,
+  stats,
   nextEvent,
   relationshipLevel = RelationshipLevel.None,
   showRelationship = true
 }) => {
+  // Use description if provided, otherwise use bio
+  const displayDescription = description || bio || "";
+  
   return (
     <div className="flex items-start">
       <div className="mr-4">
@@ -64,26 +77,34 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
       
       <div className="flex-1">
         <h2 className="font-bold mb-1">{displayName}</h2>
-        <p className="text-sm text-muted-foreground mb-2">{description}</p>
+        <p className="text-sm text-muted-foreground mb-2">{displayDescription}</p>
         
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm mb-3">
-          <div>
-            <span className="font-semibold">{followers}</span>
-            <span className="text-muted-foreground ml-1">abonnés</span>
+        {(followers || stats) && (
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm mb-3">
+            {followers && (
+              <div>
+                <span className="font-semibold">{followers}</span>
+                <span className="text-muted-foreground ml-1">abonnés</span>
+              </div>
+            )}
+            {stats && (
+              <>
+                <div>
+                  <span className="font-semibold">{stats.retentionRate}</span>
+                  <span className="text-muted-foreground ml-1">fidélisation</span>
+                </div>
+                <div>
+                  <span className="font-semibold">{stats.superfans.toLocaleString()}</span>
+                  <span className="text-muted-foreground ml-1">super-fans</span>
+                </div>
+                <div>
+                  <span className="font-semibold">{stats.watchMinutes}</span>
+                  <span className="text-muted-foreground ml-1">minutes vues</span>
+                </div>
+              </>
+            )}
           </div>
-          <div>
-            <span className="font-semibold">{stats.retentionRate}</span>
-            <span className="text-muted-foreground ml-1">fidélisation</span>
-          </div>
-          <div>
-            <span className="font-semibold">{stats.superfans.toLocaleString()}</span>
-            <span className="text-muted-foreground ml-1">super-fans</span>
-          </div>
-          <div>
-            <span className="font-semibold">{stats.watchMinutes}</span>
-            <span className="text-muted-foreground ml-1">minutes vues</span>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

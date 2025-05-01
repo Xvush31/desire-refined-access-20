@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { DatabaseIcon, Lock, Play, Volume2, VolumeX, Download, Save, Heart } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
@@ -11,7 +10,7 @@ interface HLSVideoPlayerProps {
   src: string;
   poster?: string;
   title?: string;
-  videoId: number;
+  videoId?: number;
   autoPlay?: boolean;
   onVideoComplete?: () => void;
   isPreview?: boolean;
@@ -21,7 +20,7 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
   src,
   poster,
   title,
-  videoId,
+  videoId = 0,
   autoPlay = false,
   onVideoComplete,
   isPreview = false
