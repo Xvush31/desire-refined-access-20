@@ -1,6 +1,10 @@
 
-@import "./styles/base.css";
-@import "./styles/utilities.css";
-@import "./styles/components.css";
-@import "./styles/revolutionary-navigation.css";
-
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+@import './styles/base.css';
+@import './styles/components.css';
+@import './styles/utilities.css';
+@import './styles/revolutionary-navigation.css';
+@import './styles/xtease-animations.css';
+/* ... Keep existing imports */

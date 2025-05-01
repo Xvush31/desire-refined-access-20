@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
 
@@ -6,13 +7,15 @@ interface UseHLSPlayerProps {
   autoPlay?: boolean;
   onVideoComplete?: () => void;
   startMuted?: boolean;
+  dataSavingMode?: boolean;
 }
 
 export const useHLSPlayer = ({ 
   src, 
   autoPlay = false, 
   onVideoComplete,
-  startMuted = false 
+  startMuted = false,
+  dataSavingMode = false
 }: UseHLSPlayerProps) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const hlsRef = useRef<Hls | null>(null);
@@ -23,6 +26,65 @@ export const useHLSPlayer = ({
   const [loaded, setLoaded] = useState(false);
   const [qualityLevels, setQualityLevels] = useState<Array<{height: number, bitrate: number}>>([]);
   const [currentQuality, setCurrentQuality] = useState<number>(-1);
+  const [connectionQuality, setConnectionQuality] = useState<'low'|'medium'|'high'>('high');
+  
+  // Detect network quality
+  useEffect(() => {
+    if (!navigator.connection) return;
+    
+    // @ts-ignore - navigator.connection exists but TypeScript doesn't have types for it
+    const connection = navigator.connection;
+    
+    const updateConnectionQuality = () => {
+      // @ts-ignore
+      if (connection.downlink) {
+        // @ts-ignore
+        if (connection.downlink < 1) {
+          setConnectionQuality('low');
+        // @ts-ignore
+        } else if (connection.downlink < 5) {
+          setConnectionQuality('medium');
+        } else {
+          setConnectionQuality('high');
+        }
+      }
+    };
+    
+    updateConnectionQuality();
+    // @ts-ignore
+    connection.addEventListener('change', updateConnectionQuality);
+    
+    return () => {
+      // @ts-ignore
+      connection.removeEventListener('change', updateConnectionQuality);
+    };
+  }, []);
+
+  // Load saved position from localStorage
+  useEffect(() => {
+    if (!videoRef.current) return;
+    
+    const savedTime = localStorage.getItem(`video-position-${src}`);
+    if (savedTime) {
+      const time = parseFloat(savedTime);
+      if (!isNaN(time) && time > 0 && time < videoRef.current.duration - 10) {
+        videoRef.current.currentTime = time;
+      }
+    }
+  }, [src, loaded]);
+  
+  // Save position to localStorage
+  useEffect(() => {
+    if (currentTime > 0 && src) {
+      localStorage.setItem(`video-position-${src}`, currentTime.toString());
+    }
+    
+    return () => {
+      if (currentTime > 0 && src) {
+        localStorage.setItem(`video-position-${src}`, currentTime.toString());
+      }
+    };
+  }, [currentTime, src]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -31,11 +93,17 @@ export const useHLSPlayer = ({
     const initHls = () => {
       if (Hls.isSupported()) {
         const hls = new Hls({
-          maxBufferLength: 30,
-          maxMaxBufferLength: 60,
-          maxBufferSize: 60 * 1000 * 1000,
-          startLevel: -1,
-          debug: false
+          maxBufferLength: dataSavingMode ? 15 : 30,
+          maxMaxBufferLength: dataSavingMode ? 30 : 60,
+          maxBufferSize: dataSavingMode ? 30 * 1000 * 1000 : 60 * 1000 * 1000,
+          startLevel: dataSavingMode ? 0 : -1, // Force lowest quality in data saving mode
+          debug: false,
+          // Auto level capping based on network quality
+          autoLevelCapping: dataSavingMode ? 0 : 
+                            connectionQuality === 'low' ? 1 : 
+                            connectionQuality === 'medium' ? 3 : -1,
+          // Disable preloading in data saving mode
+          preloadSegments: dataSavingMode ? 0 : 2
         });
         
         hlsRef.current = hls;
@@ -96,7 +164,7 @@ export const useHLSPlayer = ({
         hlsRef.current = null;
       }
     };
-  }, [src, autoPlay, startMuted]);
+  }, [src, autoPlay, startMuted, dataSavingMode, connectionQuality]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -132,6 +200,19 @@ export const useHLSPlayer = ({
     };
   }, [onVideoComplete]);
 
+  const toggleDataSavingMode = () => {
+    if (hlsRef.current) {
+      const newDataSavingMode = !dataSavingMode;
+      hlsRef.current.config.startLevel = newDataSavingMode ? 0 : -1;
+      hlsRef.current.config.autoLevelCapping = newDataSavingMode ? 0 : 
+                            connectionQuality === 'low' ? 1 : 
+                            connectionQuality === 'medium' ? 3 : -1;
+      hlsRef.current.nextLevel = newDataSavingMode ? 0 : -1;
+      return newDataSavingMode;
+    }
+    return dataSavingMode;
+  };
+
   return {
     videoRef,
     hlsRef,
@@ -142,6 +223,8 @@ export const useHLSPlayer = ({
     loaded,
     qualityLevels,
     currentQuality,
-    setCurrentQuality
+    setCurrentQuality,
+    connectionQuality,
+    toggleDataSavingMode
   };
 };

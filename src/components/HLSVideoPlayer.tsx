@@ -1,15 +1,17 @@
 
 import React, { useState, useEffect } from "react";
-import { Lock, Play, Volume2, VolumeX } from "lucide-react";
+import { DatabaseIcon, Lock, Play, Volume2, VolumeX, Download, Save, Heart } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useHLSPlayer } from "@/hooks/useHLSPlayer";
 import { useVideoControls } from "@/hooks/useVideoControls";
 import { VideoControls } from "@/components/video/VideoControls";
+import { useXTeaseInteractivity, VideoReaction } from "@/hooks/useXTeaseInteractivity";
 
 interface HLSVideoPlayerProps {
   src: string;
   poster?: string;
   title?: string;
+  videoId: number;
   autoPlay?: boolean;
   onVideoComplete?: () => void;
   isPreview?: boolean;
@@ -19,10 +21,15 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
   src,
   poster,
   title,
+  videoId,
   autoPlay = false,
   onVideoComplete,
   isPreview = false
 }) => {
+  const [dataSavingMode, setDataSavingMode] = useState(() => {
+    return localStorage.getItem('xtease-data-saving') === 'true';
+  });
+  
   const {
     videoRef,
     hlsRef,
@@ -32,12 +39,15 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
     buffering,
     loaded,
     qualityLevels,
-    currentQuality
+    currentQuality,
+    connectionQuality,
+    toggleDataSavingMode
   } = useHLSPlayer({ 
     src, 
     autoPlay,
     onVideoComplete,
-    startMuted: true
+    startMuted: true,
+    dataSavingMode
   });
 
   const {
@@ -51,11 +61,20 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
     handleSeek,
     setQuality
   } = useVideoControls({ videoRef, hlsRef, duration });
+  
+  const {
+    reactions,
+    isFavorite,
+    addReaction,
+    toggleFavorite
+  } = useXTeaseInteractivity({ videoId });
 
   const [isControlsVisible, setIsControlsVisible] = useState(false);
   const [isIdle, setIsIdle] = useState(false);
   const [isWatermarkVisible, setIsWatermarkVisible] = useState(false);
   const [showSubscriptionPrompt, setShowSubscriptionPrompt] = useState(false);
+  const [showReactionPicker, setShowReactionPicker] = useState(false);
+  const [lastTapTime, setLastTapTime] = useState(0);
 
   useEffect(() => {
     const idleTimer = setTimeout(() => {
@@ -94,6 +113,35 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
+  
+  const handleTap = (e: React.MouseEvent) => {
+    const now = Date.now();
+    const isDoubleTap = now - lastTapTime < 300; // 300ms between taps
+    
+    if (isDoubleTap) {
+      // Handle double tap - add heart reaction
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (rect) {
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        addReaction('❤️', x, y);
+      }
+    } else {
+      // Single tap - show/hide controls
+      setIsControlsVisible(!isControlsVisible);
+    }
+    
+    setLastTapTime(now);
+  };
+  
+  const toggleDataSaving = () => {
+    const newMode = toggleDataSavingMode();
+    setDataSavingMode(newMode);
+    localStorage.setItem('xtease-data-saving', newMode.toString());
+    toast.success(`Mode économie de données ${newMode ? 'activé' : 'désactivé'}`);
+  };
+  
+  const availableReactions = ['❤️', '🔥', '👏', '😍', '😮', '😂'];
 
   return (
     <div 
@@ -104,15 +152,30 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
         setIsIdle(false);
       }}
       onMouseLeave={() => setIsControlsVisible(false)}
+      onClick={handleTap}
     >
       <video
         ref={videoRef}
         className="w-full h-full object-contain"
-        onClick={togglePlay}
         poster={poster}
         playsInline
         muted
       />
+      
+      {/* Floating reactions */}
+      {reactions.map(reaction => (
+        <div 
+          key={reaction.id}
+          className="absolute pointer-events-none animate-float-up opacity-80"
+          style={{
+            left: `${reaction.x}%`,
+            bottom: `${reaction.y}%`,
+            fontSize: '2rem'
+          }}
+        >
+          {reaction.emoji}
+        </div>
+      ))}
       
       {(buffering || !loaded) && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/40">
@@ -136,7 +199,10 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
       {!isPlaying && !buffering && loaded && (
         <div 
           className="absolute inset-0 flex items-center justify-center bg-black/20"
-          onClick={togglePlay}
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent double-tap from firing
+            togglePlay();
+          }}
         >
           <button 
             className="w-20 h-20 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white animate-fade-in"
@@ -152,13 +218,64 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
           <h2 className="text-white text-lg font-medium drop-shadow-lg">{title}</h2>
         </div>
       )}
+      
+      {/* Quick actions */}
+      <div className="absolute right-4 top-16 flex flex-col gap-4 z-50">
+        <button 
+          className={`p-2 rounded-full transition-colors ${isFavorite ? "bg-red-600 text-white" : "bg-black/40 text-white hover:bg-red-600"}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleFavorite();
+          }}
+          aria-label={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+        >
+          <Heart size={26} fill={isFavorite ? "white" : "none"} />
+        </button>
+        
+        <button 
+          className={`p-2 rounded-full ${dataSavingMode ? "bg-purple-600 text-white" : "bg-black/40 text-white"}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleDataSaving();
+          }}
+          aria-label="Mode économie de données"
+        >
+          <DatabaseIcon size={26} />
+        </button>
+      </div>
 
       <button 
         className="absolute top-4 right-4 z-50 bg-black/40 p-2 rounded-full text-white hover:bg-black/60 transition-colors"
-        onClick={toggleMute}
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleMute();
+        }}
       >
         {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
       </button>
+      
+      {/* Reaction picker */}
+      {showReactionPicker && (
+        <div 
+          className="absolute bottom-24 left-1/2 transform -translate-x-1/2 z-50 bg-black/70 rounded-full py-2 px-3 animate-fade-in"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center gap-2">
+            {availableReactions.map(emoji => (
+              <button
+                key={emoji}
+                className="text-2xl hover:scale-125 transition-transform p-1"
+                onClick={() => {
+                  addReaction(emoji, 50, 50);
+                  setShowReactionPicker(false);
+                }}
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <VideoControls
         isPlaying={isPlaying}
@@ -175,6 +292,7 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
         onSeek={handleSeek}
         onQualityChange={setQuality}
         onToggleFullscreen={toggleFullScreen}
+        onShowReactions={() => setShowReactionPicker(!showReactionPicker)}
       />
 
       {showSubscriptionPrompt && isPreview && (
@@ -189,11 +307,21 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
             </button>
             <button 
               className="bg-white/10 hover:bg-white/20 rounded-lg px-3 py-2 text-sm"
-              onClick={() => setShowSubscriptionPrompt(false)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowSubscriptionPrompt(false);
+              }}
             >
               Plus tard
             </button>
           </div>
+        </div>
+      )}
+      
+      {/* Connection quality indicator */}
+      {connectionQuality === 'low' && (
+        <div className="absolute top-4 left-4 bg-black/50 rounded-md px-2 py-1 text-xs text-white">
+          Connexion lente
         </div>
       )}
     </div>

@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Play, Pause, Volume2, VolumeX } from "lucide-react";
+import { Heart, Play, Pause, Volume2, VolumeX, Smile } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { formatTime } from "@/utils/formatTime";
 
@@ -19,6 +19,7 @@ interface VideoControlsProps {
   onSeek: (e: React.MouseEvent<HTMLDivElement>) => void;
   onQualityChange: (level: number) => void;
   onToggleFullscreen: () => void;
+  onShowReactions?: () => void;
 }
 
 export const VideoControls = ({
@@ -35,7 +36,8 @@ export const VideoControls = ({
   onToggleMute,
   onSeek,
   onQualityChange,
-  onToggleFullscreen
+  onToggleFullscreen,
+  onShowReactions
 }: VideoControlsProps) => {
   const getCurrentQualityLabel = () => {
     if (currentQuality === -1) return "Auto";
@@ -63,7 +65,10 @@ export const VideoControls = ({
         <div className="flex items-center space-x-4">
           <button 
             className="text-white hover:text-brand-red p-1"
-            onClick={onTogglePlay}
+            onClick={(e) => {
+              e.stopPropagation();
+              onTogglePlay();
+            }}
             aria-label={isPlaying ? "Pause" : "Play"}
           >
             {isPlaying ? <Pause size={18} /> : <Play size={18} />}
@@ -72,7 +77,10 @@ export const VideoControls = ({
           <div className="hidden md:flex items-center space-x-2">
             <button 
               className="text-white hover:text-brand-red p-1"
-              onClick={onToggleMute}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleMute();
+              }}
               aria-label={isMuted ? "Unmute" : "Mute"}
             >
               {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
@@ -95,6 +103,19 @@ export const VideoControls = ({
         </div>
         
         <div className="flex items-center space-x-2">
+          {onShowReactions && (
+            <button 
+              className="text-white hover:text-brand-red p-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                onShowReactions();
+              }}
+              aria-label="Réactions"
+            >
+              <Smile size={18} />
+            </button>
+          )}
+          
           <div className="relative group">
             <button className="text-white hover:text-brand-red text-xs p-1">
               {getCurrentQualityLabel()}
@@ -103,7 +124,10 @@ export const VideoControls = ({
               <div className="text-white text-xs space-y-2 min-w-[80px]">
                 <button 
                   className={`block w-full text-left px-2 py-1 hover:bg-white/10 rounded ${currentQuality === -1 ? 'text-brand-red font-bold' : ''}`}
-                  onClick={() => onQualityChange(-1)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onQualityChange(-1);
+                  }}
                 >
                   Auto
                 </button>
@@ -111,7 +135,10 @@ export const VideoControls = ({
                   <button 
                     key={index}
                     className={`block w-full text-left px-2 py-1 hover:bg-white/10 rounded ${currentQuality === index ? 'text-brand-red font-bold' : ''}`}
-                    onClick={() => onQualityChange(index)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onQualityChange(index);
+                    }}
                   >
                     {level.height}p
                   </button>
@@ -122,7 +149,10 @@ export const VideoControls = ({
           
           <button 
             className="text-white p-1 cursor-pointer"
-            onClick={onToggleFullscreen}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleFullscreen();
+            }}
             aria-label="Plein écran"
           >
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">

@@ -1,8 +1,11 @@
+
 import React, { useRef, useEffect, useState } from "react";
 import XTeaseVideoCard from "./XTeaseVideoCard";
 import XTeaseSecurityIncidentBanner from "./XTeaseSecurityIncidentBanner";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Loader } from "lucide-react";
+import { useXTeaseNavigation } from "@/hooks/useXTeaseNavigation";
+import { XTeaseSettings } from "@/pages/XTease";
 
 interface VideoData {
   id: number;
@@ -25,6 +28,10 @@ interface XTeaseVideoListProps {
   showSecurityIncident: boolean;
   setShowSecurityIncident: (v: boolean) => void;
   handleVideoComplete: () => void;
+  settings: XTeaseSettings;
+  toggleDataSavingMode: () => void;
+  toggleAutoPlay: () => boolean;
+  updateWatchProgress: (videoId: number, progress: number) => void;
 }
 
 const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
@@ -37,10 +44,28 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
   showSecurityIncident,
   setShowSecurityIncident,
   handleVideoComplete,
+  settings,
+  toggleDataSavingMode,
+  toggleAutoPlay,
+  updateWatchProgress
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
   const [displayedVideos, setDisplayedVideos] = useState(videos.slice(0, 3));
   const [hasMore, setHasMore] = useState(true);
+
+  const {
+    containerRef,
+    registerVideoRef,
+    scrollToVideo,
+    handleTouchStart,
+    handleTouchEnd,
+    autoPlayEnabled,
+    toggleAutoPlay: toggleAutoPlayNavigation
+  } = useXTeaseNavigation({
+    currentIndex: currentVideoIndex,
+    totalVideos: displayedVideos.length,
+    onChangeIndex: setCurrentVideoIndex,
+    onActivatePlayer: () => setIsPlayerActive(true)
+  });
 
   const fetchMoreData = () => {
     const currentLength = displayedVideos.length;
@@ -57,33 +82,24 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
   };
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (!containerRef.current) return;
-      const containerHeight = containerRef.current.clientHeight;
-      const scrollTop = containerRef.current.scrollTop;
-      const index = Math.round(scrollTop / containerHeight);
-      if (
-        index !== currentVideoIndex &&
-        index >= 0 &&
-        index < displayedVideos.length
-      ) {
-        setCurrentVideoIndex(index);
-        setIsPlayerActive(false);
-      }
-    };
-
-    const container = containerRef.current;
-    if (container) {
-      container.addEventListener("scroll", handleScroll);
-      return () => container.removeEventListener("scroll", handleScroll);
+    // Sync autoplay settings
+    if (autoPlayEnabled !== settings.autoPlayEnabled) {
+      toggleAutoPlayNavigation();
     }
-  }, [currentVideoIndex, setCurrentVideoIndex, displayedVideos.length, setIsPlayerActive]);
+  }, [settings.autoPlayEnabled, autoPlayEnabled, toggleAutoPlayNavigation]);
+
+  useEffect(() => {
+    // Scroll to the current video when index changes
+    scrollToVideo(currentVideoIndex);
+  }, [currentVideoIndex, scrollToVideo]);
 
   return (
     <div
       ref={containerRef}
       id="scrollableDiv"
       className="h-[calc(100vh-80px)] overflow-y-auto snap-y snap-mandatory"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       <InfiniteScroll
         dataLength={displayedVideos.length}
@@ -99,6 +115,8 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
         {displayedVideos.map((video, index) => (
           <div
             key={video.id}
+            ref={(ref) => registerVideoRef(index, ref)}
+            data-index={index}
             className="min-h-full w-full snap-start snap-always flex items-center justify-center p-2 sm:p-4"
             style={{ minHeight: 'calc(100vh - 80px)' }}
           >
@@ -108,6 +126,7 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
               currentVideoIndex={currentVideoIndex}
               isPlayerActive={isPlayerActive}
               showSecurityIncident={showSecurityIncident}
+              dataSavingMode={settings.dataSavingMode}
               onPlay={() => {
                 setIsPlayerActive(true);
                 if (Math.random() < 0.3 && !showSecurityIncident) {
@@ -117,6 +136,7 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
                   }, 3000);
                 }
               }}
+              onVideoProgress={(progress) => updateWatchProgress(video.id, progress)}
               onVideoComplete={handleVideoComplete}
               aiSuggestions={aiSuggestions}
             />

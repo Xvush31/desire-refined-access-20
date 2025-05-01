@@ -1,10 +1,12 @@
-import React from "react";
+
+import React, { useMemo } from "react";
 import { Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SubscriptionPromoBanner from "@/components/SubscriptionPromoBanner";
 import AIContentSuggestions from "@/components/AIContentSuggestions";
 import { Link } from "react-router-dom";
 import HLSVideoPlayer from "@/components/HLSVideoPlayer";
+import { useXTeaseInteractivity } from "@/hooks/useXTeaseInteractivity";
 
 interface VideoData {
   id: number;
@@ -23,7 +25,9 @@ interface XTeaseVideoCardProps {
   currentVideoIndex: number;
   isPlayerActive: boolean;
   showSecurityIncident: boolean;
+  dataSavingMode?: boolean;
   onPlay: () => void;
+  onVideoProgress?: (progress: number) => void;
   onVideoComplete: () => void;
   aiSuggestions: Array<any>;
 }
@@ -34,10 +38,30 @@ const XTeaseVideoCard: React.FC<XTeaseVideoCardProps> = ({
   currentVideoIndex,
   isPlayerActive,
   showSecurityIncident,
+  dataSavingMode,
   onPlay,
+  onVideoProgress,
   onVideoComplete,
   aiSuggestions,
 }) => {
+  const { isFavorite } = useXTeaseInteractivity({ videoId: video.id });
+  
+  // Calculate if the video should be preloaded
+  const shouldPreload = useMemo(() => {
+    // Preload the current video and next video only if not in data saving mode
+    return !dataSavingMode && 
+           (index === currentVideoIndex || 
+            index === currentVideoIndex + 1);
+  }, [currentVideoIndex, index, dataSavingMode]);
+  
+  // Handle video progress updates
+  const handleTimeUpdate = (currentTime: number, duration: number) => {
+    if (onVideoProgress && duration > 0) {
+      const progress = (currentTime / duration) * 100;
+      onVideoProgress(Math.min(progress, 100));
+    }
+  };
+  
   return (
     <div className="relative w-full h-full max-w-md mx-auto flex flex-col">
       {video.isPremium && !isPlayerActive && (
@@ -51,6 +75,7 @@ const XTeaseVideoCard: React.FC<XTeaseVideoCardProps> = ({
               src={video.streamUrl}
               poster={video.thumbnail}
               title={video.title}
+              videoId={video.id}
               onVideoComplete={onVideoComplete}
               isPreview={video.isPreview}
             />
@@ -60,6 +85,7 @@ const XTeaseVideoCard: React.FC<XTeaseVideoCardProps> = ({
                 src={video.thumbnail}
                 alt={video.title}
                 className="h-full w-full object-cover"
+                loading={shouldPreload ? "eager" : "lazy"}
               />
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70" />
               <div className="absolute inset-0 flex items-center justify-center">
@@ -73,6 +99,11 @@ const XTeaseVideoCard: React.FC<XTeaseVideoCardProps> = ({
               {video.isPremium && (
                 <div className="absolute top-3 right-3 badge badge-premium px-3 py-1 text-sm font-medium">
                   Premium
+                </div>
+              )}
+              {isFavorite && (
+                <div className="absolute top-3 left-3 bg-red-500/80 px-2 py-1 rounded text-xs text-white font-medium">
+                  Favori
                 </div>
               )}
             </div>
