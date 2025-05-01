@@ -54,14 +54,14 @@ const CreatorFeedItem: React.FC<CreatorFeedItemProps> = ({ post }) => {
   const borderClass = theme === 'light' ? 'border-gray-200' : 'border-gray-800';
 
   return (
-    <div className={`${bgClass} rounded-lg overflow-hidden shadow-sm mb-4 border ${borderClass} mx-auto w-full`} style={{ maxWidth: "520px" }}>
+    <div className={`${bgClass} rounded-lg overflow-hidden shadow-sm mb-4 border ${borderClass} max-w-sm mx-auto w-full`}>
       {/* Creator Header */}
       <div className="p-3 flex items-center justify-between">
         <Link to={`/performers/${post.creatorId}`} className="flex items-center gap-2">
           <Avatar className="h-8 w-8 border border-pink-500">
             <AvatarImage src={post.creatorAvatar} alt={post.creatorName} />
             <AvatarFallback className="bg-gradient-to-br from-pink-500 to-purple-500 text-white">
-              {post.creatorName ? post.creatorName.substring(0, 2).toUpperCase() : ""}
+              {post.creatorName.substring(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <span className="font-medium text-sm">{post.creatorName}</span>
@@ -69,8 +69,8 @@ const CreatorFeedItem: React.FC<CreatorFeedItemProps> = ({ post }) => {
         <span className="text-xs text-muted-foreground">{post.timestamp}</span>
       </div>
 
-      {/* Post Image with standard size */}
-      <div className="relative w-full">
+      {/* Post Image with 9:16 aspect ratio */}
+      <div className="relative">
         <AspectRatio ratio={9/16} className="w-full">
           <img 
             src={post.image} 

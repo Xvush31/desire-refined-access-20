@@ -26,7 +26,7 @@ interface ProfileInfoProps {
 
 const ProfileInfo: React.FC<ProfileInfoProps> = ({ 
   image, 
-  displayName = "", // Provide default empty string to avoid undefined
+  displayName, 
   description, 
   followers, 
   stats, 
@@ -34,23 +34,17 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
   relationshipLevel = RelationshipLevel.None,
   showRelationship = true
 }) => {
-  // Get initials safely by checking if displayName exists first
-  const getInitials = () => {
-    if (!displayName) return ""; // Return empty string if displayName is undefined
-    return displayName.substring(0, 2).toUpperCase();
-  };
-
   return (
     <div className="flex items-start">
       <div className="mr-4">
         <Avatar className="w-20 h-20 md:w-24 md:h-24 border border-border p-0.5 bg-gradient-to-br from-muted/60 to-muted">
           <AvatarImage 
             src={image} 
-            alt={displayName || "Profile"} // Provide fallback alt text
+            alt={displayName} 
             className="object-cover rounded-full" 
           />
           <AvatarFallback className="bg-gradient-to-br from-muted/80 to-muted/40 text-foreground">
-            {getInitials()}
+            {displayName.substring(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
         
@@ -69,7 +63,7 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
       </div>
       
       <div className="flex-1">
-        <h2 className="font-bold mb-1">{displayName || "Unknown"}</h2>
+        <h2 className="font-bold mb-1">{displayName}</h2>
         <p className="text-sm text-muted-foreground mb-2">{description}</p>
         
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm mb-3">
