@@ -6,6 +6,7 @@ import App from "./App";
 import "./index.css";
 import "./App.css";
 import "./styles/revolutionary-navigation.css";
+import "./styles/components.css";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
