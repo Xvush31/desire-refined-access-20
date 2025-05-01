@@ -11,6 +11,8 @@ import Dashboard from "./pages/Dashboard";
 import CalendarView from "./pages/CalendarView";
 import NotFound from "./pages/NotFound";
 import SubscribersManagement from "./pages/SubscribersManagement";
+import XTease from "./pages/XTease";
+import Creators from "./pages/Creators";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +28,8 @@ const App = () => (
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/calendar" element={<CalendarView />} />
         <Route path="/subscribers" element={<SubscribersManagement />} />
+        <Route path="/xtease" element={<XTease />} />
+        <Route path="/creators" element={<Creators />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </TooltipProvider>
