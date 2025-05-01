@@ -107,9 +107,8 @@ export const useHLSPlayer = ({
           maxMaxBufferLength: dataSavingMode ? 30 : 60,
           maxBufferSize: dataSavingMode ? 30 * 1000 * 1000 : 60 * 1000 * 1000,
           startLevel: dataSavingMode ? 0 : -1, // Force lowest quality in data saving mode
-          debug: false,
-          // Preloading settings
-          preloadSegments: dataSavingMode ? 0 : 2
+          debug: false
+          // Removed preloadSegments as it doesn't exist in HlsConfig
         });
         
         hlsRef.current = hls;

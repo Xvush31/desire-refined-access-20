@@ -1,4 +1,3 @@
-
 import React from "react";
 import FlowCardLayout from "./FlowCardLayout";
 import GridCardLayout from "./GridCardLayout";
@@ -27,6 +26,7 @@ export interface ContentItem {
   collections?: string[];
   valueScore?: number; // Value indicator (1-100)
   createdAt?: Date | string;
+  author?: string; // Adding the author property that was missing
 }
 
 interface ContentCardProps {
