@@ -1,3 +1,4 @@
+
 import React, { Suspense, useEffect } from "react";
 import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
@@ -29,6 +30,7 @@ import Subscription from "./pages/Subscription";
 import AuthCallback from "./pages/AuthCallback";
 import AccessDenied from "./pages/AccessDenied";
 import CreaVerse from "./features/creaverse";
+import CreaVerseApp from "./features/creaverse/CreaVerseApp";
 import CreatorProfile from "./features/creaverse/pages/CreatorProfile";
 import CreatorDashboard from "./features/creaverse/pages/CreatorDashboard";
 import CreatorSettings from "./features/creaverse/pages/CreatorSettings";
@@ -95,6 +97,7 @@ function App() {
   return (
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
       <Routes>
+        {/* Main XVush routes - not affected by CreaVerse styles */}
         <Route path="/" element={<Layout><Index /></Layout>} />
         <Route path="/about" element={<Layout><About /></Layout>} />
         <Route path="/trending" element={<Layout><Trending /></Layout>} />
@@ -122,7 +125,7 @@ function App() {
         <Route path="/auth/callback" element={<Layout><AuthCallback /></Layout>} />
         <Route path="/access-denied" element={<Layout><AccessDenied /></Layout>} />
 
-        {/* CreaVerse Routes - CreaVerse utilise sa propre instance de RevolutionaryNavigation */}
+        {/* Main CreaVerse route - uses CreaVerse component with RevolutionaryNavigation */}
         <Route path="/creaverse" element={<CreaVerse />}>
           <Route index element={<div className="container mx-auto px-4 py-8 text-center">
             <h1 className="text-2xl font-bold mb-4">Bienvenue à CreaVerse</h1>
@@ -132,6 +135,9 @@ function App() {
           <Route path="creator/:performerId/dashboard" element={<CreatorDashboard />} />
           <Route path="creator/:performerId/settings" element={<CreatorSettings />} />
         </Route>
+        
+        {/* New CreaVerse standalone app routes */}
+        <Route path="/creaverse-app/*" element={<CreaVerseApp />} />
 
         {/* Legacy performer routes - now properly handled */}
         <Route path="/performer/:performerId" element={<PerformerProfile />} />
