@@ -54,7 +54,7 @@ const CreatorFeedItem: React.FC<CreatorFeedItemProps> = ({ post }) => {
   const borderClass = theme === 'light' ? 'border-gray-200' : 'border-gray-800';
 
   return (
-    <div className={`${bgClass} rounded-lg overflow-hidden shadow-sm mb-4 border ${borderClass} max-w-sm mx-auto w-full`}>
+    <div className={`${bgClass} rounded-lg overflow-hidden shadow-sm mb-4 border ${borderClass} w-full max-w-md mx-auto`}>
       {/* Creator Header */}
       <div className="p-3 flex items-center justify-between">
         <Link to={`/performers/${post.creatorId}`} className="flex items-center gap-2">
@@ -70,8 +70,8 @@ const CreatorFeedItem: React.FC<CreatorFeedItemProps> = ({ post }) => {
       </div>
 
       {/* Post Image with 9:16 aspect ratio */}
-      <div className="relative">
-        <AspectRatio ratio={9/16} className="w-full">
+      <div className="relative w-full">
+        <AspectRatio ratio={9/16}>
           <img 
             src={post.image} 
             alt={`Publication de ${post.creatorName}`} 
