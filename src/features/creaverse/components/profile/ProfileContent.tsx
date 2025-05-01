@@ -3,7 +3,7 @@ import React from "react";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
 import { ContentItem } from "../content/ContentCard";
-import ContentGrid from "../content/ContentGrid";
+import CreatorContentView from "../content/CreatorContentView";
 import CollectionsTabContent from "./CollectionsTabContent";
 import JourneyTabContent from "./JourneyTabContent";
 import MonetizationTiers from "@/components/creator/MonetizationTiers";
@@ -33,19 +33,16 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
 }) => {
   return (
     <Tabs value={activeTab} defaultValue="gallery">
-      <TabsContent value="gallery" className="mt-0 p-4">
+      <TabsContent value="gallery" className="mt-0">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <ContentGrid
+          <CreatorContentView
             items={sampleContentItems}
-            layout={contentLayout}
             showMetrics={isOwner}
             onItemClick={handleContentClick}
-            onLayoutChange={setContentLayout}
-            filterByFormat={filterByFormat}
           />
         </motion.div>
       </TabsContent>
@@ -82,7 +79,6 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
               <p className="text-muted-foreground mb-4">
                 Organisez vos publications et événements à venir
               </p>
-              {/* Contenu du calendrier à implémenter */}
               <div className="p-8 border border-dashed rounded-md flex justify-center items-center text-muted-foreground">
                 Calendrier de contenu (en développement)
               </div>
