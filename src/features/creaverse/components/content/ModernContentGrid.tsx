@@ -1,297 +1,191 @@
 
-import React, { useState } from 'react';
-import { ContentItem } from './ContentCard';
+import React from 'react';
 import { cn } from '@/lib/utils';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { Separator } from '@/components/ui/separator';
-import { ChevronDown, ChevronUp, Layers } from 'lucide-react';
 import EnhancedContentCard from './EnhancedContentCard';
-
-interface ContentCollection {
-  name: string;
-  contents: ContentItem[];
-}
+import { ContentItem } from './ContentCard';
+import { motion } from 'framer-motion';
 
 interface ModernContentGridProps {
   items: ContentItem[];
-  layout?: 'grid' | 'masonry' | 'featured' | 'vertical' | 'collections';
-  className?: string;
+  layout: 'vertical' | 'collections' | 'featured';
   isCreator?: boolean;
-  collections?: ContentCollection[];
   onItemClick?: (item: ContentItem) => void;
+  className?: string;
 }
 
-const ModernContentGrid: React.FC<ModernContentGridProps> = ({ 
-  items, 
-  layout = 'grid', 
-  className,
+const ModernContentGrid: React.FC<ModernContentGridProps> = ({
+  items,
+  layout,
   isCreator = false,
-  collections = [],
-  onItemClick
+  onItemClick,
+  className
 }) => {
-  const [expandedCollections, setExpandedCollections] = useState<Record<string, boolean>>({});
-  
-  // Determine trending content (if views > 10k or growth > 15%)
-  const trendingContents = items.filter(item => 
-    (item.metrics?.views && item.metrics.views > 10000) || 
-    (item.trending === true) ||
-    (item.metrics?.growth && item.metrics.growth > 15)
-  ).sort((a, b) => {
-    const aScore = (a.metrics?.views || 0) + ((a.metrics?.growth || 0) * 100);
-    const bScore = (b.metrics?.views || 0) + ((b.metrics?.growth || 0) * 100);
-    return bScore - aScore;
-  });
-  
-  const handleItemClick = (item: ContentItem) => {
-    if (onItemClick) {
-      onItemClick(item);
-    }
-  };
-  
-  const toggleCollection = (name: string) => {
-    setExpandedCollections(prev => ({
-      ...prev,
-      [name]: !prev[name]
-    }));
-  };
-  
-  // Layout: Vertical Flow (similar to TikTok/Instagram Reels)
-  if (layout === 'vertical') {
+  if (!items || items.length === 0) {
     return (
-      <div className={cn("flex flex-col space-y-4", className)}>
-        {trendingContents.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold mb-3 flex items-center">
-              <Layers size={18} className="mr-2 text-red-500" />
-              Trending Content
-            </h2>
-            <div className="w-full overflow-hidden">
-              <Carousel className="w-full">
-                <CarouselContent>
-                  {trendingContents.slice(0, 5).map((item) => (
-                    <CarouselItem key={item.id} className="basis-3/4 sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
-                      <EnhancedContentCard 
-                        key={item.id}
-                        item={item}
-                        isCreator={isCreator}
-                        size="md"
-                        onClick={() => handleItemClick(item)}
-                      />
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="left-1 sm:-left-4" />
-                <CarouselNext className="right-1 sm:-right-4" />
-              </Carousel>
-            </div>
-          </div>
-        )}
-        
-        {items.map((item) => (
-          <EnhancedContentCard 
-            key={item.id}
-            item={item}
-            isCreator={isCreator}
-            size="xl"
-            className="w-full max-w-2xl mx-auto"
-            onClick={() => handleItemClick(item)}
-          />
-        ))}
+      <div className="flex justify-center items-center h-64 bg-muted/20 rounded-xl">
+        <p className="text-muted-foreground">Aucun contenu disponible</p>
       </div>
     );
   }
-  
-  // Layout: Collections
-  if (layout === 'collections') {
-    // If no explicit collections, generate collections from tags/collections field
-    const renderedCollections = collections.length > 0 ? collections : 
-      // Group content by collection if specified
-      Object.entries(
-        items.reduce<Record<string, ContentItem[]>>((acc, item) => {
-          const collection = item.collections && item.collections.length > 0 ? item.collections[0] : 'Uncategorized';
-          if (!acc[collection]) acc[collection] = [];
-          acc[collection].push(item);
-          return acc;
-        }, {})
-      ).map(([name, contents]) => ({ name, contents }));
+
+  // Featured layout - highlight the first item
+  if (layout === 'featured') {
+    const [featuredItem, ...restItems] = items;
 
     return (
-      <div className={cn("space-y-8", className)}>
-        {/* Trending section at top if we have trending content */}
-        {trendingContents.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold mb-3 flex items-center">
-              <Layers size={18} className="mr-2 text-red-500" />
-              Trending Content
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {trendingContents.slice(0, 3).map((item) => (
-                <EnhancedContentCard 
-                  key={item.id}
-                  item={item}
-                  isCreator={isCreator}
-                  size="lg"
-                  onClick={() => handleItemClick(item)}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-        
-        {renderedCollections.map((collection) => (
-          <div key={collection.name} className="space-y-3">
-            <div 
-              className="flex justify-between items-center cursor-pointer" 
-              onClick={() => toggleCollection(collection.name)}
-            >
-              <h3 className="text-lg font-medium">{collection.name}</h3>
-              <button className="p-1 hover:bg-muted rounded-full">
-                {expandedCollections[collection.name] ? 
-                  <ChevronUp size={18} /> : <ChevronDown size={18} />}
-              </button>
-            </div>
-            
-            {(!expandedCollections[collection.name] || expandedCollections[collection.name] === true) && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {collection.contents.map((item) => (
-                  <EnhancedContentCard 
-                    key={item.id}
-                    item={item}
-                    isCreator={isCreator}
-                    collectionName={collection.name}
-                    onClick={() => handleItemClick(item)}
-                  />
-                ))}
-              </div>
-            )}
-            <Separator className="mt-6" />
-          </div>
-        ))}
-      </div>
-    );
-  }
-  
-  if (layout === 'featured') {
-    // First item is featured (larger), rest are in a standard grid
-    const featured = items[0];
-    const rest = items.slice(1);
-    
-    // Identify trending content for middle section
-    const trendingFromRest = rest
-      .filter(item => 
-        (item.metrics?.views && item.metrics.views > 10000) || 
-        (item.trending === true) ||
-        (item.metrics?.growth && item.metrics.growth > 15)
-      )
-      .slice(0, 3);
-    
-    // Remaining content after extracting featured and trending
-    const remaining = rest.filter(item => !trendingFromRest.includes(item));
-    
-    return (
-      <div className={cn("space-y-8", className)}>
-        {/* Featured content */}
-        {featured && (
-          <div>
-            <h2 className="text-xl font-semibold mb-3">Featured Content</h2>
-            <EnhancedContentCard 
-              item={featured}
-              size="xl"
-              isCreator={isCreator}
-              className="w-full"
-              onClick={() => handleItemClick(featured)}
+      <div className={cn("space-y-6", className)}>
+        {/* Featured item */}
+        {featuredItem && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="w-full aspect-video overflow-hidden rounded-xl relative cursor-pointer"
+            onClick={() => onItemClick?.(featuredItem)}
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10" />
+            <img
+              src={featuredItem.thumbnail}
+              alt={featuredItem.title}
+              className="w-full h-full object-cover"
             />
-          </div>
-        )}
-        
-        {/* Trending content */}
-        {trendingFromRest.length > 0 && (
-          <div>
-            <h2 className="text-xl font-semibold mb-3 flex items-center">
-              <Layers size={20} className="mr-2 text-red-500" />
-              Trending Now
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {trendingFromRest.map((item) => (
-                <EnhancedContentCard 
-                  key={item.id}
-                  item={item}
-                  isCreator={isCreator}
-                  size="lg"
-                  onClick={() => handleItemClick(item)}
-                />
-              ))}
+            <div className="absolute bottom-0 left-0 right-0 p-4 z-20 text-white">
+              <h2 className="font-bold text-2xl mb-2">{featuredItem.title}</h2>
+              <div className="flex items-center gap-2">
+                {featuredItem.type !== 'standard' && (
+                  <span className={`px-2 py-1 rounded text-xs ${featuredItem.type === 'premium' ? 'bg-amber-500' : 'bg-purple-600'}`}>
+                    {featuredItem.type === 'premium' ? 'Premium' : 'VIP'}
+                  </span>
+                )}
+                {featuredItem.format && (
+                  <span className="px-2 py-1 rounded text-xs bg-black/50 backdrop-blur-sm">
+                    {featuredItem.format}
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
+          </motion.div>
         )}
-        
-        {/* Recent content */}
-        <div>
-          <h2 className="text-xl font-semibold mb-3">Recent Content</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {remaining.map((item) => (
+
+        {/* Remaining items in a grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          {restItems.map((item, idx) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.1 * (idx % 4) }}
+            >
               <EnhancedContentCard 
-                key={item.id}
                 item={item}
                 isCreator={isCreator}
-                onClick={() => handleItemClick(item)}
+                onClick={() => onItemClick?.(item)}
               />
-            ))}
-          </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     );
   }
-  
-  if (layout === 'masonry') {
-    // Create an irregular grid for visual interest based on metrics
+
+  // Vertical layout
+  if (layout === 'vertical') {
     return (
-      <div className={cn("grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4 auto-rows-max", className)}>
-        {items.map((item, index) => {
-          // Determine size based on metrics and position
-          let size = 'md';
-          let className = '';
-          
-          const hasHighEngagement = 
-            (item.metrics?.views && item.metrics.views > 10000) ||
-            (item.metrics?.likes && item.metrics.likes > 1000);
-          
-          const isTrending = item.trending || 
-            (item.metrics?.growth && item.metrics.growth > 15);
-          
-          if (index % 7 === 0 || hasHighEngagement) {
-            size = 'lg';
-            className = 'col-span-2 row-span-2';
-          } else if (index % 5 === 0 || isTrending) {
-            size = 'md';
-            className = 'col-span-1 row-span-1';
-          }
-          
-          return (
-            <EnhancedContentCard 
-              key={item.id}
-              item={item}
-              isCreator={isCreator}
-              size={size as 'sm' | 'md' | 'lg' | 'xl'}
-              className={className}
-              onClick={() => handleItemClick(item)}
-            />
-          );
-        })}
+      <div className={cn("space-y-4", className)}>
+        {items.map((item, idx) => (
+          <motion.div 
+            key={item.id}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3, delay: idx * 0.05 }}
+            className="flex gap-4 p-3 rounded-lg hover:bg-muted/40 transition-colors cursor-pointer"
+            onClick={() => onItemClick?.(item)}
+          >
+            <div className="w-24 h-24 sm:w-32 sm:h-32 overflow-hidden rounded-lg flex-shrink-0">
+              <img 
+                src={item.thumbnail} 
+                alt={item.title} 
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="flex flex-col justify-between flex-grow">
+              <div>
+                <h3 className="font-medium line-clamp-2">{item.title}</h3>
+                <div className="flex items-center gap-2 mt-1">
+                  {item.type !== 'standard' && (
+                    <span className={`px-1.5 py-0.5 rounded text-xs ${item.type === 'premium' ? 'bg-amber-500/90' : 'bg-purple-600/90'} text-white`}>
+                      {item.type === 'premium' ? 'Premium' : 'VIP'}
+                    </span>
+                  )}
+                  {item.format && (
+                    <span className="px-1.5 py-0.5 rounded text-xs bg-muted text-muted-foreground">
+                      {item.format}
+                    </span>
+                  )}
+                </div>
+              </div>
+              
+              {item.metrics && (
+                <div className="flex items-center text-xs text-muted-foreground mt-2 gap-3">
+                  {item.metrics.views && (
+                    <span>{(item.metrics.views / 1000).toFixed(1)}k vues</span>
+                  )}
+                  {item.metrics.likes && (
+                    <span>{(item.metrics.likes / 1000).toFixed(1)}k likes</span>
+                  )}
+                  {isCreator && item.revenue && (
+                    <span className="font-medium text-foreground">${item.revenue}</span>
+                  )}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        ))}
       </div>
     );
   }
-  
-  // Default grid layout
+
+  // Collections layout
   return (
-    <div className={cn("grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4", className)}>
-      {items.map((item) => (
-        <EnhancedContentCard 
-          key={item.id}
-          item={item}
-          isCreator={isCreator}
-          onClick={() => handleItemClick(item)}
-        />
+    <div className={cn("space-y-8", className)}>
+      {/* Group by collections */}
+      {items.reduce((collections, item) => {
+        const collectionName = item.collections?.[0] || 'Non classé';
+        if (!collections[collectionName]) {
+          collections[collectionName] = [];
+        }
+        collections[collectionName].push(item);
+        return collections;
+      }, {} as Record<string, ContentItem[]>)
+      .entries()
+      .map(([collectionName, collectionItems], collectionIdx) => (
+        <motion.div 
+          key={collectionName}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: collectionIdx * 0.1 }}
+          className="space-y-3"
+        >
+          <h2 className="text-xl font-bold">{collectionName}</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {collectionItems.slice(0, 5).map((item, idx) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, delay: 0.05 * idx }}
+              >
+                <EnhancedContentCard 
+                  item={item} 
+                  isCreator={isCreator}
+                  size="md"
+                  collectionName={collectionName}
+                  onClick={() => onItemClick?.(item)}
+                />
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       ))}
     </div>
   );

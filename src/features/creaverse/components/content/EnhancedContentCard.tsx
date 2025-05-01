@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Heart, MessageSquare, Eye, Clock, TrendingUp, Flame } from 'lucide-react';
+import { Heart, MessageSquare, Eye, Clock, TrendingUp, Flame, Play } from 'lucide-react';
 import { ContentItem } from './ContentCard';
 import { formatDuration } from '@/utils/formatTime';
+import { Badge } from "@/components/ui/badge";
 
 interface EnhancedContentCardProps {
   item: ContentItem;
@@ -34,9 +35,9 @@ const EnhancedContentCard: React.FC<EnhancedContentCardProps> = ({
   const getBadge = () => {
     switch (item.type) {
       case 'premium':
-        return <span className="premium-badge px-3 py-1 rounded-full text-xs bg-gradient-to-r from-amber-500 to-amber-300 text-white">Premium</span>;
+        return <Badge className="bg-gradient-to-r from-amber-500 to-amber-300 text-white border-0">Premium</Badge>;
       case 'vip':
-        return <span className="vip-badge px-3 py-1 rounded-full text-xs bg-gradient-to-r from-purple-600 to-indigo-400 text-white">VIP</span>;
+        return <Badge className="bg-gradient-to-r from-purple-600 to-indigo-400 text-white border-0">VIP</Badge>;
       default:
         return null;
     }
@@ -56,7 +57,7 @@ const EnhancedContentCard: React.FC<EnhancedContentCardProps> = ({
       return (
         <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-0.5 rounded-md flex items-center">
           <Clock size={12} className="mr-1" />
-          {formatDuration(typeof item.duration === 'string' ? parseInt(item.duration, 10) : item.duration)}
+          {typeof item.duration === 'string' ? item.duration : formatDuration(item.duration)}
         </div>
       );
     }
@@ -99,7 +100,7 @@ const EnhancedContentCard: React.FC<EnhancedContentCardProps> = ({
   return (
     <div 
       className={cn(
-        "content-card relative overflow-hidden rounded-lg group transition-all duration-300 hover:shadow-lg",
+        "content-card relative overflow-hidden rounded-xl group transition-all duration-300 hover:shadow-lg cursor-pointer transform hover:-translate-y-1",
         sizeClasses[size],
         className
       )}
@@ -123,9 +124,7 @@ const EnhancedContentCard: React.FC<EnhancedContentCardProps> = ({
           <div className="absolute inset-0 flex items-center justify-center bg-black/30">
             <div className="w-16 h-16 rounded-full bg-white/30 backdrop-blur-md flex items-center justify-center animate-pulse">
               <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center">
-                <svg className="w-6 h-6 text-black ml-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M6.3 2.841A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                </svg>
+                <Play className="w-6 h-6 text-black ml-1" />
               </div>
             </div>
           </div>

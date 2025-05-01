@@ -2,6 +2,7 @@
 import React from "react";
 import FlowCardLayout from "./FlowCardLayout";
 import GridCardLayout from "./GridCardLayout";
+import { Badge } from "@/components/ui/badge";
 
 export interface ContentItem {
   id: string;
@@ -9,7 +10,7 @@ export interface ContentItem {
   thumbnail: string;
   type: "standard" | "premium" | "vip";
   format?: "video" | "image" | "audio" | "text";
-  duration?: number | string;  // Updated to allow both number and string
+  duration?: number | string;
   publishDate?: string;
   metrics?: {
     views: number;
@@ -36,6 +37,7 @@ interface ContentCardProps {
   isFeatured?: boolean;
   onClick?: () => void;
   isActive?: boolean;
+  className?: string;
 }
 
 const ContentCard: React.FC<ContentCardProps> = ({
@@ -44,7 +46,8 @@ const ContentCard: React.FC<ContentCardProps> = ({
   layout = "grid",
   isFeatured = false,
   onClick,
-  isActive = false
+  isActive = false,
+  className = ""
 }) => {
   // Determine which layout component to use
   if (layout === "flow") {
@@ -54,6 +57,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
         showMetrics={showMetrics} 
         onClick={onClick}
         isActive={isActive}
+        className={className}
       />
     );
   }
@@ -66,6 +70,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
       layout={layout}
       isFeatured={isFeatured}
       onClick={onClick}
+      className={className}
     />
   );
 };

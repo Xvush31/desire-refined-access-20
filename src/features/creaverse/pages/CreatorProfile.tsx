@@ -3,16 +3,19 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { fetchPerformerData } from "../api/performers";
 import { PerformerData } from "../types/performer";
-import MainContent from "../components/profile/MainContent";
-import ProfileSections from "../components/profile/ProfileSections";
-import DynamicHeader from "../components/header/DynamicHeader";
-import LoadingState from "../components/profile/LoadingState";
-import NotFoundState from "../components/profile/NotFoundState";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRevolutionaryNavigation } from "@/hooks/use-revolutionary-navigation";
 import { useProfileContent } from "../hooks/useProfileContent";
+import { toast } from "sonner";
+
+// Component imports
 import NavigationFooter from "../components/NavigationFooter";
+import ModernNavigation from "../components/navigation/ModernNavigation";
+import ModernProfileHeader from "../components/creator/ModernProfileHeader";
+import ProfileContent from "../components/profile/ProfileContent";
+import LoadingState from "../components/profile/LoadingState";
+import NotFoundState from "../components/profile/NotFoundState";
 
 const CreatorProfile: React.FC = () => {
   const { performerId } = useParams<{ performerId: string }>();
@@ -78,6 +81,17 @@ const CreatorProfile: React.FC = () => {
     filterByFormat
   } = useProfileContent(performerId, isOwner);
   
+  // Handle subscription button click
+  const handleSubscribeClick = () => {
+    handleSubscribe();
+    toast.success("Action d'abonnement initiée");
+  };
+  
+  // Handle upcoming event subscription
+  const handleEventSubscribe = () => {
+    toast.success("Vous serez notifié avant le prochain événement");
+  };
+  
   if (loading) {
     return <LoadingState />;
   }
@@ -87,45 +101,62 @@ const CreatorProfile: React.FC = () => {
   }
   
   return (
-    <div className="min-h-screen pt-0 pb-20">
-      <DynamicHeader 
-        username={performer.username}
-        displayName={performer.displayName}
-        profileImage={performer.image}
-        isScrolled={false}
+    <div className="min-h-screen bg-background">
+      {/* Navigation */}
+      <ModernNavigation 
+        isCreator={isOwner} 
+        performerId={performer.id}
       />
       
-      <MainContent 
-        performer={performer}
-        isOwner={isOwner}
-        showRevenue={showRevenue}
-        isFollowing={isFollowing}
-        contentLayout={contentLayout}
-        activeTab={activeTab}
-        sampleContentItems={sampleContentItems}
-        onToggleRevenue={() => setShowRevenue(prev => !prev)}
-        onToggleFollow={handleToggleFollow}
-        onSubscribe={handleSubscribe}
-        onSendMessage={handleSendMessage}
-        onViewRelationship={handleViewRelationship}
-        setActiveTab={setActiveTab}
-        setContentLayout={setContentLayout}
-        handleContentClick={handleContentClick}
-        filterByFormat={filterByFormat}
-        relationshipLevel={relationshipLevel}
-      />
+      {/* Main Content */}
+      <div className="max-w-screen-xl mx-auto px-4 py-6">
+        {/* Profile Header */}
+        <ModernProfileHeader 
+          name={performer.displayName}
+          username={performer.username}
+          avatar={performer.image}
+          bio={performer.description}
+          tier={performer.tier || 'silver'}
+          metrics={{
+            followers: parseInt(performer.followers.replace(/[^\d]/g, '')),
+            following: performer.stats?.following || 120,
+            revenue: isOwner ? performer.stats?.revenue || 0 : undefined,
+            growthRate: performer.stats?.growthRate || 12.5,
+            nextTierProgress: performer.stats?.nextTierProgress || 65,
+            retentionRate: parseFloat(performer.stats?.retentionRate || '0'),
+            superfans: performer.stats?.superfans || 0,
+            watchMinutes: performer.stats?.watchMinutes || '0'
+          }}
+          status={performer.status || 'offline'}
+          scheduledTime={performer.nextEvent?.time}
+          isCreator={isOwner}
+          upcomingEvent={performer.nextEvent ? {
+            title: performer.nextEvent.title || "Prochain live",
+            time: performer.nextEvent.time || "Aujourd'hui, 20:00",
+            type: 'live',
+            countdown: performer.nextEvent.timeRemaining || "2h"
+          } : undefined}
+          onEventSubscribe={handleEventSubscribe}
+        />
+        
+        {/* Content Area */}
+        <div className="mt-6">
+          <ProfileContent 
+            activeTab={activeTab}
+            contentLayout={contentLayout}
+            setContentLayout={setContentLayout}
+            isOwner={isOwner}
+            performerId={performer.id}
+            handleSubscribe={handleSubscribeClick}
+            handleContentClick={handleContentClick}
+            sampleContentItems={sampleContentItems}
+            filterByFormat={filterByFormat}
+          />
+        </div>
+      </div>
       
-      <ProfileSections 
-        activeTab={activeTab}
-        contentLayout={contentLayout}
-        contentItems={sampleContentItems}
-        trendingContent={trendingContent}
-        collections={collections}
-        handleContentClick={handleContentClick}
-        handleCollectionClick={handleCollectionClick}
-      />
-      
-      {isMobile && performer && (
+      {/* Mobile Navigation Footer */}
+      {isMobile && (
         <NavigationFooter 
           performerId={performer.id} 
           performerImage={performer.image}

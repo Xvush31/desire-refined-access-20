@@ -1,33 +1,34 @@
 
-import { ContentItem } from "./ContentCard";
-
-// Type color helper
-export const getTypeColor = (type: ContentItem['type']) => {
+export const getTypeColor = (type: 'standard' | 'premium' | 'vip') => {
   switch (type) {
-    case "premium": return "bg-gradient-to-r from-amber-500 to-yellow-500";
-    case "vip": return "bg-gradient-to-r from-purple-500 to-pink-500";
-    case "standard":
-    default: return "bg-gradient-to-r from-blue-500 to-cyan-500";
+    case 'premium':
+      return 'bg-gradient-to-r from-amber-500 to-amber-300';
+    case 'vip':
+      return 'bg-gradient-to-r from-purple-600 to-indigo-400';
+    default:
+      return 'bg-gray-700';
   }
 };
 
-// Value indicator color based on score
-export const getValueColor = (valueScore?: number) => {
-  if (!valueScore) return "bg-gray-400";
-  if (valueScore >= 80) return "bg-emerald-500";
-  if (valueScore >= 60) return "bg-green-500";
-  if (valueScore >= 40) return "bg-yellow-500";
-  if (valueScore >= 20) return "bg-orange-500";
-  return "bg-red-500";
+export const getValueColor = (value: number) => {
+  if (value >= 90) return 'bg-gradient-to-r from-green-500 to-emerald-400';
+  if (value >= 70) return 'bg-gradient-to-r from-blue-500 to-cyan-400';
+  if (value >= 50) return 'bg-gradient-to-r from-amber-500 to-yellow-400';
+  if (value >= 30) return 'bg-gradient-to-r from-orange-500 to-amber-400';
+  return 'bg-gradient-to-r from-red-500 to-rose-400';
 };
 
-// Layout classes helper
-export const getLayoutClasses = (layout: "grid" | "masonry" | "featured" | "flow") => {
-  switch (layout) {
-    case "masonry": return "h-auto";
-    case "featured": return "h-72 md:h-96";
-    case "flow": return "w-full flex flex-col md:flex-row";
-    case "grid":
-    default: return "h-48 md:h-60";
+export const getFormatIcon = (format: string) => {
+  switch (format) {
+    case 'video':
+      return 'video';
+    case 'image':
+      return 'image';
+    case 'audio':
+      return 'headphones';
+    case 'text':
+      return 'file-text';
+    default:
+      return 'file';
   }
 };
