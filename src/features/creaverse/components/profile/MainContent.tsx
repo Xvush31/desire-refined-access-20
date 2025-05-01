@@ -176,6 +176,7 @@ const MainContent: React.FC<MainContentProps> = ({
                   items={sampleContentItems}
                   layout={contentLayout}
                   onItemClick={handleContentClick}
+                  onLayoutChange={setContentLayout}
                 />
               ) : (
                 <ContentFlow
