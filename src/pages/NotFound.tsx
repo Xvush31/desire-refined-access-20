@@ -1,78 +1,52 @@
 
 import React from "react";
-import { useLocation, Link } from "react-router-dom";
-import { useEffect } from "react";
-import Header from "@/components/Header";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { HomeIcon, UsersIcon } from "lucide-react";
-import { toast } from "sonner";
+import { ArrowLeft, Home } from "lucide-react";
 
 const NotFound = () => {
-  const location = useLocation();
-
-  useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      location.pathname
-    );
-    
-    // Show toast with helpful message
-    toast.error("Page non trouvée", {
-      description: "La page que vous recherchez n'existe pas.",
-      duration: 5000
-    });
-    
-  }, [location.pathname]);
-
-  // Check if this might be a creator profile route
-  const mightBeCreatorProfile = 
-    location.pathname.includes('/performer') || 
-    location.pathname.includes('/performers') || 
-    location.pathname.includes('/creator') || 
-    location.pathname.match(/\/[0-9]+$/); // URLs ending with a number might be legacy creator IDs
-
-  // For legacy URLs from xvush.com, extract proper URL structure
-  const extractedId = location.pathname.match(/\/performers\/(\d+)/) || location.pathname.match(/\/performer\/(\d+)/);
-  const suggestedProfileUrl = extractedId ? `/creaverse/performer/${extractedId[1]}` : '/creators';
-
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <Header />
-      <div className="container mx-auto px-4 py-20 text-center">
-        <h1 className="text-6xl font-bold mb-6">404</h1>
-        <p className="text-xl text-muted-foreground mb-8">
-          Oops! La page que vous recherchez n'existe pas.
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-gray-100 dark:from-zinc-900 dark:to-zinc-800 px-4">
+      <div className="max-w-md w-full text-center">
+        <h1 className="text-6xl font-bold text-gray-900 dark:text-white mb-4">404</h1>
+        <p className="text-xl mb-8 text-gray-600 dark:text-gray-300">
+          Oops! La page que vous cherchez semble avoir disparu.
         </p>
         
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Button asChild className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button asChild variant="outline" className="gap-2">
             <Link to="/">
-              <HomeIcon size={18} />
-              Retourner à l'accueil
+              <ArrowLeft className="h-4 w-4" />
+              Retour
             </Link>
           </Button>
-          
-          <Button asChild variant="outline" className="flex items-center gap-2">
-            <Link to="/creators">
-              <UsersIcon size={18} />
-              Voir les créateurs
+          <Button asChild className="gap-2 bg-pink-600 hover:bg-pink-700">
+            <Link to="/">
+              <Home className="h-4 w-4" />
+              Accueil
             </Link>
           </Button>
-          
-          {mightBeCreatorProfile && (
-            <Button asChild variant="secondary" className="flex items-center gap-2">
-              <Link to={suggestedProfileUrl}>
-                Accéder au profil
-              </Link>
-            </Button>
-          )}
         </div>
         
-        {mightBeCreatorProfile && (
-          <p className="mt-6 text-sm text-muted-foreground">
-            Vous recherchiez peut-être un profil de créateur? Tous les profils sont maintenant accessibles via CreaVerse.
+        <div className="mt-12">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Vous cherchez peut-être...
           </p>
-        )}
+          <div className="mt-2 flex flex-wrap gap-2 justify-center">
+            <Button variant="link" asChild>
+              <Link to="/creator">Profil Créateur</Link>
+            </Button>
+            <Button variant="link" asChild>
+              <Link to="/dashboard">Dashboard</Link>
+            </Button>
+            <Button variant="link" asChild>
+              <Link to="/subscribers">Abonnés</Link>
+            </Button>
+            <Button variant="link" asChild>
+              <Link to="/calendar">Calendrier</Link>
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );
