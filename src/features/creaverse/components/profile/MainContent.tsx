@@ -48,17 +48,31 @@ const MainContent: React.FC<MainContentProps> = ({
   handleContentClick,
   filterByFormat,
 }) => {
+  // Safely access performer properties with fallbacks
+  const performerName = performer?.name || performer?.displayName || "Creator";
+  const performerUsername = performer?.username || "";
+  const performerBio = performer?.bio || performer?.description || "";
+  const performerTier = performer?.tier || "";
+  const performerIsVerified = performer?.isVerified || false;
+  const performerIsOnline = performer?.isOnline || false;
+  
+  // Safely access metrics with fallbacks
+  const followerCount = performer?.metrics?.followers || performer?.stats?.followers || 0;
+  const followingCount = performer?.metrics?.following || performer?.stats?.following || 0;
+  const contentCount = performer?.metrics?.contentCount || performer?.content?.total || performer?.stats?.contentCount || 0;
+  const viewCount = performer?.metrics?.views || performer?.stats?.views || 0;
+
   return (
     <div className="container px-4 lg:px-8 py-6 -mt-12 z-20 relative">
       <div className="bg-card rounded-xl p-6 shadow-sm border border-border">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-6">
           <ProfileInfo
-            displayName={performer.name}
-            username={performer.username}
-            bio={performer.bio}
-            tier={performer.tier}
-            isVerified={performer.isVerified}
-            isOnline={performer.isOnline}
+            displayName={performerName}
+            username={performerUsername}
+            bio={performerBio}
+            tier={performerTier}
+            isVerified={performerIsVerified}
+            isOnline={performerIsOnline}
           />
           
           <div className="flex flex-col xs:flex-row gap-3 justify-end">
@@ -74,8 +88,8 @@ const MainContent: React.FC<MainContentProps> = ({
 
                 <MessagingButton
                   performerId={performer.id.toString()}
-                  performerName={performer.name}
-                  performerAvatar={performer.avatar}
+                  performerName={performerName}
+                  performerAvatar={performer.avatar || performer.image}
                   variant="outline"
                 />
 
@@ -121,11 +135,11 @@ const MainContent: React.FC<MainContentProps> = ({
         </div>
         
         <ProfileStats
-          followerCount={performer.metrics.followers}
-          followingCount={performer.metrics.following}
-          contentCount={performer.metrics.contentCount || 120}
-          viewCount={performer.metrics.views || 45600}
-          tier={performer.tier}
+          followerCount={followerCount}
+          followingCount={followingCount}
+          contentCount={contentCount}
+          viewCount={viewCount}
+          tier={performerTier}
         />
 
         <div className="mt-6">
@@ -149,7 +163,7 @@ const MainContent: React.FC<MainContentProps> = ({
                     <ContentLayout
                       currentLayout={contentLayout}
                       onChange={setContentLayout}
-                      items={[]} // Empty array just to satisfy the type
+                      items={[]}
                     />
                   </>
                 )}
@@ -161,7 +175,6 @@ const MainContent: React.FC<MainContentProps> = ({
                 <ContentGrid
                   items={sampleContentItems}
                   layout={contentLayout}
-                  onLayoutChange={setContentLayout}
                   onItemClick={handleContentClick}
                 />
               ) : (
