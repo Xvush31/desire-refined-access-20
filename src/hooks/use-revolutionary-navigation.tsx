@@ -39,7 +39,13 @@ export function useRevolutionaryNavigation() {
       type: "swipe-up",
       handler: () => {
         setIsImmersiveMode(true);
-        toast.info("Mode immersif activé");
+        toast.info("Mode immersif activé", {
+          style: { 
+            background: "rgba(0, 0, 0, 0.85)",
+            color: "#ffffff",
+            border: "1px solid rgba(255, 255, 255, 0.2)"
+          }
+        });
       },
       description: "Mode immersif activé"
     },
@@ -47,7 +53,13 @@ export function useRevolutionaryNavigation() {
       type: "swipe-down",
       handler: () => {
         setIsImmersiveMode(false);
-        toast.info("Mode immersif désactivé");
+        toast.info("Mode immersif désactivé", {
+          style: { 
+            background: "rgba(0, 0, 0, 0.85)",
+            color: "#ffffff",
+            border: "1px solid rgba(255, 255, 255, 0.2)"
+          }
+        });
       },
       description: "Mode immersif désactivé"
     },
@@ -55,7 +67,13 @@ export function useRevolutionaryNavigation() {
       type: "double-tap",
       handler: () => {
         setZoomLevel(1);
-        toast.info("Zoom réinitialisé");
+        toast.info("Zoom réinitialisé", {
+          style: { 
+            background: "rgba(0, 0, 0, 0.85)",
+            color: "#ffffff", 
+            border: "1px solid rgba(255, 255, 255, 0.2)"
+          }
+        });
       },
       description: "Zoom réinitialisé"
     },
@@ -63,7 +81,13 @@ export function useRevolutionaryNavigation() {
       type: "long-press",
       handler: () => {
         setIsRadialOpen(true);
-        toast.info("Menu radial ouvert");
+        toast.info("Menu radial ouvert", {
+          style: { 
+            background: "rgba(0, 0, 0, 0.85)",
+            color: "#ffffff",
+            border: "1px solid rgba(255, 255, 255, 0.2)"
+          }
+        });
       },
       description: "Menu radial ouvert"
     },
@@ -71,11 +95,41 @@ export function useRevolutionaryNavigation() {
       type: "pinch",
       handler: () => {
         setZoomLevel(zoomLevel > 0.8 ? 0.6 : 1);
-        toast.info(zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant");
+        toast.info(zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant", {
+          style: { 
+            background: "rgba(0, 0, 0, 0.85)",
+            color: "#ffffff",
+            border: "1px solid rgba(255, 255, 255, 0.2)"
+          }
+        });
       },
       description: zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant"
     }
   ]);
+  
+  // Update gesture actions when zoom level changes
+  useEffect(() => {
+    setGestureActions(prev => 
+      prev.map(action => 
+        action.type === "pinch" 
+          ? { 
+              ...action, 
+              handler: () => {
+                setZoomLevel(zoomLevel > 0.8 ? 0.6 : 1);
+                toast.info(zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant", {
+                  style: { 
+                    background: "rgba(0, 0, 0, 0.85)", 
+                    color: "#ffffff",
+                    border: "1px solid rgba(255, 255, 255, 0.2)"
+                  }
+                });
+              },
+              description: zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant" 
+            }
+          : action
+      )
+    );
+  }, [zoomLevel]);
   
   // Load settings from localStorage
   useEffect(() => {
@@ -84,9 +138,6 @@ export function useRevolutionaryNavigation() {
       if (savedSettings) {
         setSettings(JSON.parse(savedSettings));
       }
-      
-      // For demo purposes, log that the navigation is initialized
-      console.log("Revolutionary navigation initialized with settings:", settings);
     } catch (err) {
       console.error("Failed to load navigation settings:", err);
     }
@@ -101,40 +152,43 @@ export function useRevolutionaryNavigation() {
     }
   }, [settings]);
   
-  // Update gesture actions when zoom level changes
-  useEffect(() => {
-    setGestureActions(prev => 
-      prev.map(action => 
-        action.type === "pinch" 
-          ? { 
-              ...action, 
-              handler: () => setZoomLevel(zoomLevel > 0.8 ? 0.6 : 1),
-              description: zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant" 
-            }
-          : action
-      )
-    );
-  }, [zoomLevel]);
-  
   // Handle keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Alt+R to toggle radial menu
       if (e.altKey && e.key === 'r') {
         setIsRadialOpen(prev => !prev);
-        toast.info(isRadialOpen ? "Menu radial fermé" : "Menu radial ouvert");
+        toast.info(isRadialOpen ? "Menu radial fermé" : "Menu radial ouvert", {
+          style: { 
+            background: "rgba(0, 0, 0, 0.85)", 
+            color: "#ffffff",
+            border: "1px solid rgba(255, 255, 255, 0.2)"
+          }
+        });
       }
       
       // Alt+I to toggle immersive mode
       if (e.altKey && e.key === 'i') {
         setIsImmersiveMode(prev => !prev);
-        toast.info(isImmersiveMode ? "Mode normal" : "Mode immersif activé");
+        toast.info(isImmersiveMode ? "Mode normal" : "Mode immersif activé", {
+          style: { 
+            background: "rgba(0, 0, 0, 0.85)", 
+            color: "#ffffff",
+            border: "1px solid rgba(255, 255, 255, 0.2)"
+          }
+        });
       }
       
       // Alt+Z to toggle zoom level
       if (e.altKey && e.key === 'z') {
         setZoomLevel(prev => prev > 0.8 ? 0.6 : 1);
-        toast.info(zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant");
+        toast.info(zoomLevel > 0.8 ? "Zoom arrière" : "Zoom avant", {
+          style: { 
+            background: "rgba(0, 0, 0, 0.85)", 
+            color: "#ffffff",
+            border: "1px solid rgba(255, 255, 255, 0.2)"
+          }
+        });
       }
       
       // Alt+G to cycle through layouts
@@ -143,7 +197,13 @@ export function useRevolutionaryNavigation() {
         const currentIndex = layouts.indexOf(currentLayout);
         const nextLayout = layouts[(currentIndex + 1) % layouts.length];
         setCurrentLayout(nextLayout);
-        toast.info(`Affichage en ${nextLayout}`);
+        toast.info(`Affichage en ${nextLayout}`, {
+          style: { 
+            background: "rgba(0, 0, 0, 0.85)", 
+            color: "#ffffff",
+            border: "1px solid rgba(255, 255, 255, 0.2)"
+          }
+        });
       }
     };
     

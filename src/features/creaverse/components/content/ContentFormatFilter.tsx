@@ -26,55 +26,55 @@ const ContentFormatFilter: React.FC<ContentFormatFilterProps> = ({
         <TabsList className="w-full overflow-x-auto flex justify-start bg-transparent p-0">
           <TabsTrigger 
             value="all" 
-            className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground shadow-sm"
           >
             <Grid2X2 size={16} />
             <span>Tous</span>
-            <Badge variant="outline" className="ml-1 bg-background">
+            <Badge variant="outline" className="ml-1 bg-background text-foreground">
               {metrics.video + metrics.image + metrics.audio + metrics.text}
             </Badge>
           </TabsTrigger>
           
           <TabsTrigger 
             value="video" 
-            className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground shadow-sm"
           >
             <FileVideo size={16} />
             <span>Vidéos</span>
-            <Badge variant="outline" className="ml-1 bg-background">
+            <Badge variant="outline" className="ml-1 bg-background text-foreground">
               {metrics.video}
             </Badge>
           </TabsTrigger>
           
           <TabsTrigger 
             value="image" 
-            className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground shadow-sm"
           >
             <FileImage size={16} />
             <span>Photos</span>
-            <Badge variant="outline" className="ml-1 bg-background">
+            <Badge variant="outline" className="ml-1 bg-background text-foreground">
               {metrics.image}
             </Badge>
           </TabsTrigger>
           
           <TabsTrigger 
             value="audio" 
-            className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground shadow-sm"
           >
             <Play size={16} />
             <span>Audio</span>
-            <Badge variant="outline" className="ml-1 bg-background">
+            <Badge variant="outline" className="ml-1 bg-background text-foreground">
               {metrics.audio}
             </Badge>
           </TabsTrigger>
           
           <TabsTrigger 
             value="text" 
-            className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground shadow-sm"
           >
             <FileText size={16} />
             <span>Textes</span>
-            <Badge variant="outline" className="ml-1 bg-background">
+            <Badge variant="outline" className="ml-1 bg-background text-foreground">
               {metrics.text}
             </Badge>
           </TabsTrigger>

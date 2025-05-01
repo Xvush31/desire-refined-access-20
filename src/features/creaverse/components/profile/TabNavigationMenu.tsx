@@ -20,7 +20,7 @@ const TabNavigationMenu: React.FC<TabNavigationMenuProps> = ({
         <TabsList className="w-full h-auto overflow-x-auto flex justify-start bg-transparent p-0">
           <TabsTrigger 
             value="gallery" 
-            className="flex items-center gap-2 py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none bg-transparent"
+            className="flex items-center gap-2 py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-none bg-transparent"
           >
             <Grid size={18} />
             <span>Galerie</span>
@@ -28,7 +28,7 @@ const TabNavigationMenu: React.FC<TabNavigationMenuProps> = ({
           
           <TabsTrigger 
             value="collections" 
-            className="flex items-center gap-2 py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none bg-transparent"
+            className="flex items-center gap-2 py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-none bg-transparent"
           >
             <FileImage size={18} />
             <span>Collections</span>
@@ -36,7 +36,7 @@ const TabNavigationMenu: React.FC<TabNavigationMenuProps> = ({
           
           <TabsTrigger 
             value="journey" 
-            className="flex items-center gap-2 py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none bg-transparent"
+            className="flex items-center gap-2 py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-none bg-transparent"
           >
             <Clock size={18} />
             <span>Parcours</span>
@@ -44,7 +44,7 @@ const TabNavigationMenu: React.FC<TabNavigationMenuProps> = ({
           
           <TabsTrigger 
             value="tiers" 
-            className="flex items-center gap-2 py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none bg-transparent"
+            className="flex items-center gap-2 py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-none bg-transparent"
           >
             <Layers size={18} />
             <span>Abonnements</span>
@@ -53,7 +53,7 @@ const TabNavigationMenu: React.FC<TabNavigationMenuProps> = ({
           {isOwner && (
             <TabsTrigger 
               value="calendar" 
-              className="flex items-center gap-2 py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none bg-transparent"
+              className="flex items-center gap-2 py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-none bg-transparent"
             >
               <Calendar size={18} />
               <span>Calendrier</span>

@@ -1,4 +1,3 @@
-
 import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
 
@@ -70,7 +69,7 @@ const CustomGestures: React.FC<CustomGesturesProps> = ({
     
     lastTapRef.current = now;
     
-    // Set up long press detection
+    // Set up long press detection - CHANGED TO 1.5 SECONDS
     if (longPressTimerRef.current) {
       clearTimeout(longPressTimerRef.current);
     }
@@ -81,7 +80,7 @@ const CustomGestures: React.FC<CustomGesturesProps> = ({
         longPressAction.handler();
         showFeedback(longPressAction.description, touch.clientX, touch.clientY);
       }
-    }, 800); // 800ms for long press
+    }, 1500); // Changed from 800ms to 1500ms (1.5 seconds) for long press
   };
   
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -195,7 +194,7 @@ const CustomGestures: React.FC<CustomGesturesProps> = ({
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.5 }}
-          className="absolute bg-black/70 text-white px-3 py-2 rounded-lg text-sm pointer-events-none backdrop-blur-sm z-50"
+          className="absolute bg-black/80 text-white px-3 py-2 rounded-lg text-sm pointer-events-none backdrop-blur-sm z-50 border border-white/20 shadow-lg"
           style={{
             left: feedback.position.x,
             top: feedback.position.y,

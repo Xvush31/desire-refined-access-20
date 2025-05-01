@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTheme } from "@/hooks/use-theme";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ImmersiveModeProps {
   children: React.ReactNode;
@@ -12,104 +13,103 @@ interface ImmersiveModeProps {
 const ImmersiveMode: React.FC<ImmersiveModeProps> = ({
   children,
   isImmersive,
-  onToggleImmersive
+  onToggleImmersive,
 }) => {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
-  
   const [showControls, setShowControls] = useState(true);
-  const [mouseIdle, setMouseIdle] = useState(false);
-  const [lastMouseMove, setLastMouseMove] = useState(Date.now());
-  
-  // Hide controls when mouse is idle in immersive mode
+  const [mouseMovement, setMouseMovement] = useState({ x: 0, y: 0 });
+  const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
+  const [controlsTimer, setControlsTimer] = useState<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
-    if (!isImmersive) {
+    if (isImmersive) {
+      document.body.classList.add("overflow-hidden");
+      
+      // Show controls on initial immersive mode entry
       setShowControls(true);
-      return;
-    }
-    
-    const handleMouseMove = () => {
-      setLastMouseMove(Date.now());
-      setMouseIdle(false);
-      setShowControls(true);
-    };
-    
-    const idleTimer = setInterval(() => {
-      const now = Date.now();
-      if (now - lastMouseMove > 3000) { // 3 seconds of inactivity
-        setMouseIdle(true);
+      
+      // Hide controls after 3 seconds of inactivity
+      const timer = setTimeout(() => {
         setShowControls(false);
+      }, 3000);
+      
+      setControlsTimer(timer);
+      
+      // Clean up the timer when exiting immersive mode
+      return () => {
+        document.body.classList.remove("overflow-hidden");
+        if (controlsTimer) clearTimeout(controlsTimer);
+      };
+    }
+  }, [isImmersive]);
+  
+  useEffect(() => {
+    // Only add mouse move listener in immersive mode
+    if (!isImmersive) return;
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      const currentPosition = { x: e.clientX, y: e.clientY };
+      const movement = {
+        x: Math.abs(currentPosition.x - lastMousePosition.x),
+        y: Math.abs(currentPosition.y - lastMousePosition.y)
+      };
+      
+      setLastMousePosition(currentPosition);
+      setMouseMovement(movement);
+      
+      // If significant mouse movement, show controls
+      if (movement.x > 5 || movement.y > 5) {
+        setShowControls(true);
+        
+        // Reset the timer
+        if (controlsTimer) clearTimeout(controlsTimer);
+        
+        const newTimer = setTimeout(() => {
+          setShowControls(false);
+        }, 3000);
+        
+        setControlsTimer(newTimer);
       }
-    }, 1000);
+    };
     
     window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("touchstart", handleMouseMove);
-    
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("touchstart", handleMouseMove);
-      clearInterval(idleTimer);
-    };
-  }, [isImmersive, lastMouseMove]);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [isImmersive, lastMousePosition, controlsTimer]);
+  
+  if (!isImmersive) {
+    return <>{children}</>;
+  }
   
   return (
-    <div className={`relative h-full w-full transition-all duration-500 ${
-      isImmersive ? "immersive-mode" : ""
-    }`}>
-      {/* Main content */}
-      <motion.div
-        initial={false}
-        animate={{
-          scale: isImmersive ? 1.02 : 1,
-          transition: { duration: 0.5, ease: "easeInOut" }
-        }}
-        className={`h-full ${isImmersive ? "immersive-container" : ""}`}
-      >
+    <div className="immersive-mode">
+      <div className="immersive-container">
         {children}
-      </motion.div>
-      
-      {/* Immersive toggle button */}
-      <AnimatePresence>
-        {(showControls || !isImmersive) && (
-          <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={`absolute top-4 right-4 p-2 rounded-full z-50 ${
-              isDark 
-                ? "bg-black/50 text-white hover:bg-black/70" 
-                : "bg-white/70 text-black hover:bg-white/90"
-            } backdrop-blur-sm transition-all`}
-            onClick={onToggleImmersive}
-            onMouseEnter={() => setShowControls(true)}
-          >
-            {isImmersive ? (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
-              </svg>
-            ) : (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
-              </svg>
-            )}
-          </motion.button>
-        )}
-      </AnimatePresence>
-      
-      {/* Overlay instruction when entering immersive mode */}
-      <AnimatePresence>
-        {isImmersive && showControls && mouseIdle === false && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.3 }}
-            className="absolute bottom-8 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-full bg-black/50 text-white text-sm backdrop-blur-sm"
-          >
-            Déplacez la souris pour afficher les contrôles
-          </motion.div>
-        )}
-      </AnimatePresence>
+        
+        <AnimatePresence>
+          {showControls && (
+            <>
+              <motion.button
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                onClick={onToggleImmersive}
+                className="fixed top-4 right-4 z-50 rounded-full bg-black/80 hover:bg-black/90 text-white border border-white/20 p-2 shadow-xl"
+                aria-label="Quitter le mode immersif"
+              >
+                <X size={24} />
+              </motion.button>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 bg-black/80 text-white py-2 px-4 rounded-full border border-white/20 shadow-xl"
+              >
+                Déplacez la souris pour afficher les contrôles
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 };
