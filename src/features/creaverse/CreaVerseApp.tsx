@@ -19,6 +19,7 @@ const CreaVerseApp = () => (
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/creator" element={<CreatorProfile />} />
+        <Route path="/performer/:id" element={<CreatorProfile />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/calendar" element={<CalendarView />} />
         <Route path="/subscribers" element={<SubscribersManagement />} />

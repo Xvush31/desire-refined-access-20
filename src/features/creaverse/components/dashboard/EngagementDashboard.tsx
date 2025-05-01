@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -6,10 +5,6 @@ import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, L
 import { ArrowUpRight, ArrowDownRight, Users, Heart, MessageSquare, Star } from 'lucide-react';
 import { CustomTooltip } from '@/features/creaverse/components/charts/CustomTooltip';
 import { ChartContainer } from '@/components/ui/chart';
-
-interface EngagementDashboardProps {
-  className?: string;
-}
 
 // Données simulées
 const engagementData = [
@@ -46,6 +41,10 @@ const superfansData = [
   { month: 'Mai', count: 480, growth: 17.1 },
   { month: 'Juin', count: 560, growth: 16.7 },
 ];
+
+interface EngagementDashboardProps {
+  className?: string;
+}
 
 const EngagementDashboard = ({ className }: EngagementDashboardProps) => {
   return (
