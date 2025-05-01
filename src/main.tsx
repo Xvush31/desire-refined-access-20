@@ -16,6 +16,21 @@ declare global {
 }
 window.toast = toast;
 
+// Initialize theme before rendering
+const initializeTheme = () => {
+  const storedTheme = localStorage.getItem('theme');
+  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
+  if (storedTheme === 'dark' || (storedTheme === null && systemPrefersDark)) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  } else {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+};
+
+// Call initialization
+initializeTheme();
+
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Failed to find the root element");
 
