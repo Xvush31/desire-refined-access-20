@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Play } from 'lucide-react';
 import { useXTeaseInteractivity } from '@/hooks/useXTeaseInteractivity';
 import { toast } from 'sonner';
@@ -32,20 +32,18 @@ const XTeasePromoRow: React.FC<XTeasePromoRowProps> = ({ videos }) => {
 
 const XTeaseThumb: React.FC<{ video: XTeaseVideo }> = ({ video }) => {
   const { isFavorite } = useXTeaseInteractivity({ videoId: video.id });
+  const navigate = useNavigate();
   
   const handleVideoClick = (e: React.MouseEvent) => {
     e.preventDefault();
     toast.info(`Redirection vers XTease: ${video.title}`);
-    // La vraie redirection serait ici
-    window.location.href = `/xtease/${video.id}`;
+    navigate(`/xtease/${video.id}`);
   };
   
   return (
-    <Link 
-      key={video.id} 
-      to={`/xtease/${video.id}`}
+    <div 
       onClick={handleVideoClick}
-      className="relative overflow-hidden rounded-lg group"
+      className="relative overflow-hidden rounded-lg group cursor-pointer"
     >
       <div className="relative aspect-[9/16]">
         <img 
@@ -64,7 +62,7 @@ const XTeaseThumb: React.FC<{ video: XTeaseVideo }> = ({ video }) => {
           <div className="absolute top-1 right-1 bg-red-500/80 w-2 h-2 rounded-full"></div>
         )}
       </div>
-    </Link>
+    </div>
   );
 };
 

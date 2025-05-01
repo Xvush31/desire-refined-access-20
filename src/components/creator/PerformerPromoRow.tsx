@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from 'sonner';
 
@@ -17,11 +17,12 @@ interface PerformerPromoRowProps {
 }
 
 const PerformerPromoRow: React.FC<PerformerPromoRowProps> = ({ performers }) => {
+  const navigate = useNavigate();
+  
   const handleCreatorClick = (e: React.MouseEvent, performer: Performer) => {
     e.preventDefault();
     toast.info(`Redirection vers le profil de ${performer.name}`);
-    // La vraie redirection serait ici
-    window.location.href = `/creaverse-app/performer/${performer.id}`;
+    navigate(`/creaverse/performer/${performer.id}`);
   };
 
   return (
@@ -29,11 +30,10 @@ const PerformerPromoRow: React.FC<PerformerPromoRowProps> = ({ performers }) => 
       <h3 className="text-lg font-semibold mb-2 text-center animated-gradient">Créateurs populaires</h3>
       <div className="grid grid-cols-3 gap-2">
         {performers.map((performer) => (
-          <Link 
-            key={performer.id} 
-            to={`/creaverse-app/performer/${performer.id}`}
+          <div 
+            key={performer.id}
             onClick={(e) => handleCreatorClick(e, performer)}
-            className="relative rounded-lg group bg-card border border-border p-3 flex flex-col items-center"
+            className="relative rounded-lg group bg-card border border-border p-3 flex flex-col items-center cursor-pointer"
           >
             <Avatar className="w-16 h-16 mb-2 border-2 border-pink-500">
               <AvatarImage src={performer.avatar} alt={performer.name} />
@@ -45,7 +45,7 @@ const PerformerPromoRow: React.FC<PerformerPromoRowProps> = ({ performers }) => 
               <p className="font-medium text-sm truncate w-full">{performer.name}</p>
               <p className="text-xs text-muted-foreground">{performer.followers.toLocaleString()} fans</p>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
     </div>

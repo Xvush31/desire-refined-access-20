@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Play } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -18,11 +18,12 @@ interface TrendingPromoRowProps {
 }
 
 const TrendingPromoRow: React.FC<TrendingPromoRowProps> = ({ videos }) => {
+  const navigate = useNavigate();
+
   const handleVideoClick = (e: React.MouseEvent, video: TrendingVideo) => {
     e.preventDefault();
     toast.info(`Redirection vers la vidéo: ${video.title}`);
-    // La vraie redirection serait ici
-    window.location.href = `/video/${video.id}`;
+    navigate(`/video/${video.id}`);
   };
 
   return (
@@ -30,11 +31,10 @@ const TrendingPromoRow: React.FC<TrendingPromoRowProps> = ({ videos }) => {
       <h3 className="text-lg font-semibold mb-2 text-center animated-gradient">Vidéos tendances</h3>
       <div className="grid grid-cols-3 gap-2">
         {videos.map((video) => (
-          <Link 
-            key={video.id} 
-            to={`/video/${video.id}`}
+          <div 
+            key={video.id}
             onClick={(e) => handleVideoClick(e, video)}
-            className="relative overflow-hidden rounded-lg group"
+            className="relative overflow-hidden rounded-lg group cursor-pointer"
           >
             <div className="relative aspect-video">
               <img 
@@ -56,7 +56,7 @@ const TrendingPromoRow: React.FC<TrendingPromoRowProps> = ({ videos }) => {
                 {video.duration}
               </div>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
     </div>
