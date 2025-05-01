@@ -14,7 +14,7 @@ const SubscribersManagement = () => {
         </Button>
       </div>
       
-      <Card className="mb-6">
+      <Card className="creaverse-glass-card mb-6">
         <CardHeader>
           <CardTitle>Statistiques d'abonnement</CardTitle>
         </CardHeader>
@@ -36,12 +36,16 @@ const SubscribersManagement = () => {
         </CardContent>
       </Card>
       
-      <Card>
+      <Card className="creaverse-glass-card">
         <CardHeader>
           <CardTitle>Liste des abonnés</CardTitle>
         </CardHeader>
         <CardContent>
           <p>Interface de gestion des abonnés</p>
+          
+          <div className="mt-4 creaverse-progress-bar">
+            <div className="creaverse-progress-fill bg-gradient-to-r from-[#FF91A4] to-[#FF6B8B]" style={{ width: '75%' }}></div>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -14,7 +14,7 @@ const CalendarView = () => {
         </Button>
       </div>
       
-      <Card>
+      <Card className="creaverse-glass-card">
         <CardContent className="p-6">
           <div className="grid grid-cols-7 gap-1 text-center">
             <div className="p-2 font-medium">Lun</div>
