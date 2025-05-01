@@ -1,65 +1,54 @@
 
-import React from "react";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import React from 'react';
+import { cn } from '@/lib/utils';
 
 interface CreatorBadgeProps {
-  tier: "bronze" | "silver" | "gold" | "platinum" | "diamond";
+  tier: 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
   className?: string;
-  size?: "sm" | "md" | "lg";
-  showLabel?: boolean;
 }
 
-const CreatorBadge: React.FC<CreatorBadgeProps> = ({ 
-  tier, 
-  className = "",
-  size = "md",
-  showLabel = true
-}) => {
-  const getTierColor = () => {
-    switch (tier) {
-      case "bronze": return "from-amber-700 to-amber-500";
-      case "silver": return "from-gray-400 to-gray-300";
-      case "gold": return "from-yellow-500 to-amber-300";
-      case "platinum": return "from-gray-300 to-gray-100";
-      case "diamond": return "from-blue-400 to-purple-500";
-      default: return "from-gray-400 to-gray-300";
-    }
-  };
-  
-  const getTierTextColor = () => {
-    switch (tier) {
-      case "bronze": return "text-white";
-      case "silver": return "text-gray-800";
-      case "gold": return "text-gray-800";
-      case "platinum": return "text-gray-800";
-      case "diamond": return "text-white";
-      default: return "text-white";
-    }
-  };
-  
-  const getSizeClasses = () => {
-    switch (size) {
-      case "sm": return "text-xs px-1.5 py-0.5";
-      case "lg": return "text-sm px-3 py-1.5";
-      case "md":
-      default: return "text-xs px-2 py-0.5";
-    }
+const CreatorBadge = ({ tier, className }: CreatorBadgeProps) => {
+  const tierConfig = {
+    bronze: {
+      color: 'bg-gradient-to-r from-amber-700 to-amber-500',
+      text: 'Bronze',
+      textColor: 'text-white',
+    },
+    silver: {
+      color: 'bg-gradient-to-r from-gray-400 to-gray-300',
+      text: 'Silver',
+      textColor: 'text-gray-800',
+    },
+    gold: {
+      color: 'bg-gradient-to-r from-yellow-500 to-amber-300',
+      text: 'Gold',
+      textColor: 'text-gray-800',
+    },
+    platinum: {
+      color: 'bg-gradient-to-r from-gray-300 to-gray-100',
+      text: 'Platinum',
+      textColor: 'text-gray-800',
+    },
+    diamond: {
+      color: 'bg-gradient-to-r from-blue-400 to-purple-500',
+      text: 'Diamond',
+      textColor: 'text-white',
+    },
   };
 
+  const { color, text, textColor } = tierConfig[tier];
+
   return (
-    <Badge
-      variant="outline"
+    <span 
       className={cn(
-        "bg-gradient-to-r uppercase font-medium",
-        getTierColor(),
-        getTierTextColor(), 
-        getSizeClasses(),
+        'px-2 py-0.5 text-xs font-semibold rounded-full',
+        color,
+        textColor,
         className
       )}
     >
-      {showLabel ? tier : ""}
-    </Badge>
+      {text}
+    </span>
   );
 };
 

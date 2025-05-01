@@ -48,24 +48,37 @@ const CreatorContentView: React.FC<CreatorContentViewProps> = ({
     format: item.format || 'image',
     metrics: item.metrics,
   }));
-  
-  return (
-    <div className={`${isImmersiveMode ? 'p-0' : 'p-4'} transition-all duration-300`}>
-      {layout === 'grid' || layout === 'masonry' ? (
-        <EnhancedContentGrid
-          items={items}
-          onItemClick={handleItemClicked}
-          showMetrics={showMetrics}
-          filterByFormat={handleFilterByFormat}
-        />
-      ) : (
-        <ModernContentGrid
+
+  // For modern layouts like vertical or collections, use ModernContentGrid
+  if (layout === 'vertical' || layout === 'collections' || layout === 'featured') {
+    return (
+      <div className={`${isImmersiveMode ? 'p-0' : 'p-4'} transition-all duration-300`}>
+        <ModernContentGrid 
           items={items}
           layout={layout}
           isCreator={showMetrics}
           onItemClick={handleItemClicked}
         />
-      )}
+        
+        <ImmersiveView 
+          isOpen={immersiveViewOpen}
+          onClose={() => setImmersiveViewOpen(false)}
+          content={immersiveItems}
+          initialIndex={selectedItemIndex}
+        />
+      </div>
+    );
+  }
+  
+  // For grid and masonry layouts, use EnhancedContentGrid
+  return (
+    <div className={`${isImmersiveMode ? 'p-0' : 'p-4'} transition-all duration-300`}>
+      <EnhancedContentGrid
+        items={items}
+        onItemClick={handleItemClicked}
+        showMetrics={showMetrics}
+        filterByFormat={handleFilterByFormat}
+      />
       
       <ImmersiveView 
         isOpen={immersiveViewOpen}

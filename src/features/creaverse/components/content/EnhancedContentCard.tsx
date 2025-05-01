@@ -1,25 +1,26 @@
 
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Heart, MessageSquare, Eye, Flame, Clock, TrendingUp } from 'lucide-react';
+import { Heart, MessageSquare, Eye, Clock, TrendingUp, Flame } from 'lucide-react';
 import { ContentItem } from './ContentCard';
+import { formatDuration } from '@/utils/formatTime';
 
 interface EnhancedContentCardProps {
   item: ContentItem;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
   isCreator?: boolean;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  className?: string;
   collectionName?: string;
   onClick?: () => void;
-  className?: string;
 }
 
 const EnhancedContentCard: React.FC<EnhancedContentCardProps> = ({ 
-  item,
-  size = 'md',
+  item, 
   isCreator = false,
-  collectionName,
-  onClick,
+  size = 'md',
   className,
+  collectionName,
+  onClick
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   
@@ -50,10 +51,6 @@ const EnhancedContentCard: React.FC<EnhancedContentCardProps> = ({
     return num.toString();
   };
   
-  const formatDuration = (duration: string) => {
-    return duration;
-  };
-  
   const renderFormatIndicator = () => {
     if (item.format === 'video' && item.duration) {
       return (
@@ -68,10 +65,9 @@ const EnhancedContentCard: React.FC<EnhancedContentCardProps> = ({
   
   const renderCollectionBadge = () => {
     if (collectionName || (item.collections && item.collections.length > 0)) {
-      const name = collectionName || item.collections?.[0];
       return (
         <div className="absolute top-2 left-2 z-20 bg-black/40 backdrop-blur-md text-white text-xs px-3 py-1 rounded-full">
-          {name}
+          {collectionName || item.collections?.[0]}
         </div>
       );
     }
