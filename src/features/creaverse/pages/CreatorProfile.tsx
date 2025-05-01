@@ -1,7 +1,7 @@
+
 import React from 'react';
-import { useRouter } from 'next/router';
-import { useQuery } from 'react-query';
-import { fetchPerformerProfile } from '@/lib/api';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,20 +18,98 @@ interface CreatorProfileProps {
   // Define any props if needed
 }
 
-const CreatorProfile = () => {
-  const router = useRouter();
-  const { username } = router.query;
+// Mock function to replace fetchPerformerProfile since it doesn't exist
+const fetchPerformerProfile = async (username: string) => {
+  // This is a placeholder. In a real app, you would fetch this from an API
+  console.log(`Fetching profile for ${username}`);
+  
+  // Return mock data
+  return {
+    id: '1',
+    username: username || 'performer1',
+    displayName: 'Jane Creator',
+    profileImageUrl: 'https://i.pravatar.cc/300',
+    bio: 'Digital creator and content specialist.',
+    tier: 'gold' as 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond',
+    stats: {
+      followers: 24500,
+      following: 143,
+      revenue: 12350,
+      growthRate: 15,
+      nextTierProgress: 75,
+      retentionRate: 92,
+      superfans: 230,
+      watchMinutes: 45600,
+      isOnline: true
+    },
+    content: [
+      {
+        id: '1',
+        title: 'Summer Photoshoot',
+        thumbnail: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        type: 'premium',
+        format: 'image',
+        metrics: {
+          views: 12500,
+          likes: 1540,
+          engagement: 0.85
+        }
+      },
+      {
+        id: '2',
+        title: 'Behind the Scenes',
+        thumbnail: 'https://images.unsplash.com/photo-1521119989659-a83eee488004?q=80&w=1923&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        type: 'vip',
+        format: 'video',
+        duration: 320,
+        metrics: {
+          views: 8300,
+          likes: 950,
+          engagement: 0.92
+        }
+      },
+      {
+        id: '3',
+        title: 'Fashion Week Highlights',
+        thumbnail: 'https://images.unsplash.com/photo-1469460340997-2f854421e72f?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        type: 'standard',
+        format: 'video',
+        duration: 540,
+        metrics: {
+          views: 23100,
+          likes: 3400,
+          engagement: 0.78
+        }
+      },
+      {
+        id: '4',
+        title: 'New Collection Preview',
+        thumbnail: 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        type: 'premium',
+        format: 'image',
+        metrics: {
+          views: 19800,
+          likes: 2800,
+          engagement: 0.88
+        }
+      }
+    ]
+  };
+};
 
-  const { data: performer, isLoading, isError } = useQuery(
-    ['performerProfile', username],
-    () => fetchPerformerProfile(username as string),
-    {
-      enabled: !!username, // Ensure username is available before fetching
-    }
-  );
+const CreatorProfile: React.FC<CreatorProfileProps> = () => {
+  const params = useParams();
+  const navigate = useNavigate();
+  const username = params.username;
+
+  const { data: performer, isLoading, isError } = useQuery({
+    queryKey: ['performerProfile', username],
+    queryFn: () => fetchPerformerProfile(username as string),
+    enabled: !!username, // Ensure username is available before fetching
+  });
 
   const handleBack = () => {
-    router.back();
+    navigate(-1); // Go back to previous page
   };
 
   const handleContentClick = (item: ContentItem) => {
@@ -68,17 +146,17 @@ const CreatorProfile = () => {
   }
 
   const creatorMetrics = {
-    followers: performer?.stats.followers || 0,
-    following: performer?.stats.following || 0,
-    revenue: performer?.stats.revenue || 0,
-    growthRate: performer?.stats.growthRate || 0,
-    nextTierProgress: performer?.stats.nextTierProgress || 0,
-    retentionRate: performer?.stats.retentionRate || 0,
-    superfans: performer?.stats.superfans || 0,
-    watchMinutes: performer?.stats.watchMinutes || 0, // Changed from string to number
+    followers: performer.stats.followers || 0,
+    following: performer.stats.following || 0,
+    revenue: performer.stats.revenue || 0,
+    growthRate: performer.stats.growthRate || 0,
+    nextTierProgress: performer.stats.nextTierProgress || 0,
+    retentionRate: performer.stats.retentionRate || 0,
+    superfans: performer.stats.superfans || 0,
+    watchMinutes: performer.stats.watchMinutes || 0,
   };
 
-  const status = performer?.stats?.isOnline ? 'online' : 'offline';
+  const status = performer.stats.isOnline ? 'online' : 'offline';
 
   return (
     <div className="container py-10">
@@ -88,7 +166,7 @@ const CreatorProfile = () => {
       <div className="flex items-center gap-4 mb-6">
         <Avatar className="w-24 h-24">
           <AvatarImage src={performer.profileImageUrl} alt={performer.username} />
-          <AvatarFallback>{performer.username?.charAt(0).toUpperCase()}</AvatarFallback>
+          <AvatarFallback>{performer.username.charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
         <div>
           <div className="flex items-center gap-2">
