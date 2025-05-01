@@ -11,6 +11,42 @@ import ProfileStats from "../creator/ProfileStats";
 import ContentLayout from "../content/ContentLayout";
 import MessagingButton from "../messaging/MessagingButton";
 
+interface ProfileInfoProps {
+  displayName: string;
+  username: string;
+  bio: string;
+  tier: string;
+  isVerified: boolean;
+  isOnline: boolean;
+}
+
+interface ProfileStatsProps {
+  followerCount: number;
+  followingCount: number;
+  contentCount: number;
+  viewCount: number;
+  tier: string;
+}
+
+interface ContentFormatFilterProps {
+  onChange: (format: "all" | "video" | "image" | "audio" | "text") => void;
+}
+
+interface ContentLayoutProps {
+  currentLayout: "grid" | "masonry" | "featured" | "flow";
+  onChange: (layout: "grid" | "masonry" | "featured" | "flow") => void;
+}
+
+interface ContentGridProps {
+  contentItems: any[];
+  onItemClick: (item: any) => void;
+}
+
+interface ContentFlowProps {
+  contentItems: any[];
+  onItemClick: (item: any) => void;
+}
+
 const MainContent = ({
   performer,
   isOwner,
@@ -34,7 +70,7 @@ const MainContent = ({
       <div className="bg-card rounded-xl p-6 shadow-sm border border-border">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-6">
           <ProfileInfo
-            name={performer.name}
+            displayName={performer.name}
             username={performer.username}
             bio={performer.bio}
             tier={performer.tier}
@@ -102,10 +138,10 @@ const MainContent = ({
         </div>
         
         <ProfileStats
-          followers={performer.metrics.followers}
-          following={performer.metrics.following}
+          followerCount={performer.metrics.followers}
+          followingCount={performer.metrics.following}
           contentCount={performer.metrics.contentCount || 120}
-          views={performer.metrics.views || 45600}
+          viewCount={performer.metrics.views || 45600}
           tier={performer.tier}
         />
 
@@ -126,10 +162,10 @@ const MainContent = ({
               <div className="flex items-center">
                 {activeTab === "content" && (
                   <>
-                    <ContentFormatFilter onFilterChange={filterByFormat} />
+                    <ContentFormatFilter onChange={filterByFormat} />
                     <ContentLayout
-                      layout={contentLayout}
-                      onLayoutChange={setContentLayout}
+                      currentLayout={contentLayout}
+                      onChange={setContentLayout}
                     />
                   </>
                 )}
@@ -139,13 +175,13 @@ const MainContent = ({
             <TabsContent value="content" className="mt-6">
               {contentLayout === "grid" ? (
                 <ContentGrid
-                  items={sampleContentItems}
-                  onContentClick={handleContentClick}
+                  contentItems={sampleContentItems}
+                  onItemClick={handleContentClick}
                 />
               ) : (
                 <ContentFlow
-                  items={sampleContentItems}
-                  onContentClick={handleContentClick}
+                  contentItems={sampleContentItems}
+                  onItemClick={handleContentClick}
                 />
               )}
             </TabsContent>
