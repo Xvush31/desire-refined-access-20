@@ -1,6 +1,6 @@
 
-import React, { Suspense } from "react";
-import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import React, { Suspense, useEffect } from "react";
+import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import Index from "./pages/Index";
 import About from "./pages/About";
