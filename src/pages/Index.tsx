@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useCallback } from "react";
 import Header from "@/components/Header";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -298,7 +297,7 @@ const Index = () => {
     for (let i = 0; i < posts.length; i++) {
       // Ajouter le post
       result.push(
-        <CreatorFeedItem key={posts[i].id} post={posts[i]} />
+        <CreatorFeedItem key={`post-${i}`} post={posts[i]} />
       );
       
       // Après chaque groupe de 3 posts, insérer un bloc promo différent
@@ -335,15 +334,6 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header />
-
-      {/* CreaVerse Access Button - Si l'utilisateur est connecté */}
-      {currentUser && (
-        <div className="container mx-auto px-4 py-4 text-center">
-          <Button asChild className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white">
-            <Link to="/creaverse-app/performer/1">Accéder à CreaVerse</Link>
-          </Button>
-        </div>
-      )}
 
       {/* Section feed immersif en première position */}
       <div className="container max-w-md mx-auto px-4 pb-4">
