@@ -53,7 +53,6 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = ({
     src,
     autoPlay: autoPlay && isVisible,
     onVideoComplete,
-    startWithControls: true,
     startMuted: true
   });
   

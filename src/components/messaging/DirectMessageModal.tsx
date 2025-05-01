@@ -42,10 +42,8 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
     if (!message.trim()) return;
     
     if (!isPremiumUser) {
-      toast({
-        title: "Abonnement premium requis",
-        description: "L'envoi de messages directs est réservé aux membres premium.",
-        variant: "destructive"
+      toast.error("Abonnement premium requis", {
+        description: "L'envoi de messages directs est réservé aux membres premium."
       });
       return;
     }
@@ -54,9 +52,8 @@ export const DirectMessageModal: React.FC<DirectMessageModalProps> = ({
     
     // Simulate API call
     setTimeout(() => {
-      toast({
-        title: "Message envoyé",
-        description: `Votre message a été envoyé à ${recipientName}.`,
+      toast.success("Message envoyé", {
+        description: `Votre message a été envoyé à ${recipientName}.`
       });
       setMessage('');
       setIsSubmitting(false);

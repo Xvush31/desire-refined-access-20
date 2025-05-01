@@ -64,8 +64,7 @@ export const EnhancedSharingMenu: React.FC<EnhancedSharingMenuProps> = ({
   const copyToClipboard = () => {
     navigator.clipboard.writeText(url);
     setCopied(true);
-    toast({
-      title: "Lien copié",
+    toast.success("Lien copié", {
       description: "Le lien a été copié dans votre presse-papiers"
     });
     
