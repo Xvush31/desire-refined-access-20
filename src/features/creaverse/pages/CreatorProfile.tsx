@@ -23,7 +23,7 @@ const fetchPerformerProfile = async (username: string) => {
   // This is a placeholder. In a real app, you would fetch this from an API
   console.log(`Fetching profile for ${username}`);
   
-  // Return mock data
+  // Return mock data with proper type values for ContentItem
   return {
     id: '1',
     username: username || 'performer1',
@@ -47,8 +47,8 @@ const fetchPerformerProfile = async (username: string) => {
         id: '1',
         title: 'Summer Photoshoot',
         thumbnail: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        type: 'premium',
-        format: 'image',
+        type: 'premium' as 'standard' | 'premium' | 'vip',
+        format: 'image' as 'video' | 'image' | 'audio' | 'text',
         metrics: {
           views: 12500,
           likes: 1540,
@@ -59,8 +59,8 @@ const fetchPerformerProfile = async (username: string) => {
         id: '2',
         title: 'Behind the Scenes',
         thumbnail: 'https://images.unsplash.com/photo-1521119989659-a83eee488004?q=80&w=1923&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        type: 'vip',
-        format: 'video',
+        type: 'vip' as 'standard' | 'premium' | 'vip',
+        format: 'video' as 'video' | 'image' | 'audio' | 'text',
         duration: 320,
         metrics: {
           views: 8300,
@@ -72,8 +72,8 @@ const fetchPerformerProfile = async (username: string) => {
         id: '3',
         title: 'Fashion Week Highlights',
         thumbnail: 'https://images.unsplash.com/photo-1469460340997-2f854421e72f?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        type: 'standard',
-        format: 'video',
+        type: 'standard' as 'standard' | 'premium' | 'vip',
+        format: 'video' as 'video' | 'image' | 'audio' | 'text',
         duration: 540,
         metrics: {
           views: 23100,
@@ -85,15 +85,15 @@ const fetchPerformerProfile = async (username: string) => {
         id: '4',
         title: 'New Collection Preview',
         thumbnail: 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        type: 'premium',
-        format: 'image',
+        type: 'premium' as 'standard' | 'premium' | 'vip',
+        format: 'image' as 'video' | 'image' | 'audio' | 'text',
         metrics: {
           views: 19800,
           likes: 2800,
           engagement: 0.88
         }
       }
-    ]
+    ] as ContentItem[]
   };
 };
 
