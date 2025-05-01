@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Verified } from 'lucide-react';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import CreatorBadge from '@/features/creaverse/components/ui/CreatorBadge';
 import ProfileNav from '@/features/creaverse/components/ui/ProfileNav';
 import EnhancedContentGrid from '@/features/creaverse/components/content/EnhancedContentGrid';
@@ -17,10 +18,14 @@ import CreatorDNA from '@/features/creaverse/components/creator/CreatorDNA';
 import CreatorJourney from '@/features/creaverse/components/creator/CreatorJourney';
 import FeedbackLoop from '@/features/creaverse/components/creator/FeedbackLoop';
 import ValueVault from '@/features/creaverse/components/creator/ValueVault';
+import EngagementDashboard from '@/features/creaverse/components/dashboard/EngagementDashboard';
 
 interface CreatorProfileProps {
   // Define any props if needed
 }
+
+// Create a new QueryClient instance
+const queryClient = new QueryClient();
 
 // Mock function to replace fetchPerformerProfile since it doesn't exist
 const fetchPerformerProfile = async (username: string) => {
@@ -196,6 +201,14 @@ const fetchPerformerProfile = async (username: string) => {
   };
 };
 
+const CreatorProfileWrapper: React.FC<CreatorProfileProps> = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <CreatorProfile />
+    </QueryClientProvider>
+  );
+};
+
 const CreatorProfile: React.FC<CreatorProfileProps> = () => {
   const params = useParams();
   const navigate = useNavigate();
@@ -350,6 +363,11 @@ const CreatorProfile: React.FC<CreatorProfileProps> = () => {
         />
       </div>
 
+      {/* Added Engagement Dashboard */}
+      <div className="mb-8">
+        <EngagementDashboard />
+      </div>
+
       {/* Content Grid */}
       <h2 className="text-2xl font-semibold mb-4">Contenu récent</h2>
       <EnhancedContentGrid
@@ -361,4 +379,4 @@ const CreatorProfile: React.FC<CreatorProfileProps> = () => {
   );
 };
 
-export default CreatorProfile;
+export default CreatorProfileWrapper;
