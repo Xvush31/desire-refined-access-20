@@ -35,9 +35,9 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({ posts, on
     enableLightEffects: true
   });
 
-  // Change post every 8 seconds
+  // Change post every 8 seconds in desktop mode only
   useEffect(() => {
-    if (!isImmersive) return;
+    if (!isImmersive || isMobile) return;
     
     const timer = setTimeout(() => {
       goToNextPost();
@@ -53,7 +53,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({ posts, on
     }, 8000);
     
     return () => clearTimeout(timer);
-  }, [currentIndex, isImmersive]);
+  }, [currentIndex, isImmersive, isMobile]);
   
   // Apply initial effects
   useEffect(() => {
@@ -103,7 +103,61 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({ posts, on
 
   if (!posts.length) return null;
   
-  const currentPost = posts[currentIndex];
+  const renderPostContent = (post: CreatorFeedPost) => (
+    <div 
+      className="relative mb-4"
+      ref={imageRef}
+      onClick={() => {
+        interactWithContent(imageRef.current, 'image', 'medium');
+        setIsDescriptionVisible(!isDescriptionVisible);
+      }}
+    >
+      <motion.div
+        className="overflow-hidden rounded-xl shadow-lg"
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        key={post.id}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      >
+        <AspectRatio ratio={9/16} className="bg-muted">
+          <img 
+            src={post.image} 
+            alt={`Publication de ${post.creatorName}`}
+            className="object-cover w-full h-full"
+          />
+        </AspectRatio>
+      </motion.div>
+      
+      {/* Creator info overlay */}
+      <AnimatePresence>
+        {isDescriptionVisible && (
+          <motion.div 
+            className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white">
+                <img 
+                  src={post.creatorAvatar} 
+                  alt={post.creatorName} 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div>
+                <h3 className="font-bold text-white">{post.creatorName}</h3>
+                <p className="text-white/70 text-sm">{post.timestamp}</p>
+              </div>
+            </div>
+            <p className="text-white mb-2">{post.caption}</p>
+            <p className="text-white/90 text-sm">❤️ {post.likes.toLocaleString()} j'aime</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
   
   return (
     <AnimatePresence>
@@ -152,91 +206,61 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({ posts, on
         </div>
         
         <div className="h-full flex flex-col items-center justify-center p-4">
-          {/* Image content */}
-          <div 
-            className="w-full max-w-md relative mb-4"
-            ref={imageRef}
-            onClick={() => {
-              interactWithContent(imageRef.current, 'image', 'medium');
-              setIsDescriptionVisible(!isDescriptionVisible);
-            }}
-          >
-            <motion.div
-              className="overflow-hidden rounded-xl shadow-lg"
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              key={currentPost.id}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            >
-              <AspectRatio ratio={9/16} className="bg-muted">
-                <img 
-                  src={currentPost.image} 
-                  alt={`Publication de ${currentPost.creatorName}`}
-                  className="object-cover w-full h-full"
-                />
-              </AspectRatio>
-            </motion.div>
-            
-            {/* Creator info overlay */}
-            <AnimatePresence>
-              {isDescriptionVisible && (
-                <motion.div 
-                  className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white">
-                      <img 
-                        src={currentPost.creatorAvatar} 
-                        alt={currentPost.creatorName} 
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-white">{currentPost.creatorName}</h3>
-                      <p className="text-white/70 text-sm">{currentPost.timestamp}</p>
+          {isMobile ? (
+            <ScrollArea className="h-[calc(100vh-80px)] w-full max-w-md">
+              <div className="space-y-8 pb-8 pt-2">
+                {posts.map((post, index) => (
+                  <div key={post.id} className="w-full max-w-md mx-auto">
+                    {renderPostContent(post)}
+                    
+                    {/* Post indicator */}
+                    <div className="flex space-x-1 justify-center mt-2">
+                      <div className="h-1.5 w-16 bg-primary rounded-full"></div>
+                      <div className="text-xs text-muted-foreground">
+                        {index + 1}/{posts.length}
+                      </div>
                     </div>
                   </div>
-                  <p className="text-white mb-2">{currentPost.caption}</p>
-                  <p className="text-white/90 text-sm">❤️ {currentPost.likes.toLocaleString()} j'aime</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-          
-          {/* Navigation dots */}
-          <div className="flex space-x-1 mt-2">
-            {posts.slice(0, Math.min(5, posts.length)).map((_, i) => (
-              <motion.div
-                key={i}
-                className={`h-2 rounded-full ${i === currentIndex ? "bg-primary w-8" : "bg-muted w-2"}`}
-                initial={{ opacity: 0.5 }}
-                animate={{ opacity: i === currentIndex ? 1 : 0.5 }}
-                transition={{ duration: 0.3 }}
-              />
-            ))}
-            {posts.length > 5 && (
-              <motion.div className="h-2 w-2 rounded-full bg-muted opacity-50" />
-            )}
-          </div>
-          
-          {/* Left/Right navigation */}
-          <button
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-background/30 rounded-full p-2 backdrop-blur-sm"
-            onClick={goToPrevPost}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-          </button>
-          
-          <button
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-background/30 rounded-full p-2 backdrop-blur-sm"
-            onClick={goToNextPost}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-          </button>
+                ))}
+              </div>
+            </ScrollArea>
+          ) : (
+            <>
+              {/* Desktop version with navigation arrows */}
+              {renderPostContent(posts[currentIndex])}
+              
+              {/* Navigation dots */}
+              <div className="flex space-x-1 mt-2">
+                {posts.slice(0, Math.min(5, posts.length)).map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className={`h-2 rounded-full ${i === currentIndex ? "bg-primary w-8" : "bg-muted w-2"}`}
+                    initial={{ opacity: 0.5 }}
+                    animate={{ opacity: i === currentIndex ? 1 : 0.5 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                ))}
+                {posts.length > 5 && (
+                  <motion.div className="h-2 w-2 rounded-full bg-muted opacity-50" />
+                )}
+              </div>
+              
+              {/* Left/Right navigation */}
+              <button
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-background/30 rounded-full p-2 backdrop-blur-sm"
+                onClick={goToPrevPost}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              </button>
+              
+              <button
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-background/30 rounded-full p-2 backdrop-blur-sm"
+                onClick={goToNextPost}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+            </>
+          )}
           
           {/* First time welcome message */}
           <AnimatePresence>

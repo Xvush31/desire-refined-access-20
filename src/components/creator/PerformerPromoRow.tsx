@@ -22,7 +22,8 @@ const PerformerPromoRow: React.FC<PerformerPromoRowProps> = ({ performers }) => 
   const handleCreatorClick = (e: React.MouseEvent, performer: Performer) => {
     e.preventDefault();
     toast.info(`Redirection vers le profil de ${performer.name}`);
-    navigate(`/creaverse/performer/${performer.id}`);
+    // Redirection vers la page Creators existante
+    navigate(`/creators`);
   };
 
   return (

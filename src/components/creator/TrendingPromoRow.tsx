@@ -23,7 +23,8 @@ const TrendingPromoRow: React.FC<TrendingPromoRowProps> = ({ videos }) => {
   const handleVideoClick = (e: React.MouseEvent, video: TrendingVideo) => {
     e.preventDefault();
     toast.info(`Redirection vers la vidéo: ${video.title}`);
-    navigate(`/video/${video.id}`);
+    // Redirection vers une page vidéo existante
+    navigate(`/trending`);
   };
 
   return (

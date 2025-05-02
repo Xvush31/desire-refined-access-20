@@ -19,6 +19,7 @@ import TrendingPromoRow from "@/components/creator/TrendingPromoRow";
 import ImmersivePublications from "@/components/creator/ImmersivePublications";
 import { useImmersiveMode } from "@/hooks/useImmersiveMode";
 import { motion } from "framer-motion";
+import Footer from "@/components/Footer";
 
 // Données mockées pour le feed des créateurs
 const generateMockFeed = (): CreatorFeedPost[] => {
@@ -287,9 +288,9 @@ const Index = () => {
           className="container mx-auto px-4 py-2 text-center"
         >
           <Button
-            variant="outline"
+            variant="default"
             onClick={() => setShowImmersive(true)}
-            className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white border-0 hover:opacity-90"
+            className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white hover:opacity-90"
           >
             Mode Immersif
           </Button>
@@ -300,7 +301,7 @@ const Index = () => {
       {currentUser && (
         <div className="container mx-auto px-4 py-4 text-center">
           <Button asChild className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white">
-            <Link to="/creaverse-app/performer/1">Accéder à CreaVerse</Link>
+            <Link to="/creaverse/performer/1">Accéder à CreaVerse</Link>
           </Button>
         </div>
       )}
@@ -308,7 +309,7 @@ const Index = () => {
       {/* Section feed immersif en première position */}
       <div className="container max-w-md mx-auto px-4 pb-4">
         <ScrollArea 
-          className="h-[calc(100vh-130px)]" 
+          className="h-[calc(100vh-180px)]" 
           onScrollCapture={handleScroll}
         >
           <div className="pb-6">
@@ -330,26 +331,7 @@ const Index = () => {
       </div>
 
       {/* Footer */}
-      <footer className="py-golden-lg border-t border-muted">
-        <div className="container px-golden-sm mx-auto">
-          <div className={`${isMobile ? 'flex flex-col gap-4' : 'golden-grid'} items-center`}>
-            <div>
-              <p className="text-muted-foreground text-sm">
-                {t("footer.copyright")}
-              </p>
-            </div>
-            <div className="flex justify-end gap-golden-md flex-wrap">
-              <Link to="/about" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">{t("footer.about")}</Link>
-              <Link to="/terms" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">{t("footer.terms")}</Link>
-              <Link to="/privacy" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">{t("footer.privacy")}</Link>
-              <Link to="/contact" className="text-sm text-muted-foreground hover:text-brand-accent transition-colors">{t("footer.contact")}</Link>
-              {currentUser && (
-                <Link to="/creaverse-app/performer/1" className="text-sm text-brand-accent font-medium transition-colors">CreaVerse</Link>
-              )}
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

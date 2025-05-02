@@ -37,7 +37,8 @@ const XTeaseThumb: React.FC<{ video: XTeaseVideo }> = ({ video }) => {
   const handleVideoClick = (e: React.MouseEvent) => {
     e.preventDefault();
     toast.info(`Redirection vers XTease: ${video.title}`);
-    navigate(`/xtease/${video.id}`);
+    // Redirection vers une page XTease existante au lieu de /xtease/${video.id}
+    navigate(`/xtease`);
   };
   
   return (
