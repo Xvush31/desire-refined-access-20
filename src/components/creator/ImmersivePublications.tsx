@@ -4,24 +4,40 @@ import { useImmersiveMode } from '@/hooks/useImmersiveMode';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Moon, Sun, Volume2, VolumeX, Vibrate } from 'lucide-react';
+import { Moon, Sun, Volume2, VolumeX, Vibrate, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { CreatorFeedPost } from './CreatorFeedItem';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { useTheme } from '@/hooks/use-theme';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Card } from '@/components/ui/card';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Link } from 'react-router-dom';
 
 interface ImmersivePublicationsProps {
   posts: CreatorFeedPost[];
   onExitImmersive: () => void;
+  activePromo?: {
+    type: 'xtease' | 'creator' | 'trending' | null;
+    data: any;
+  };
+  onClosePromo?: () => void;
 }
 
-const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({ posts, onExitImmersive }) => {
+const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({ 
+  posts, 
+  onExitImmersive,
+  activePromo = { type: null, data: null },
+  onClosePromo = () => {}
+}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [vibrationsEnabled, setVibrationsEnabled] = useState(true);
   const [isDescriptionVisible, setIsDescriptionVisible] = useState(true);
+  const [showNeuroEffect, setShowNeuroEffect] = useState(false);
+  const [ambientMood, setAmbientMood] = useState<'calm' | 'energetic' | 'mysterious'>('calm');
   const imageRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const { theme, setTheme } = useTheme();
   
@@ -35,25 +51,25 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({ posts, on
     enableLightEffects: true
   });
 
-  // Change post every 8 seconds in desktop mode only
+  // Change post every 12 seconds in desktop mode only
   useEffect(() => {
-    if (!isImmersive || isMobile) return;
-    
-    const timer = setTimeout(() => {
-      goToNextPost();
+    if (!isMobile && !activePromo?.type) {
+      const timer = setTimeout(() => {
+        goToNextPost();
+        
+        // Apply effects when changing posts
+        if (imageRef.current) {
+          interactWithContent(
+            imageRef.current, 
+            'image', 
+            currentIndex % 3 === 0 ? 'high' : 'medium'
+          );
+        }
+      }, 12000);
       
-      // Apply effects when changing posts
-      if (imageRef.current) {
-        interactWithContent(
-          imageRef.current, 
-          'image', 
-          currentIndex % 3 === 0 ? 'high' : 'medium'
-        );
-      }
-    }, 8000);
-    
-    return () => clearTimeout(timer);
-  }, [currentIndex, isImmersive, isMobile]);
+      return () => clearTimeout(timer);
+    }
+  }, [currentIndex, isMobile, activePromo]);
   
   // Apply initial effects
   useEffect(() => {
@@ -66,6 +82,39 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({ posts, on
       return () => clearTimeout(timer);
     }
   }, [isImmersive]);
+  
+  // Neuro-Aesthetic Loop effects - change mood every 45 seconds
+  useEffect(() => {
+    const moodTimer = setInterval(() => {
+      const moods: Array<'calm' | 'energetic' | 'mysterious'> = ['calm', 'energetic', 'mysterious'];
+      const currentMoodIndex = moods.indexOf(ambientMood);
+      const nextMoodIndex = (currentMoodIndex + 1) % moods.length;
+      setAmbientMood(moods[nextMoodIndex]);
+      
+      // Trigger a brief neuro effect when mood changes
+      setShowNeuroEffect(true);
+      setTimeout(() => setShowNeuroEffect(false), 3000);
+      
+    }, 45000);
+    
+    return () => clearInterval(moodTimer);
+  }, [ambientMood]);
+  
+  // Parallax effect on scroll
+  useEffect(() => {
+    if (!containerRef.current || isMobile) return;
+    
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      if (imageRef.current) {
+        // Apply subtle parallax effect
+        imageRef.current.style.transform = `translateY(${scrollPosition * 0.05}px)`;
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isMobile]);
   
   const goToNextPost = () => {
     setCurrentIndex((prev) => (prev + 1) % posts.length);
@@ -102,6 +151,38 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({ posts, on
   };
 
   if (!posts.length) return null;
+
+  // Get ambient style based on current mood
+  const getAmbientStyle = () => {
+    switch(ambientMood) {
+      case 'calm':
+        return {
+          background: 'linear-gradient(135deg, rgba(20,30,48,0.95) 0%, rgba(36,59,85,0.90) 100%)',
+          transition: 'all 2s cubic-bezier(0.4, 0, 0.2, 1)',
+          boxShadow: theme === 'dark' 
+            ? '0 0 50px 5px rgba(100, 149, 237, 0.15)' 
+            : '0 0 50px 5px rgba(100, 149, 237, 0.05)'
+        };
+      case 'energetic':
+        return {
+          background: 'linear-gradient(135deg, rgba(40,10,20,0.95) 0%, rgba(90,30,40,0.90) 100%)',
+          transition: 'all 2s cubic-bezier(0.4, 0, 0.2, 1)',
+          boxShadow: theme === 'dark' 
+            ? '0 0 50px 5px rgba(255, 105, 180, 0.15)' 
+            : '0 0 50px 5px rgba(255, 105, 180, 0.05)'
+        };
+      case 'mysterious':
+        return {
+          background: 'linear-gradient(135deg, rgba(30,20,40,0.95) 0%, rgba(50,30,70,0.90) 100%)',
+          transition: 'all 2s cubic-bezier(0.4, 0, 0.2, 1)',
+          boxShadow: theme === 'dark' 
+            ? '0 0 50px 5px rgba(147, 112, 219, 0.15)' 
+            : '0 0 50px 5px rgba(147, 112, 219, 0.05)'
+        };
+      default:
+        return {};
+    }
+  };
   
   const renderPostContent = (post: CreatorFeedPost) => (
     <div 
@@ -113,17 +194,18 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({ posts, on
       }}
     >
       <motion.div
-        className="overflow-hidden rounded-xl shadow-lg"
+        className={`overflow-hidden rounded-xl shadow-lg ${showNeuroEffect ? 'pulse-glow' : ''}`}
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         key={post.id}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        style={{ willChange: 'transform, opacity', perspective: '1000px' }}
       >
         <AspectRatio ratio={9/16} className="bg-muted">
           <img 
             src={post.image} 
             alt={`Publication de ${post.creatorName}`}
-            className="object-cover w-full h-full"
+            className="object-cover w-full h-full depth-layer"
           />
         </AspectRatio>
       </motion.div>
@@ -132,7 +214,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({ posts, on
       <AnimatePresence>
         {isDescriptionVisible && (
           <motion.div 
-            className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent"
+            className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/60 to-transparent backdrop-blur-sm"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
@@ -158,6 +240,116 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({ posts, on
       </AnimatePresence>
     </div>
   );
+
+  // Render promo popup content
+  const renderPromoContent = () => {
+    if (!activePromo || !activePromo.type) return null;
+
+    const { type, data } = activePromo;
+
+    switch (type) {
+      case 'xtease':
+        return (
+          <Card className="bg-background/80 backdrop-blur-md border-primary/20 p-4 max-w-md w-full rounded-xl">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="absolute right-2 top-2 rounded-full" 
+              onClick={onClosePromo}
+            >
+              <X size={18} />
+            </Button>
+            <div className="aspect-[9/16] relative mb-4 rounded-lg overflow-hidden">
+              <img 
+                src={data.thumbnail}
+                alt={data.title}
+                className="object-cover w-full h-full"
+              />
+              <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+            <h3 className="text-xl font-semibold mb-2">{data.title}</h3>
+            <p className="text-muted-foreground mb-4">Par {data.performer} • {data.views}</p>
+            <Button 
+              asChild
+              className="w-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white hover:opacity-90"
+            >
+              <Link to="/xtease">Voir sur XTease</Link>
+            </Button>
+          </Card>
+        );
+
+      case 'creator':
+        return (
+          <Card className="bg-background/80 backdrop-blur-md border-primary/20 p-4 max-w-md w-full rounded-xl">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="absolute right-2 top-2 rounded-full" 
+              onClick={onClosePromo}
+            >
+              <X size={18} />
+            </Button>
+            <div className="flex flex-col items-center pt-4 pb-2">
+              <Avatar className="w-24 h-24 border-2 border-primary mb-4">
+                <AvatarImage src={data.avatar} alt={data.name} />
+                <AvatarFallback className="bg-muted">
+                  {data.name.substring(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <h3 className="text-xl font-semibold">{data.name}</h3>
+              <p className="text-muted-foreground mb-1">{data.category}</p>
+              <p className="text-sm mb-4">{data.followers.toLocaleString()} fans</p>
+            </div>
+            <Button 
+              asChild
+              className="w-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white hover:opacity-90"
+            >
+              <Link to="/creators">Voir le profil</Link>
+            </Button>
+          </Card>
+        );
+
+      case 'trending':
+        return (
+          <Card className="bg-background/80 backdrop-blur-md border-primary/20 p-4 max-w-md w-full rounded-xl">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="absolute right-2 top-2 rounded-full" 
+              onClick={onClosePromo}
+            >
+              <X size={18} />
+            </Button>
+            <div className="aspect-video relative mb-4 rounded-lg overflow-hidden">
+              <img 
+                src={data.thumbnail}
+                alt={data.title}
+                className="object-cover w-full h-full"
+              />
+              <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+              <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-1 py-0.5 rounded">
+                {data.duration}
+              </div>
+            </div>
+            <h3 className="text-xl font-semibold mb-2">{data.title}</h3>
+            <p className="text-muted-foreground mb-4">Par {data.performer} • {data.views}</p>
+            <Button 
+              asChild
+              className="w-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white hover:opacity-90"
+            >
+              <Link to="/trending">Voir la vidéo</Link>
+            </Button>
+          </Card>
+        );
+        
+      default:
+        return null;
+    }
+  };
   
   return (
     <AnimatePresence>
@@ -167,12 +359,14 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({ posts, on
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.5 }}
+        style={getAmbientStyle()}
+        ref={containerRef}
       >
         <div className="absolute top-4 right-4 flex space-x-2 z-10">
           <Button 
             variant="outline" 
             size="icon" 
-            className="rounded-full bg-background/80 backdrop-blur-sm"
+            className={`rounded-full ${theme === 'dark' ? 'bg-background/50' : 'bg-background/80'} backdrop-blur-sm`}
             onClick={toggleSound}
           >
             {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
@@ -181,7 +375,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({ posts, on
           <Button 
             variant="outline" 
             size="icon" 
-            className="rounded-full bg-background/80 backdrop-blur-sm"
+            className={`rounded-full ${theme === 'dark' ? 'bg-background/50' : 'bg-background/80'} backdrop-blur-sm`}
             onClick={toggleVibrations}
           >
             <Vibrate size={18} />
@@ -190,7 +384,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({ posts, on
           <Button 
             variant="outline" 
             size="icon" 
-            className="rounded-full bg-background/80 backdrop-blur-sm"
+            className={`rounded-full ${theme === 'dark' ? 'bg-background/50' : 'bg-background/80'} backdrop-blur-sm`}
             onClick={toggleTheme}
           >
             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
@@ -198,12 +392,36 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({ posts, on
           
           <Button 
             variant="outline" 
-            className="rounded-full bg-background/80 backdrop-blur-sm"
+            className={`rounded-full ${theme === 'dark' ? 'bg-background/50' : 'bg-background/80'} backdrop-blur-sm`}
             onClick={onExitImmersive}
           >
             Quitter
           </Button>
         </div>
+
+        {/* Popup promo content */}
+        <AnimatePresence>
+          {activePromo?.type && (
+            <motion.div 
+              className="fixed inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => onClosePromo()}
+            >
+              <motion.div 
+                className="p-4 max-w-sm w-full"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: "spring", damping: 25 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {renderPromoContent()}
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         
         <div className="h-full flex flex-col items-center justify-center p-4">
           {isMobile ? (
@@ -262,9 +480,9 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({ posts, on
             </>
           )}
           
-          {/* First time welcome message */}
+          {/* Welcome message */}
           <AnimatePresence>
-            {currentIndex === 0 && (
+            {currentIndex === 0 && !activePromo?.type && (
               <motion.div
                 className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-background/80 backdrop-blur-md px-6 py-3 rounded-full shadow-lg"
                 initial={{ opacity: 0, y: 20 }}

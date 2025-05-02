@@ -102,3 +102,291 @@
 .scale-hover:hover {
   transform: scale(1.05);
 }
+
+/* Apple-Grade Transitions */
+.apple-transition {
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.apple-spring {
+  transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Depth & Parallax Layers */
+.depth-layer {
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease;
+}
+
+.depth-1 {
+  transform: translateZ(10px);
+}
+
+.depth-2 {
+  transform: translateZ(20px);
+}
+
+.depth-3 {
+  transform: translateZ(30px);
+}
+
+/* Neuro-Aesthetic Loops - Mood lighting */
+.mood-calm {
+  background: linear-gradient(135deg, rgba(24,42,115,0.8) 0%, rgba(33,138,174,0.7) 100%);
+  transition: background 2s ease;
+}
+
+.mood-energetic {
+  background: linear-gradient(135deg, rgba(194,21,0,0.8) 0%, rgba(255,197,0,0.7) 100%);
+  transition: background 2s ease;
+}
+
+.mood-mysterious {
+  background: linear-gradient(135deg, rgba(76,0,112,0.8) 0%, rgba(86,20,168,0.7) 100%);
+  transition: background 2s ease;
+}
+
+/* Creator Signature Skins */
+.creator-signature {
+  position: relative;
+  overflow: hidden;
+}
+
+.creator-signature::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--creator-color-1, #ff3366), var(--creator-color-2, #ff9933));
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.creator-signature:hover::after {
+  transform: scaleX(1);
+}
+
+/* Organic Fluidity */
+.organic-motion {
+  animation: organic-sway 6s ease-in-out infinite alternate;
+}
+
+@keyframes organic-sway {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(5px) translateY(-2px) rotate(0.5deg);
+  }
+}
+
+/* Micro Rewards */
+@keyframes micro-reward {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  10% {
+    transform: scale(1.05);
+    filter: brightness(1.2);
+  }
+  20% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+.micro-reward {
+  animation: micro-reward 0.6s ease-out;
+}
+
+/* Focus Mode */
+.focus-mode {
+  position: relative;
+}
+
+.focus-mode::before {
+  content: '';
+  position: absolute;
+  inset: -10px;
+  background: radial-gradient(circle closest-side, rgba(255,255,255,0), rgba(0,0,0,0.8));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.focus-mode.active::before {
+  opacity: 1;
+}
+
+/* Ambient Soundscapes Visual Indicator */
+.ambient-indicator {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  opacity: 0.5;
+  transition: all 0.5s ease;
+}
+
+.ambient-indicator.calm {
+  background: radial-gradient(circle, rgba(100,149,237,0.7) 0%, rgba(100,149,237,0) 70%);
+  animation: pulse-ambient 3s infinite alternate;
+}
+
+.ambient-indicator.energetic {
+  background: radial-gradient(circle, rgba(255,105,180,0.7) 0%, rgba(255,105,180,0) 70%);
+  animation: pulse-ambient 1.5s infinite alternate;
+}
+
+.ambient-indicator.mysterious {
+  background: radial-gradient(circle, rgba(147,112,219,0.7) 0%, rgba(147,112,219,0) 70%);
+  animation: pulse-ambient 4s infinite alternate;
+}
+
+@keyframes pulse-ambient {
+  from {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+}
+
+/* Addictive Loop UX */
+.addictive-loop {
+  position: relative;
+  overflow: hidden;
+}
+
+.addictive-loop::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+  transform: translateX(-100%);
+}
+
+.addictive-loop:hover::after {
+  animation: addictive-shine 1s forwards;
+}
+
+@keyframes addictive-shine {
+  0% {
+    transform: translateX(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) rotate(45deg);
+  }
+}
+
+/* Personalized Ambience */
+.personalized-bg {
+  position: relative;
+  overflow: hidden;
+}
+
+.personalized-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--user-pattern, linear-gradient(135deg, rgba(50,50,50,0.02) 25%, transparent 25%, transparent 50%, rgba(50,50,50,0.02) 50%, rgba(50,50,50,0.02) 75%, transparent 75%, transparent));
+  background-size: 10px 10px;
+  opacity: 0.1;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Distinctly Recognizable Visual Identity */
+.xvush-identity {
+  position: relative;
+}
+
+.xvush-identity::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  background-image: linear-gradient(135deg, #ff3366, #ff9933);
+  border-radius: 50%;
+  opacity: 0.8;
+  z-index: 10;
+}
+
+/* Mobile-First Interactive Elements */
+.mobile-interactive {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.mobile-interactive:active {
+  transform: scale(0.98);
+  box-shadow: 0 0 0 3px rgba(255,105,180,0.2);
+}
+
+/* High Contrast Accessibility Mode */
+.high-contrast {
+  --contrast-background: #121212;
+  --contrast-foreground: #ffffff;
+  --contrast-accent: #ff3366;
+  background: var(--contrast-background);
+  color: var(--contrast-foreground);
+}
+
+.high-contrast img {
+  filter: contrast(1.2);
+}
+
+/* Haptic Feedback Visual Indicator */
+.haptic-indicator {
+  position: relative;
+}
+
+.haptic-indicator::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  color: white;
+  background-color: rgba(0,0,0,0.5);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.haptic-indicator.active::after {
+  animation: haptic-confirm 0.5s forwards;
+}
+
+@keyframes haptic-confirm {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useCallback } from "react";
 import Header from "@/components/Header";
 import SubscriptionTiers from "@/components/SubscriptionTiers";
@@ -172,22 +173,19 @@ const Index = () => {
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [showImmersive, setShowImmersive] = useState(false);
+  const [showImmersive, setShowImmersive] = useState(true); // Changed to true by default
+  const [activePromo, setActivePromo] = useState<{
+    type: 'xtease' | 'creator' | 'trending' | null,
+    data: any
+  }>({ type: null, data: null });
   const allPosts = generateMockFeed();
   
   const { isFirstVisit } = useImmersiveMode();
   
-  // Show immersive mode for first-time visitors
+  // Changed to always show immersive mode when landing on homepage
   useEffect(() => {
-    if (isFirstVisit) {
-      // Small delay to ensure smooth transition
-      const timer = setTimeout(() => {
-        setShowImmersive(true);
-      }, 1000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [isFirstVisit]);
+    setShowImmersive(true);
+  }, []);
   
   useEffect(() => {
     console.log("Index component mounted, auth loading:", loading);
@@ -216,7 +214,7 @@ const Index = () => {
     }, 800);
   }, [page, isLoading, hasMore, allPosts]);
   
-  // Gérer l'événement de défilement pour le chargement infini
+  // Handle scroll event for infinite loading
   const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
     
@@ -226,31 +224,122 @@ const Index = () => {
     }
   }, [loadMorePosts, isLoading, hasMore]);
 
-  // Fonction pour insérer les différents blocs promotionnels
+  // Function to handle promotion clicks without exiting immersive mode
+  const handlePromoClick = (type: 'xtease' | 'creator' | 'trending', data: any) => {
+    setActivePromo({ type, data });
+  };
+
+  // Function to close the promo popup
+  const closePromo = () => {
+    setActivePromo({ type: null, data: null });
+  };
+
+  // Function to insert promotional blocks that use our new handlePromoClick
   const renderFeedWithPromos = () => {
     const result = [];
     
     for (let i = 0; i < posts.length; i++) {
-      // Ajouter le post
+      // Add the post
       result.push(
         <CreatorFeedItem key={posts[i].id} post={posts[i]} />
       );
       
-      // Après chaque groupe de 3 posts, insérer un bloc promo différent
+      // After each group of 3 posts, insert a different promo block
       if ((i + 1) % 3 === 0 && i < posts.length - 1) {
-        const promoType = Math.floor((i / 3) % 3); // Alternance entre 0, 1, 2
+        const promoType = Math.floor((i / 3) % 3); // Alternating between 0, 1, 2
         
         if (promoType === 0) {
           result.push(
-            <XTeasePromoRow key={`xtease-promo-${i}`} videos={xteaseVideos} />
+            <div key={`xtease-promo-${i}`} className="mb-6 w-full">
+              <h3 className="text-lg font-semibold mb-2 text-center animated-gradient">Découvrez XTease</h3>
+              <div className="grid grid-cols-3 gap-2">
+                {xteaseVideos.map((video) => (
+                  <div 
+                    key={video.id}
+                    onClick={() => handlePromoClick('xtease', video)}
+                    className="relative overflow-hidden rounded-lg group cursor-pointer"
+                  >
+                    <div className="relative aspect-[9/16]">
+                      <img 
+                        src={video.thumbnail} 
+                        alt={video.title}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white opacity-80"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                      </div>
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                        <p className="text-white text-xs truncate">{video.title}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           );
         } else if (promoType === 1) {
           result.push(
-            <PerformerPromoRow key={`performer-promo-${i}`} performers={popularCreators} />
+            <div key={`performer-promo-${i}`} className="mb-6 w-full">
+              <h3 className="text-lg font-semibold mb-2 text-center animated-gradient">Créateurs populaires</h3>
+              <div className="grid grid-cols-3 gap-2">
+                {popularCreators.map((performer) => (
+                  <div 
+                    key={performer.id}
+                    onClick={() => handlePromoClick('creator', performer)}
+                    className="relative rounded-lg group bg-card border border-border p-3 flex flex-col items-center cursor-pointer"
+                  >
+                    <div className="w-16 h-16 mb-2 border-2 border-pink-500 rounded-full overflow-hidden">
+                      <img 
+                        src={performer.avatar} 
+                        alt={performer.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="text-center">
+                      <p className="font-medium text-sm truncate w-full">{performer.name}</p>
+                      <p className="text-xs text-muted-foreground">{performer.followers.toLocaleString()} fans</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           );
         } else {
           result.push(
-            <TrendingPromoRow key={`trending-promo-${i}`} videos={trendingVideos} />
+            <div key={`trending-promo-${i}`} className="mb-6 w-full">
+              <h3 className="text-lg font-semibold mb-2 text-center animated-gradient">Vidéos tendances</h3>
+              <div className="grid grid-cols-3 gap-2">
+                {trendingVideos.map((video) => (
+                  <div 
+                    key={video.id}
+                    onClick={() => handlePromoClick('trending', video)}
+                    className="relative overflow-hidden rounded-lg group cursor-pointer"
+                  >
+                    <div className="relative aspect-video">
+                      <img 
+                        src={video.thumbnail} 
+                        alt={video.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white opacity-80"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                      </div>
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                        <p className="text-white text-xs truncate">{video.title}</p>
+                        <div className="flex justify-between items-center mt-1">
+                          <span className="text-xs text-gray-300">{video.performer}</span>
+                          <span className="text-xs text-gray-300">{video.views}</span>
+                        </div>
+                      </div>
+                      <div className="absolute top-1 right-1 bg-black/70 text-white text-xs px-1 py-0.5 rounded">
+                        {video.duration}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           );
         }
       }
@@ -273,65 +362,69 @@ const Index = () => {
       {showImmersive && (
         <ImmersivePublications 
           posts={allPosts.slice(0, 10)} 
-          onExitImmersive={() => setShowImmersive(false)} 
+          onExitImmersive={() => setShowImmersive(false)}
+          activePromo={activePromo}
+          onClosePromo={closePromo}
         />
       )}
       
-      <Header />
-
-      {/* Immersive Mode Toggle Button */}
       {!showImmersive && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2, duration: 0.5 }}
-          className="container mx-auto px-4 py-2 text-center"
-        >
-          <Button
-            variant="default"
-            onClick={() => setShowImmersive(true)}
-            className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white hover:opacity-90"
+        <>
+          <Header />
+
+          {/* Immersive Mode Toggle Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 2, duration: 0.5 }}
+            className="container mx-auto px-4 py-2 text-center"
           >
-            Mode Immersif
-          </Button>
-        </motion.div>
-      )}
+            <Button
+              variant="outline"
+              onClick={() => setShowImmersive(true)}
+              className="bg-primary text-primary-foreground hover:opacity-90"
+            >
+              Mode Immersif
+            </Button>
+          </motion.div>
 
-      {/* CreaVerse Access Button - Si l'utilisateur est connecté */}
-      {currentUser && (
-        <div className="container mx-auto px-4 py-4 text-center">
-          <Button asChild className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white">
-            <Link to="/creaverse/performer/1">Accéder à CreaVerse</Link>
-          </Button>
-        </div>
-      )}
+          {/* CreaVerse Access Button - Si l'utilisateur est connecté */}
+          {currentUser && (
+            <div className="container mx-auto px-4 py-4 text-center">
+              <Button asChild className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white">
+                <Link to="/creaverse/performer/1">Accéder à CreaVerse</Link>
+              </Button>
+            </div>
+          )}
 
-      {/* Section feed immersif en première position */}
-      <div className="container max-w-md mx-auto px-4 pb-4">
-        <ScrollArea 
-          className="h-[calc(100vh-180px)]" 
-          onScrollCapture={handleScroll}
-        >
-          <div className="pb-6">
-            {renderFeedWithPromos()}
-            
-            {isLoading && (
-              <div className="flex justify-center py-4">
-                <Loader className="animate-spin w-6 h-6 text-brand-accent" />
+          {/* Section feed immersif en première position */}
+          <div className="container max-w-md mx-auto px-4 pb-4">
+            <ScrollArea 
+              className="h-[calc(100vh-180px)]" 
+              onScrollCapture={handleScroll}
+            >
+              <div className="pb-6">
+                {renderFeedWithPromos()}
+                
+                {isLoading && (
+                  <div className="flex justify-center py-4">
+                    <Loader className="animate-spin w-6 h-6 text-brand-accent" />
+                  </div>
+                )}
+                
+                {!hasMore && !isLoading && posts.length > 0 && (
+                  <p className="text-center text-muted-foreground py-4">
+                    Vous avez atteint la fin du feed
+                  </p>
+                )}
               </div>
-            )}
-            
-            {!hasMore && !isLoading && posts.length > 0 && (
-              <p className="text-center text-muted-foreground py-4">
-                Vous avez atteint la fin du feed
-              </p>
-            )}
+            </ScrollArea>
           </div>
-        </ScrollArea>
-      </div>
 
-      {/* Footer */}
-      <Footer />
+          {/* Footer */}
+          <Footer />
+        </>
+      )}
     </div>
   );
 };
