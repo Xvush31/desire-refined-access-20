@@ -1,0 +1,104 @@
+
+/* Styles pour le mode immersif */
+
+/* Animation de pulsation pour les éléments mis en évidence */
+.pulse-glow {
+  animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 5px 0 rgba(255, 105, 180, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px 5px rgba(255, 105, 180, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 5px 0 rgba(255, 105, 180, 0.5);
+  }
+}
+
+/* Animation de gradient pour les badges premium */
+.animated-gradient-bg {
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradient 3s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Effet de flou lors de la transition entre mode normal et immersif */
+.blur-transition {
+  transition: filter 0.5s ease-in-out;
+}
+
+.blur-transition.active {
+  filter: blur(10px);
+}
+
+/* Animation de rebond pour les boutons */
+.bounce-effect {
+  transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+.bounce-effect:active {
+  transform: scale(0.9);
+}
+
+/* Animation d'apparition par le bas */
+.slide-up-fade-in {
+  animation: slide-up-fade-in 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes slide-up-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Effets lumineux pour différents états d'immersion */
+.light-effect-subtle {
+  box-shadow: 0 0 15px 2px rgba(255, 255, 255, 0.2);
+}
+
+.light-effect-medium {
+  box-shadow: 0 0 20px 5px rgba(255, 105, 180, 0.4);
+}
+
+.light-effect-intense {
+  box-shadow: 0 0 30px 8px rgba(255, 105, 180, 0.7);
+}
+
+/* Transitions douces pour tous les éléments du mode immersif */
+.immersive-transition {
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Effet de luma pour images en mode sombre */
+.dark .luma-boost img {
+  filter: brightness(1.1) contrast(1.05);
+}
+
+/* Animation d'échelle sur hover pour éléments interactifs */
+.scale-hover {
+  transition: transform 0.3s ease;
+}
+
+.scale-hover:hover {
+  transform: scale(1.05);
+}

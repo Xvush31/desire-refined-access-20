@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useCallback } from "react";
 import Header from "@/components/Header";
 import SubscriptionTiers from "@/components/SubscriptionTiers";
@@ -17,6 +16,9 @@ import CreatorFeedItem, { CreatorFeedPost } from "@/components/creator/CreatorFe
 import XTeasePromoRow from "@/components/creator/XTeasePromoRow";
 import PerformerPromoRow from "@/components/creator/PerformerPromoRow";
 import TrendingPromoRow from "@/components/creator/TrendingPromoRow";
+import ImmersivePublications from "@/components/creator/ImmersivePublications";
+import { useImmersiveMode } from "@/hooks/useImmersiveMode";
+import { motion } from "framer-motion";
 
 // Données mockées pour le feed des créateurs
 const generateMockFeed = (): CreatorFeedPost[] => {
@@ -169,7 +171,22 @@ const Index = () => {
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [showImmersive, setShowImmersive] = useState(false);
   const allPosts = generateMockFeed();
+  
+  const { isFirstVisit } = useImmersiveMode();
+  
+  // Show immersive mode for first-time visitors
+  useEffect(() => {
+    if (isFirstVisit) {
+      // Small delay to ensure smooth transition
+      const timer = setTimeout(() => {
+        setShowImmersive(true);
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isFirstVisit]);
   
   useEffect(() => {
     console.log("Index component mounted, auth loading:", loading);
@@ -251,7 +268,33 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      {/* Immersive mode */}
+      {showImmersive && (
+        <ImmersivePublications 
+          posts={allPosts.slice(0, 10)} 
+          onExitImmersive={() => setShowImmersive(false)} 
+        />
+      )}
+      
       <Header />
+
+      {/* Immersive Mode Toggle Button */}
+      {!showImmersive && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 2, duration: 0.5 }}
+          className="container mx-auto px-4 py-2 text-center"
+        >
+          <Button
+            variant="outline"
+            onClick={() => setShowImmersive(true)}
+            className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white border-0 hover:opacity-90"
+          >
+            Mode Immersif
+          </Button>
+        </motion.div>
+      )}
 
       {/* CreaVerse Access Button - Si l'utilisateur est connecté */}
       {currentUser && (
