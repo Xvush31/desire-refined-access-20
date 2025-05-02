@@ -1,6 +1,10 @@
+
 onlyBuiltDependencies:
   - '@firebase/util'
   - '@swc/core'
   - esbuild
   - protobufjs
   - sharp
+
+# Vercel configuration - allows non-frozen installs
+packageManager: pnpm@10.x
