@@ -1,0 +1,208 @@
+
+/* Importation de la police Inter pour CreaVerse */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Styles spécifiques à CreaVerse */
+.creaverse-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+}
+
+.creaverse-logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+
+.creaverse-logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+
+.creaverse-logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes creaverse-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .creaverse-container a:nth-of-type(2) .creaverse-logo {
+    animation: creaverse-logo-spin infinite 20s linear;
+  }
+}
+
+.creaverse-card {
+  padding: 2em;
+}
+
+.creaverse-read-the-docs {
+  color: #888;
+}
+
+/* Variables de couleurs et de thème spécifiques à CreaVerse */
+.creaverse-container {
+  /* Variables du thème clair */
+  --creaverse-background: 0 0% 100%;
+  --creaverse-foreground: 222.2 84% 4.9%;
+
+  --creaverse-card: 0 0% 100%;
+  --creaverse-card-foreground: 222.2 84% 4.9%;
+
+  --creaverse-popover: 0 0% 100%;
+  --creaverse-popover-foreground: 222.2 84% 4.9%;
+
+  --creaverse-primary: 222.2 47.4% 11.2%;
+  --creaverse-primary-foreground: 210 40% 98%;
+
+  --creaverse-secondary: 210 40% 96.1%;
+  --creaverse-secondary-foreground: 222.2 47.4% 11.2%;
+
+  --creaverse-muted: 210 40% 96.1%;
+  --creaverse-muted-foreground: 215.4 16.3% 46.9%;
+
+  --creaverse-accent: 210 40% 96.1%;
+  --creaverse-accent-foreground: 222.2 47.4% 11.2%;
+
+  --creaverse-destructive: 0 84.2% 60.2%;
+  --creaverse-destructive-foreground: 210 40% 98%;
+
+  --creaverse-border: 214.3 31.8% 91.4%;
+  --creaverse-input: 214.3 31.8% 91.4%;
+  --creaverse-ring: 222.2 84% 4.9%;
+
+  --creaverse-radius: 0.75rem;
+
+  --creaverse-sidebar-background: 0 0% 98%;
+  --creaverse-sidebar-foreground: 240 5.3% 26.1%;
+  --creaverse-sidebar-primary: 240 5.9% 10%;
+  --creaverse-sidebar-primary-foreground: 0 0% 98%;
+  --creaverse-sidebar-accent: 240 4.8% 95.9%;
+  --creaverse-sidebar-accent-foreground: 240 5.9% 10%;
+  --creaverse-sidebar-border: 220 13% 91%;
+  --creaverse-sidebar-ring: 217.2 91.2% 59.8%;
+}
+
+/* Mode sombre spécifique à CreaVerse */
+.dark .creaverse-container {
+  --creaverse-background: 20 14% 4%;
+  --creaverse-foreground: 210 40% 98%;
+
+  --creaverse-card: 24 9% 10%;
+  --creaverse-card-foreground: 210 40% 98%;
+
+  --creaverse-popover: 20 14% 4%;
+  --creaverse-popover-foreground: 210 40% 98%;
+
+  --creaverse-primary: 210 40% 98%;
+  --creaverse-primary-foreground: 222.2 47.4% 11.2%;
+
+  --creaverse-secondary: 217.2 32.6% 17.5%;
+  --creaverse-secondary-foreground: 210 40% 98%;
+
+  --creaverse-muted: 217.2 32.6% 17.5%;
+  --creaverse-muted-foreground: 215 20.2% 65.1%;
+
+  --creaverse-accent: 217.2 32.6% 17.5%;
+  --creaverse-accent-foreground: 210 40% 98%;
+
+  --creaverse-destructive: 0 62.8% 30.6%;
+  --creaverse-destructive-foreground: 210 40% 98%;
+
+  --creaverse-border: 217.2 32.6% 17.5%;
+  --creaverse-input: 217.2 32.6% 17.5%;
+  --creaverse-ring: 212.7 26.8% 83.9%;
+  --creaverse-sidebar-background: 240 5.9% 10%;
+  --creaverse-sidebar-foreground: 240 4.8% 95.9%;
+  --creaverse-sidebar-primary: 224.3 76.3% 48%;
+  --creaverse-sidebar-primary-foreground: 0 0% 100%;
+  --creaverse-sidebar-accent: 240 3.7% 15.9%;
+  --creaverse-sidebar-accent-foreground: 240 4.8% 95.9%;
+  --creaverse-sidebar-border: 240 3.7% 15.9%;
+  --creaverse-sidebar-ring: 217.2 91.2% 59.8%;
+}
+
+/* Composants spécifiques à CreaVerse */
+.creaverse-glass-card {
+  background-color: hsla(0, 0%, 100%, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid hsla(0, 0%, 100%, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.dark .creaverse-glass-card {
+  background-color: hsla(0, 0%, 0%, 0.5);
+  border: 1px solid hsla(0, 0%, 0%, 0.2);
+}
+
+.creaverse-gold-badge {
+  background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%);
+  color: rgba(0, 0, 0, 0.8);
+  font-weight: 600;
+}
+
+.creaverse-premium-badge {
+  background: linear-gradient(90deg, #FF91A4 0%, #FF6B8B 100%);
+  color: white;
+  font-weight: 600;
+}
+
+.creaverse-vip-badge {
+  background: linear-gradient(90deg, #9333EA 0%, #6366F1 100%);
+  color: white;
+  font-weight: 600;
+}
+
+.creaverse-progress-bar {
+  height: 0.375rem;
+  background-color: rgba(229, 231, 235, 0.3);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.dark .creaverse-progress-bar {
+  background-color: rgba(55, 65, 81, 0.3);
+}
+
+.creaverse-progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition-property: all;
+  transition-duration: 700ms;
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+
+.creaverse-animate-pulse-subtle {
+  animation: creaverse-pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes creaverse-pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.creaverse-story-ring {
+  background: conic-gradient(
+    from 0deg, 
+    #FF91A4 0%, 
+    #FFA07A 25%, 
+    #FFD700 50%, 
+    #FFA07A 75%, 
+    #FF91A4 100%
+  );
+  padding: 3px;
+  border-radius: 50%;
+}

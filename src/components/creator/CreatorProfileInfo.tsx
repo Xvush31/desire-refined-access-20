@@ -1,35 +1,58 @@
 
-import React from 'react';
-import { Badge } from '@/components/ui/badge';
+import React from "react";
+import CreatorBadge from "@/features/creaverse/components/creator/CreatorBadge";
 
 interface CreatorProfileInfoProps {
-  name: string;
-  verified?: boolean;
-  followers?: number;
-  description?: string;
+  displayName: string;
+  username: string;
+  tier: "bronze" | "silver" | "gold" | "platinum" | "diamond";
+  description: string;
+  isOwner: boolean;
+  isFollowing: boolean;
+  onSendMessage: () => void;
+  onToggleFollow: () => void;
 }
 
 const CreatorProfileInfo: React.FC<CreatorProfileInfoProps> = ({
-  name,
-  verified = false,
-  followers = 0,
-  description
+  displayName,
+  username,
+  tier,
+  description,
+  isOwner,
+  isFollowing,
+  onSendMessage,
+  onToggleFollow
 }) => {
   return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        <h3 className="text-lg font-semibold">{name}</h3>
-        {verified && (
-          <Badge variant="secondary" className="px-2 py-0">Vérifié</Badge>
-        )}
+    <div className="text-center mb-6">
+      <div className="flex items-center justify-center gap-2 mb-1">
+        <h1 className="text-2xl font-bold">{displayName}</h1>
+        <CreatorBadge tier={tier} size="md" className="uppercase" />
       </div>
       
-      <div className="text-sm text-muted-foreground">
-        <span>{followers.toLocaleString()} followers</span>
-      </div>
+      <p className="text-muted-foreground text-sm mb-1">@{username}</p>
       
-      {description && (
-        <p className="text-sm">{description}</p>
+      <p className="text-sm text-center max-w-md mx-auto mt-3 mb-5">
+        {description}
+      </p>
+      
+      {/* Boutons d'action pour les visiteurs */}
+      {!isOwner && (
+        <div className="flex justify-center gap-3 mb-6">
+          <button 
+            onClick={onSendMessage} 
+            className="bg-white dark:bg-zinc-800 text-black dark:text-white border border-gray-200 dark:border-zinc-700 rounded-full px-6 py-2 flex items-center gap-1 text-sm font-medium"
+          >
+            Message
+          </button>
+          
+          <button 
+            onClick={onToggleFollow} 
+            className={`${isFollowing ? 'bg-white dark:bg-zinc-800 text-black dark:text-white border border-gray-200 dark:border-zinc-700' : 'bg-black text-white dark:bg-white dark:text-black'} rounded-full px-6 py-2 flex items-center gap-1 text-sm font-medium`}
+          >
+            {isFollowing ? 'Abonné' : 'Suivre'}
+          </button>
+        </div>
       )}
     </div>
   );
