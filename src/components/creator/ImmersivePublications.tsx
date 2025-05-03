@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from 'react';
 import { useImmersiveMode } from '@/hooks/useImmersiveMode';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -186,7 +185,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
   
   const renderPostContent = (post: CreatorFeedPost) => (
     <div 
-      className="relative mb-4"
+      className="relative mb-4 w-full"
       ref={imageRef}
       onClick={() => {
         interactWithContent(imageRef.current, 'image', 'medium');
@@ -194,14 +193,14 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
       }}
     >
       <motion.div
-        className={`overflow-hidden rounded-xl shadow-lg ${showNeuroEffect ? 'pulse-glow' : ''}`}
+        className={`overflow-hidden rounded-xl shadow-lg ${showNeuroEffect ? 'pulse-glow' : ''} w-full`}
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         key={post.id}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
         style={{ willChange: 'transform, opacity', perspective: '1000px' }}
       >
-        <AspectRatio ratio={9/16} className="bg-muted">
+        <AspectRatio ratio={9/16} className="bg-muted w-full">
           <img 
             src={post.image} 
             alt={`Publication de ${post.creatorName}`}
@@ -425,10 +424,10 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
         
         <div className="h-full flex flex-col items-center justify-center p-4">
           {isMobile ? (
-            <ScrollArea className="h-[calc(100vh-80px)] w-full max-w-md">
-              <div className="space-y-8 pb-8 pt-2">
+            <ScrollArea className="h-[calc(100vh-80px)] w-full max-w-md mx-auto">
+              <div className="space-y-8 pb-8 pt-2 w-full">
                 {posts.map((post, index) => (
-                  <div key={post.id} className="w-full max-w-md mx-auto">
+                  <div key={post.id} className="w-full mx-auto">
                     {renderPostContent(post)}
                     
                     {/* Post indicator */}
@@ -445,7 +444,9 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
           ) : (
             <>
               {/* Desktop version with navigation arrows */}
-              {renderPostContent(posts[currentIndex])}
+              <div className="w-full max-w-md mx-auto">
+                {renderPostContent(posts[currentIndex])}
+              </div>
               
               {/* Navigation dots */}
               <div className="flex space-x-1 mt-2">

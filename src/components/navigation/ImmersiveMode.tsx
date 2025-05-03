@@ -111,7 +111,7 @@ const ImmersiveMode: React.FC<ImmersiveModeProps> = ({
   
   return (
     <div 
-      className="immersive-mode w-full max-w-full h-full"
+      className="immersive-mode fixed inset-0 z-40 w-full max-w-full h-full bg-[#1A2335]"
       onTouchStart={isMobile ? handleTouchStart : undefined}
       onTouchEnd={isMobile ? handleTouchEnd : undefined}
       onTouchMove={isMobile ? handleTouchMove : undefined}

@@ -3,24 +3,24 @@
 
 @layer base {
   :root[data-theme="dark"] {
-    --background: 240 20% 10%; /* Dark navy background from the image */
+    --background: 215 28% 17%; /* Dark navy background from the image */
     --foreground: 0 0% 100%;
-    --card: 240 20% 12%;
+    --card: 217 33% 17%;
     --card-foreground: 0 0% 100%;
-    --popover: 240 20% 12%;
+    --popover: 217 33% 17%;
     --popover-foreground: 0 0% 100%;
     --primary: 330 100% 50%; /* Bright pink color from the image */
     --primary-foreground: 0 0% 100%;
-    --secondary: 240 15% 15%;
+    --secondary: 215 28% 24%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 240 15% 15%;
+    --muted: 215 28% 24%;
     --muted-foreground: 0 0% 70%;
     --accent: 330 100% 50%; /* Same pink accent */
     --accent-foreground: 0 0% 100%;
     --destructive: 0 85% 65%;
     --destructive-foreground: 0 0% 100%;
-    --border: 240 15% 20%;
-    --input: 240 15% 20%;
+    --border: 215 28% 25%;
+    --input: 215 28% 25%;
     --ring: 330 100% 50%; /* Pink ring */
     --radius: 0.75rem;
   }
@@ -80,7 +80,7 @@ html[data-theme="light"] body {
 
 /* Apply dark navy background for dark theme from image */
 html[data-theme="dark"] body {
-  background-color: #0d0e1a; /* Dark navy from image */
+  background-color: #1A2335; /* Updated dark navy from image */
   color: white;
 }
 
