@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useCallback } from "react";
 import Header from "@/components/Header";
 import SubscriptionTiers from "@/components/SubscriptionTiers";

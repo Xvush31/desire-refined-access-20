@@ -3,26 +3,26 @@
 
 @layer base {
   :root[data-theme="dark"] {
-    --background: 0 0% 6%;
+    --background: 240 20% 10%; /* Dark navy background from the image */
     --foreground: 0 0% 100%;
-    --card: 0 0% 8%;
+    --card: 240 20% 12%;
     --card-foreground: 0 0% 100%;
-    --popover: 0 0% 8%;
+    --popover: 240 20% 12%;
     --popover-foreground: 0 0% 100%;
-    --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 15%;
+    --primary: 330 100% 50%; /* Bright pink color from the image */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 15% 15%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
-    --accent: 0 0% 15%;
+    --muted: 240 15% 15%;
+    --muted-foreground: 0 0% 70%;
+    --accent: 330 100% 50%; /* Same pink accent */
     --accent-foreground: 0 0% 100%;
     --destructive: 0 85% 65%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 0 0% 45%;
-    --radius: 0.5rem;
+    --border: 240 15% 20%;
+    --input: 240 15% 20%;
+    --ring: 330 100% 50%; /* Pink ring */
+    --radius: 0.75rem;
   }
 
   :root[data-theme="light"] {
@@ -78,8 +78,10 @@ html[data-theme="light"] body {
   background-size: cover;
 }
 
+/* Apply dark navy background for dark theme from image */
 html[data-theme="dark"] body {
-  background-color: hsl(var(--background));
+  background-color: #0d0e1a; /* Dark navy from image */
+  color: white;
 }
 
 /* Supprimer les paddings par défaut du root */
@@ -111,6 +113,13 @@ p {
   @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-sm;
 }
 
+/* Dark mode glass effect like in the image */
+html[data-theme="dark"] .sexy-glass,
+html[data-theme="dark"] .glass-effect {
+  @apply bg-[#1a1b31]/80 backdrop-blur-md border border-[#2a2b4a];
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
 .gradient-border-light {
   background: linear-gradient(white, white) padding-box,
               var(--brand-gradient) border-box;
@@ -138,4 +147,18 @@ p {
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+}
+
+/* Dark mode specific styles for headers and pink accents */
+html[data-theme="dark"] .text-primary {
+  color: #ff3b8b; /* Pink from the image */
+}
+
+html[data-theme="dark"] .bg-primary {
+  background-color: #ff3b8b; /* Pink from the image */
+}
+
+/* Highlight for "V" in XVush logo */
+html[data-theme="dark"] .brand-highlight {
+  color: #ff3b8b; /* Pink highlight */
 }

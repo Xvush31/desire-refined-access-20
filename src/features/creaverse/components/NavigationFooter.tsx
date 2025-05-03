@@ -21,8 +21,9 @@ const NavigationFooter: React.FC<NavigationFooterProps> = ({
   const { theme } = useTheme();
   const { currentUser } = useAuth();
   const location = useLocation();
-  const secondaryBgClass = theme === 'light' ? 'bg-white' : 'bg-zinc-900';
-  const borderClass = theme === 'light' ? 'border-gray-200' : 'border-gray-800';
+  const isDark = theme === 'dark';
+  const secondaryBgClass = theme === 'light' ? 'bg-white' : 'bg-[#1a1b31]';
+  const borderClass = theme === 'light' ? 'border-gray-200' : 'border-[#2a2b4a]';
   
   // Helper function to check if a path is active
   const isActive = (path: string) => {
@@ -54,6 +55,9 @@ const NavigationFooter: React.FC<NavigationFooterProps> = ({
     }
   };
 
+  // In dark mode, use the pink from the image
+  const activeColor = isDark ? "#ff3b8b" : "rose-500";
+
   return (
     <motion.nav 
       className={`fixed bottom-0 left-0 right-0 w-full flex justify-around py-3 ${secondaryBgClass} border-t ${borderClass} z-40`}
@@ -61,13 +65,13 @@ const NavigationFooter: React.FC<NavigationFooterProps> = ({
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 380, damping: 30 }}
     >
-      <Link to="/" className={isActive("/") ? "text-rose-500" : "text-primary"}>
+      <Link to="/" className={isActive("/") ? (isDark ? "text-[#ff3b8b]" : "text-rose-500") : "text-primary"}>
         <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.1 }}>
           <Home size={24} />
         </motion.div>
       </Link>
       
-      <Link to="/search" className={isActive("/search") ? "text-rose-500" : "text-primary"}>
+      <Link to="/search" className={isActive("/search") ? (isDark ? "text-[#ff3b8b]" : "text-rose-500") : "text-primary"}>
         <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.1 }}>
           <Search size={24} />
         </motion.div>
@@ -78,20 +82,20 @@ const NavigationFooter: React.FC<NavigationFooterProps> = ({
           <motion.div 
             whileTap={{ scale: 0.9 }} 
             transition={{ duration: 0.1 }}
-            className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 rounded-lg p-1"
+            className={isDark ? "bg-gradient-to-r from-[#ff3b8b] to-[#ff71a6] rounded-lg p-1" : "bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 rounded-lg p-1"}
           >
             <Plus size={24} className="text-white" />
           </motion.div>
         </Link>
       ) : (
-        <Link to="/creators" className={isActive("/creators") ? "text-rose-500" : "text-primary"}>
+        <Link to="/creators" className={isActive("/creators") ? (isDark ? "text-[#ff3b8b]" : "text-rose-500") : "text-primary"}>
           <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.1 }}>
             <User size={24} />
           </motion.div>
         </Link>
       )}
       
-      <Link to="/xtease" className={isActive("/xtease") ? "text-rose-500" : "text-primary"}>
+      <Link to="/xtease" className={isActive("/xtease") ? (isDark ? "text-[#ff3b8b]" : "text-rose-500") : "text-primary"}>
         <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.1 }}>
           <Video size={24} />
         </motion.div>

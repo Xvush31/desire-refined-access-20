@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss"
 
 const config = {
@@ -53,7 +54,7 @@ const config = {
           foreground: "hsl(var(--card-foreground))",
         },
         "brand-dark": "#1A1F2C",
-        "brand-accent": "#ea384c",
+        "brand-accent": "#ff3b8b", // Updated to match the pink in the image
       },
       borderRadius: {
         lg: "var(--radius)",

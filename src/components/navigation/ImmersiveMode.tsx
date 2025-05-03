@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -111,12 +111,12 @@ const ImmersiveMode: React.FC<ImmersiveModeProps> = ({
   
   return (
     <div 
-      className="immersive-mode"
+      className="immersive-mode w-full max-w-full h-full"
       onTouchStart={isMobile ? handleTouchStart : undefined}
       onTouchEnd={isMobile ? handleTouchEnd : undefined}
       onTouchMove={isMobile ? handleTouchMove : undefined}
     >
-      <div className="immersive-container">
+      <div className="immersive-container w-full max-w-full h-full overflow-y-auto">
         {children}
         
         <AnimatePresence>

@@ -29,6 +29,7 @@ const DynamicHeader: React.FC<DynamicHeaderProps> = ({
   const [scrolled, setScrolled] = useState(false);
   const [prevScrollPos, setPrevScrollPos] = useState(0);
   const [visible, setVisible] = useState(true);
+  const isDark = theme === 'dark';
   
   useEffect(() => {
     const handleScroll = () => {
@@ -59,13 +60,16 @@ const DynamicHeader: React.FC<DynamicHeaderProps> = ({
     }
   };
 
+  // Dark mode header class
+  const darkHeaderBgClass = isDark && scrolled ? 'bg-[#1a1b31]/90 backdrop-blur-md border-b border-[#2a2b4a]' : '';
+
   return (
     <motion.header 
       className={`sticky top-0 z-40 transition-all duration-300 ${
         scrolled 
           ? theme === 'light' 
             ? 'bg-white/90 backdrop-blur-md border-b border-gray-200' 
-            : 'bg-zinc-900/90 backdrop-blur-md border-b border-gray-800' 
+            : darkHeaderBgClass 
           : 'bg-transparent'
       }`}
       initial={{ y: 0 }}

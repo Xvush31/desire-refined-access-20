@@ -19,6 +19,7 @@ const Header = () => {
   const isMobile = useIsMobile();
   const { theme } = useTheme();
   const isLight = theme === "light";
+  const isDark = theme === "dark";
   const lastScrollY = useRef(0);
   const { scrollY } = useScroll();
   
@@ -72,11 +73,18 @@ const Header = () => {
     }
   };
 
+  // Class for dark theme header
+  const darkHeaderClass = isDark 
+    ? 'bg-[#1a1b31]/90 backdrop-blur-md border-b border-[#2a2b4a]' 
+    : '';
+
   return (
     <motion.header 
       className={`sticky top-0 z-40 transition-all duration-300 ${
         scrolled 
-          ? isLight ? 'sexy-glass' : 'glass-effect dark:glass-effect' 
+          ? isLight 
+              ? 'sexy-glass' 
+              : darkHeaderClass
           : 'bg-transparent'
       }`}
       variants={headerVariants}
@@ -125,7 +133,7 @@ const Header = () => {
               <motion.div whileTap={{ scale: 0.95 }}>
                 <Button 
                   variant="ghost" 
-                  className={`hover:bg-muted rounded-full p-2 transition-colors ${isLight ? 'text-gray-800' : ''}`}
+                  className={`hover:bg-muted rounded-full p-2 transition-colors ${isLight ? 'text-gray-800' : 'text-white'}`}
                 >
                   <User size={20} />
                 </Button>
@@ -134,7 +142,7 @@ const Header = () => {
               <motion.div whileTap={{ scale: 0.95 }}>
                 <Button 
                   variant="ghost" 
-                  className={`hover:bg-muted rounded-full p-2 transition-colors ${isLight ? 'text-gray-800' : ''}`}
+                  className={`hover:bg-muted rounded-full p-2 transition-colors ${isLight ? 'text-gray-800' : 'text-white'}`}
                   onClick={() => setShowMobileMenu(true)}
                 >
                   <Menu size={20} />

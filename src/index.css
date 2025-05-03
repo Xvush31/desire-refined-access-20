@@ -39,25 +39,25 @@
   }
 
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 240 20% 10%; /* Dark navy background from the image */
     --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
+    --card: 240 20% 12%;
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
+    --popover: 240 20% 12%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
+    --primary: 330 100% 50%; /* Bright pink color from the image */
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 15% 15%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
+    --muted: 240 15% 15%;
     --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
+    --accent: 330 100% 50%; /* Same pink accent */
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --border: 240 15% 20%;
+    --input: 240 15% 20%;
+    --ring: 330 100% 50%; /* Pink ring */
   }
 }
 
@@ -98,7 +98,8 @@
   }
   
   .dark .glass {
-    @apply bg-black/20 backdrop-blur-lg border border-white/10 rounded-2xl;
+    @apply bg-[#1a1b31]/60 backdrop-blur-lg border border-[#2a2b4a] rounded-2xl;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
   }
   
   /* Depth effects */
@@ -119,6 +120,21 @@
       #ff8ba7 0%,
       #ffc6c7 50%,
       #fae3d9 100%
+    );
+    background-size: 600% 600%;
+    animation: gradient 3s ease infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* Dark mode animated gradient */
+  .dark .animated-gradient {
+    background: linear-gradient(
+      270deg,
+      #ff3b8b 0%,
+      #ff71a6 50%,
+      #ff3b8b 100%
     );
     background-size: 600% 600%;
     animation: gradient 3s ease infinite;
@@ -194,4 +210,21 @@ footer p.copyright {
 .fluid-type-h2 {
   font-size: clamp(1.3rem, 1.1rem + 0.8vw, 2rem);
   line-height: 1.25;
+}
+
+/* Dark mode specific header styles */
+.dark .sexy-glass {
+  @apply bg-[#1a1b31]/80 backdrop-blur-md border border-[#2a2b4a];
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Update the pink accent in dark mode */
+.dark .text-brand-accent,
+.dark .text-pink-500 {
+  color: #ff3b8b;
+}
+
+.dark .bg-brand-accent,
+.dark .bg-pink-500 {
+  background-color: #ff3b8b;
 }
