@@ -1,61 +1,93 @@
 
-import React, { useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { useTheme } from "@/hooks/use-theme";
-import { useIsMobile } from "@/hooks/use-mobile";
-import MessagingSystem from "@/features/creaverse/components/messaging/MessagingSystem";
+import React, { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from '@/hooks/use-toast';
 
 interface SendMessageDialogProps {
-  performerName: string;
-  performerId: number;
-  isOpen?: boolean;
-  onOpenChange?: (isOpen: boolean) => void;
+  recipientName: string;
+  recipientId: string;
+  trigger?: React.ReactNode;
 }
 
 const SendMessageDialog: React.FC<SendMessageDialogProps> = ({
-  performerName,
-  performerId,
-  isOpen,
-  onOpenChange
+  recipientName,
+  recipientId,
+  trigger
 }) => {
-  const [internalOpen, setInternalOpen] = useState(false);
-  const open = isOpen !== undefined ? isOpen : internalOpen;
-  const setOpen = onOpenChange || setInternalOpen;
-  const { theme } = useTheme();
-  const isMobile = useIsMobile();
+  const [message, setMessage] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
-  const mockPerformer = {
-    id: performerId,
-    username: performerName,
-    displayName: performerName,
-    image: `https://picsum.photos/seed/${performerId}/150/150`
+  const handleSend = async () => {
+    if (!message.trim()) {
+      toast.error("Veuillez saisir un message");
+      return;
+    }
+
+    setIsSending(true);
+    
+    try {
+      // Simulate sending a message
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast.success(`Message envoyé à ${recipientName}`);
+      setMessage('');
+      setIsOpen(false);
+    } catch (error) {
+      toast.error("Erreur lors de l'envoi du message");
+      console.error("Message sending error:", error);
+    } finally {
+      setIsSending(false);
+    }
   };
 
-  if (isMobile) {
-    return (
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="bottom" className="p-0 h-[85vh] max-h-full">
-          <MessagingSystem
-            performerId={performerId.toString()}
-            performerName={performerName}
-            performerAvatar={mockPerformer.image}
-            onClose={() => setOpen(false)}
-          />
-        </SheetContent>
-      </Sheet>
-    );
-  }
-
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[500px] p-0 max-h-[85vh]">
-        <MessagingSystem
-          performerId={performerId.toString()}
-          performerName={performerName}
-          performerAvatar={mockPerformer.image}
-          onClose={() => setOpen(false)}
-        />
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        {trigger || <Button variant="outline">Envoyer un message</Button>}
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Message à {recipientName}</DialogTitle>
+          <DialogDescription>
+            Envoyez un message privé à {recipientName}. Ils seront notifiés lorsqu'ils se connecteront.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="py-4">
+          <Textarea
+            placeholder="Écrivez votre message ici..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            className="min-h-[120px]"
+          />
+        </div>
+        <DialogFooter>
+          <Button 
+            type="button" 
+            variant="secondary" 
+            onClick={() => setIsOpen(false)}
+            disabled={isSending}
+          >
+            Annuler
+          </Button>
+          <Button 
+            type="submit" 
+            onClick={handleSend}
+            disabled={isSending || !message.trim()}
+          >
+            {isSending ? "Envoi..." : "Envoyer"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

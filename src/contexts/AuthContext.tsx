@@ -5,8 +5,8 @@ import { onAuthStateChanged, type User } from "firebase/auth";
 import { toast } from "@/hooks/use-toast";
 
 interface AuthContextType {
-  currentUser: { token: string; role: string; uid: string } | null;
-  login: (token: string, role: string, uid: string) => void;
+  currentUser: { token: string; role: string; uid: string; photoURL?: string } | null;
+  login: (token: string, role: string, uid: string, photoURL?: string) => void;
   logout: () => void;
   loading: boolean;
 }
@@ -26,6 +26,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     token: string;
     role: string;
     uid: string;
+    photoURL?: string;
   } | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -35,10 +36,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
     const uid = localStorage.getItem("uid");
+    const photoURL = localStorage.getItem("photoURL");
     
     if (token && role && uid) {
       console.log("Found auth data in localStorage, restoring session");
-      setCurrentUser({ token, role, uid });
+      setCurrentUser({ token, role, uid, photoURL: photoURL || undefined });
     }
     
     // Then set up Firebase auth state listener
@@ -52,12 +54,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           const token = await user.getIdToken();
           const role = localStorage.getItem("role") || "user";
           const uid = user.uid;
+          const photoURL = user.photoURL || undefined;
           console.log("Setting current user from Firebase auth with uid:", uid);
           
-          setCurrentUser({ token, role, uid });
+          setCurrentUser({ token, role, uid, photoURL });
           localStorage.setItem("token", token);
           localStorage.setItem("role", role);
           localStorage.setItem("uid", uid);
+          if (photoURL) {
+            localStorage.setItem("photoURL", photoURL);
+          }
         } else if (!user) {
           // If Firebase has no user, clear local storage data if it exists
           if (localStorage.getItem("token")) {
@@ -65,6 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             localStorage.removeItem("token");
             localStorage.removeItem("role");
             localStorage.removeItem("uid");
+            localStorage.removeItem("photoURL");
             setCurrentUser(null);
           }
         }
@@ -83,12 +90,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, []);
 
-  const login = (token: string, role: string, uid: string) => {
+  const login = (token: string, role: string, uid: string, photoURL?: string) => {
     console.log("Login called, setting user data with uid:", uid);
-    setCurrentUser({ token, role, uid });
+    setCurrentUser({ token, role, uid, photoURL });
     localStorage.setItem("token", token);
     localStorage.setItem("role", role);
     localStorage.setItem("uid", uid);
+    if (photoURL) {
+      localStorage.setItem("photoURL", photoURL);
+    }
   };
 
   const logout = () => {
@@ -97,6 +107,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.removeItem("token");
     localStorage.removeItem("role");
     localStorage.removeItem("uid");
+    localStorage.removeItem("photoURL");
     auth.signOut().catch(err => {
       console.error("Error during sign out:", err);
       toast.error("Error during logout");

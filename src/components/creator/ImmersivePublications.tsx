@@ -1,200 +1,88 @@
 
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useImmersiveMode } from "@/hooks/useImmersiveMode";
-import ImmersiveMode from "@/components/navigation/ImmersiveMode";
-import { X, Zap } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { X } from 'lucide-react';
 
-export interface CreatorFeedPost {
-  id: string;
-  title: string;
-  content: string;
-  mediaUrl: string;
-  timestamp: string;
-  creatorId: string;
-  creatorName: string;
-  creatorUsername: string;
-  creatorImage: string;
-  metrics: {
-    likes: number;
-    comments: number;
-    shares: number;
-  };
-}
-
-const MOCK_POSTS: CreatorFeedPost[] = [
-  {
-    id: "1",
-    title: "Nouvelle expérience immersive",
-    content: "Découvrez mes nouvelles créations en réalité augmentée !",
-    mediaUrl: "https://images.unsplash.com/photo-1633934542143-217d3bc9ab7b",
-    timestamp: "2023-11-15T14:30:00.000Z",
-    creatorId: "creator1",
-    creatorName: "Emma Virtuelle",
-    creatorUsername: "emmav",
-    creatorImage: "https://randomuser.me/api/portraits/women/44.jpg",
-    metrics: {
-      likes: 752,
-      comments: 48,
-      shares: 32
-    }
-  },
-  {
-    id: "2",
-    title: "Exploration sensorielle",
-    content: "Une nouvelle façon d'interagir avec le contenu numérique",
-    mediaUrl: "https://images.unsplash.com/photo-1592477725143-2e27772ce424",
-    timestamp: "2023-11-14T09:15:00.000Z",
-    creatorId: "creator2",
-    creatorName: "Neo Digital",
-    creatorUsername: "neod",
-    creatorImage: "https://randomuser.me/api/portraits/men/35.jpg",
-    metrics: {
-      likes: 952,
-      comments: 87,
-      shares: 112
-    }
-  },
-  {
-    id: "3",
-    title: "Voyage virtuel",
-    content: "Embarquez pour une odyssée sensorielle unique",
-    mediaUrl: "https://images.unsplash.com/photo-1535223289827-42f1e9919769",
-    timestamp: "2023-11-13T17:45:00.000Z",
-    creatorId: "creator3",
-    creatorName: "Techno Sophia",
-    creatorUsername: "techsoph",
-    creatorImage: "https://randomuser.me/api/portraits/women/68.jpg",
-    metrics: {
-      likes: 1284,
-      comments: 93,
-      shares: 204
-    }
-  }
-];
-
+// Simple implementation to replace the CreaVerse components
 const ImmersivePublications: React.FC = () => {
-  const navigate = useNavigate();
-  const [currentPostIndex, setCurrentPostIndex] = useState(0);
-  const { isImmersive, toggleImmersive } = useImmersiveMode();
+  const [isImmersiveActive, setIsImmersiveActive] = useState(false);
 
-  // Pour la démonstration, nous utilisons des données simulées
-  const posts = MOCK_POSTS;
-  const currentPost = posts[currentPostIndex];
-
-  const handleNextPost = () => {
-    setCurrentPostIndex((prev) => (prev + 1) % posts.length);
+  const toggleImmersive = () => {
+    setIsImmersiveActive(prev => !prev);
   };
 
-  const handlePreviousPost = () => {
-    setCurrentPostIndex((prev) => (prev - 1 + posts.length) % posts.length);
-  };
-
-  const handleEnterImmersiveMode = () => {
-    if (!isImmersive) {
-      toggleImmersive();
-    }
-  };
-
-  const handleNavigateToCreator = (username: string) => {
-    navigate(`/profile/${username}`);
-  };
-
-  const renderPostContent = () => (
-    <div className="relative w-full flex flex-col items-center">
-      <img
-        src={currentPost.mediaUrl}
-        alt={currentPost.title}
-        className="w-full h-[80vh] object-cover rounded-lg"
-      />
-      
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 text-white">
-        <h3 className="text-xl font-bold mb-2">{currentPost.title}</h3>
-        <p className="mb-4">{currentPost.content}</p>
-        
-        <div className="flex items-center gap-3">
-          <img
-            src={currentPost.creatorImage}
-            alt={currentPost.creatorName}
-            className="w-10 h-10 rounded-full object-cover border-2 border-white"
-            onClick={() => handleNavigateToCreator(currentPost.creatorUsername)}
-          />
-          <div>
-            <p className="font-semibold">{currentPost.creatorName}</p>
-            <p className="text-xs opacity-80">@{currentPost.creatorUsername}</p>
+  if (isImmersiveActive) {
+    return (
+      <div className="fixed inset-0 z-50 bg-black">
+        <div className="flex flex-col h-full">
+          <div className="flex justify-between items-center p-4 bg-gradient-to-b from-black/70 to-transparent">
+            <h3 className="text-white text-lg font-bold">Mode Immersif</h3>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-white hover:bg-white/20" 
+              onClick={toggleImmersive}
+            >
+              <X size={24} />
+            </Button>
           </div>
-        </div>
-      </div>
-
-      <div className="absolute top-4 right-4 flex gap-2">
-        <Button
-          variant="outline"
-          size="icon"
-          className="bg-black/40 border-white/40 text-white hover:bg-black/60"
-          onClick={handleEnterImmersiveMode}
-        >
-          <Zap className="h-5 w-5" />
-        </Button>
-      </div>
-    </div>
-  );
-
-  return (
-    <div className="relative w-full max-w-2xl mx-auto">
-      {isImmersive ? (
-        <ImmersiveMode 
-          isImmersive={isImmersive} 
-          onToggleImmersive={toggleImmersive}
-        >
-          <div className="post-container mx-auto p-4">
-            {renderPostContent()}
-            <div className="flex justify-between mt-4">
-              <Button 
-                variant="outline" 
-                onClick={handlePreviousPost}
-                className="text-sm"
-              >
-                Précédent
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={handleNextPost}
-                className="text-sm"
-              >
-                Suivant
+          
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center text-white p-6">
+              <h2 className="text-2xl font-bold mb-4">Contenu Immersif</h2>
+              <p className="text-lg mb-6">
+                Cette fonctionnalité remplace l'interface CreaVerse précédente.
+              </p>
+              <Button onClick={toggleImmersive} variant="outline" className="bg-white/10 hover:bg-white/20">
+                Quitter le mode immersif
               </Button>
             </div>
           </div>
-        </ImmersiveMode>
-      ) : (
-        <div className="regular-view space-y-4">
-          {renderPostContent()}
-          <div className="flex justify-between px-2">
-            <Button 
-              variant="outline" 
-              onClick={handlePreviousPost}
-              className="text-sm"
-            >
-              Précédent
-            </Button>
-            <Button 
-              variant="default" 
-              onClick={handleEnterImmersiveMode}
-              className="text-sm"
-            >
-              Mode Immersif
-            </Button>
-            <Button 
-              variant="outline" 
-              onClick={handleNextPost}
-              className="text-sm"
-            >
-              Suivant
-            </Button>
-          </div>
         </div>
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="border rounded-lg overflow-hidden bg-card shadow-sm hover:shadow-md transition-shadow">
+        <div className="aspect-video bg-muted flex items-center justify-center">
+          <span className="text-2xl font-semibold text-muted-foreground">Thumbnail</span>
+        </div>
+        <div className="p-4">
+          <h3 className="font-semibold mb-1">Publication #1</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Découvrez cette publication en mode immersif.
+          </p>
+          <Button onClick={toggleImmersive}>Mode Immersif</Button>
+        </div>
+      </div>
+
+      <div className="border rounded-lg overflow-hidden bg-card shadow-sm hover:shadow-md transition-shadow">
+        <div className="aspect-video bg-muted flex items-center justify-center">
+          <span className="text-2xl font-semibold text-muted-foreground">Thumbnail</span>
+        </div>
+        <div className="p-4">
+          <h3 className="font-semibold mb-1">Publication #2</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Une autre publication immersive disponible.
+          </p>
+          <Button onClick={toggleImmersive}>Mode Immersif</Button>
+        </div>
+      </div>
+
+      <div className="border rounded-lg overflow-hidden bg-card shadow-sm hover:shadow-md transition-shadow">
+        <div className="aspect-video bg-muted flex items-center justify-center">
+          <span className="text-2xl font-semibold text-muted-foreground">Thumbnail</span>
+        </div>
+        <div className="p-4">
+          <h3 className="font-semibold mb-1">Publication #3</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Explorez cette publication unique.
+          </p>
+          <Button onClick={toggleImmersive}>Mode Immersif</Button>
+        </div>
+      </div>
     </div>
   );
 };

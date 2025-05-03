@@ -1,40 +1,42 @@
 
-import React from "react";
-import ProfileAvatar from "@/features/creaverse/components/creator/ProfileAvatar";
+import React from 'react';
 
 interface CreatorProfileAvatarProps {
-  image: string;
-  displayName: string;
-  creatorStatus: "streaming" | "online" | "offline";
-  hasStory: boolean;
+  imageUrl?: string;
+  name: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
-const CreatorProfileAvatar: React.FC<CreatorProfileAvatarProps> = ({
-  image,
-  displayName,
-  creatorStatus,
-  hasStory
+const CreatorProfileAvatar: React.FC<CreatorProfileAvatarProps> = ({ 
+  imageUrl, 
+  name, 
+  size = 'md' 
 }) => {
+  const sizeClasses = {
+    sm: 'w-8 h-8 text-xs',
+    md: 'w-12 h-12 text-sm',
+    lg: 'w-16 h-16 text-base',
+    xl: 'w-24 h-24 text-lg'
+  };
+  
+  const initials = name
+    .split(' ')
+    .map(part => part[0])
+    .join('')
+    .toUpperCase()
+    .substring(0, 2);
+
   return (
-    <div className="flex flex-col items-center mb-6">
-      <div className="relative">
-        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-pink-400 via-orange-300 to-yellow-300 -z-10 scale-105"></div>
-        <ProfileAvatar 
-          image={image}
-          displayName={displayName}
-          size="xl"
-          status={creatorStatus}
-          hasStory={hasStory}
+    <div className={`${sizeClasses[size]} rounded-full overflow-hidden flex items-center justify-center bg-primary text-primary-foreground`}>
+      {imageUrl ? (
+        <img 
+          src={imageUrl} 
+          alt={name} 
+          className="w-full h-full object-cover"
         />
-      </div>
-      
-      {/* Indicateur de statut en ligne avec texte */}
-      <div className="flex items-center gap-2 mt-3">
-        <div className={`w-2 h-2 rounded-full ${creatorStatus === 'online' || creatorStatus === 'streaming' ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-        <span className="text-sm text-muted-foreground">
-          {creatorStatus === 'online' ? 'En ligne' : creatorStatus === 'streaming' ? 'En direct' : 'Hors ligne'}
-        </span>
-      </div>
+      ) : (
+        <span className="font-semibold">{initials}</span>
+      )}
     </div>
   );
 };

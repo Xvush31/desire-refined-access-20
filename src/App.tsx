@@ -6,6 +6,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ErrorBoundary } from "react-error-boundary";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
+import Fallback from "@/components/errors/Fallback";
 
 // Pages
 import Home from "@/pages/Home";
@@ -32,7 +33,7 @@ function App() {
   });
 
   return (
-    <ErrorBoundary fallback={<div>Une erreur est survenue</div>}>
+    <ErrorBoundary fallback={<Fallback />}>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider defaultTheme="dark" storageKey="xvush-ui-theme">
           <AuthProvider>
