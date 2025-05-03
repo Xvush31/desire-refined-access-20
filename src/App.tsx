@@ -9,24 +9,10 @@ import { Toaster } from "@/components/ui/sonner";
 
 // Pages
 import Home from "@/pages/Home";
-import PublicProfile from "@/pages/PublicProfile";
-import Search from "@/pages/Search";
-import Settings from "@/pages/Settings";
-import Messages from "@/pages/Messages";
 import NotFound from "@/pages/NotFound";
-import Video from "@/pages/Video";
-import Explore from "@/pages/Explore";
-import Layout from "@/layouts/Layout";
-import VideosLayout from "@/layouts/VideosLayout";
-import FullLayout from "@/layouts/FullLayout";
-import MobileProfileLayout from "@/layouts/MobileProfileLayout";
-import Fallback from "@/components/errors/Fallback";
 
 // Auth
 import { AuthProvider } from "@/contexts/AuthContext";
-import Login from "@/pages/auth/Login";
-import Register from "@/pages/auth/Register";
-import ForgotPassword from "@/pages/auth/ForgotPassword";
 
 // Theme
 import { ThemeProvider } from "@/providers/theme-provider";
@@ -46,52 +32,16 @@ function App() {
   });
 
   return (
-    <ErrorBoundary fallback={<Fallback />}>
+    <ErrorBoundary fallback={<div>Une erreur est survenue</div>}>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider defaultTheme="dark" storageKey="xvush-ui-theme">
           <AuthProvider>
             <TooltipProvider>
               <Routes>
                 {/* Public routes */}
-                <Route element={<Layout />}>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/search" element={<Search />} />
-                  <Route path="/explore" element={<Explore />} />
-                </Route>
-
-                {/* Video routes */}
-                <Route element={<VideosLayout />}>
-                  <Route path="/video/:videoId" element={<Video />} />
-                </Route>
-
-                {/* Auth routes */}
-                <Route element={<FullLayout />}>
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                </Route>
-
-                {/* Profile routes */}
-                <Route path="/profile/:username" element={
-                  <Suspense fallback={<div>Chargement...</div>}>
-                    <MobileProfileLayout>
-                      <PublicProfile />
-                    </MobileProfileLayout>
-                  </Suspense>
-                } />
-
-                {/* Settings routes */}
-                <Route element={<Layout />}>
-                  <Route path="/settings/*" element={<Settings />} />
-                </Route>
-
-                {/* Messages routes */}
-                <Route element={<Layout />}>
-                  <Route path="/messages" element={<Messages />} />
-                  <Route path="/messages/:conversationId" element={<Messages />} />
-                </Route>
-
-                {/* Handle legacy performer profile URLs - redirect to appropriate page */}
+                <Route path="/" element={<Home />} />
+                
+                {/* Legacy redirect */}
                 <Route path="/performer/:performerId" element={<Navigate to="/" replace />} />
                 
                 {/* 404 */}

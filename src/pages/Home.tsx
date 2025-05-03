@@ -1,7 +1,7 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { UpgradeNeuroIcon } from "@/icons";
 import ImmersivePublications from "@/components/creator/ImmersivePublications";
 
 const Home = () => {
@@ -12,7 +12,7 @@ const Home = () => {
         Découvrez et partagez du contenu incroyable.
       </p>
       <div className="space-x-4">
-        <Button asChild variant="primary">
+        <Button asChild variant="default">
           <Link to="/explore">Explorer</Link>
         </Button>
         <Button asChild variant="secondary">

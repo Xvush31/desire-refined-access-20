@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,14 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import MobileMenu from "./MobileMenu";
 
@@ -28,6 +22,13 @@ const Header = () => {
   const { currentUser, logout } = useAuth();
   const { theme } = useTheme();
   const isDark = theme === "dark";
+
+  // Helper function to get initials from user display name
+  const getUserInitials = (user: any) => {
+    return user && user.displayName 
+      ? user.displayName.slice(0, 2).toUpperCase() 
+      : "XU";
+  };
 
   return (
     <header className="sticky top-0 z-40 w-full bg-background/95 backdrop-blur-sm border-b">
@@ -42,8 +43,10 @@ const Header = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={currentUser?.photoURL || ""} alt={currentUser?.displayName || "Profile"} />
-                    <AvatarFallback>{currentUser?.displayName?.slice(0, 2).toUpperCase()}</AvatarFallback>
+                    {currentUser.photoURL && (
+                      <AvatarImage src={currentUser.photoURL} alt="Profile" />
+                    )}
+                    <AvatarFallback>{getUserInitials(currentUser)}</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
