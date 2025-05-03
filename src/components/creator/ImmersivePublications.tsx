@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect } from 'react';
 import { useImmersiveMode } from '@/hooks/useImmersiveMode';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,6 +13,38 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Link } from 'react-router-dom';
+import HLSVideoPlayer from '@/components/HLSVideoPlayer';
+
+// Données statiques pour les vidéos XTease à utiliser dans l'interface immersive
+const immersiveXTeaseVideos = [
+  {
+    id: 101,
+    title: "Moment intime en soirée",
+    performer: "PartyGirl",
+    views: "421K vues",
+    thumbnail: "https://picsum.photos/seed/xtease1/1080/1920",
+    streamUrl: "https://d38s5lp2g9pf7s.cloudfront.net/video-1/playlist.m3u8",
+    isPremium: false,
+  },
+  {
+    id: 102,
+    title: "Séance photo personnelle",
+    performer: "PhotoArtist",
+    views: "732K vues",
+    thumbnail: "https://picsum.photos/seed/xtease2/1080/1920",
+    streamUrl: "https://d38s5lp2g9pf7s.cloudfront.net/video-2/playlist.m3u8",
+    isPremium: true,
+  },
+  {
+    id: 103,
+    title: "Rencontre dans un hôtel 5 étoiles",
+    performer: "LuxuryCouple",
+    views: "628K vues",
+    thumbnail: "https://picsum.photos/seed/xtease3/1080/1920",
+    streamUrl: "https://d38s5lp2g9pf7s.cloudfront.net/video-3/playlist.m3u8",
+    isPremium: true,
+  },
+];
 
 interface ImmersivePublicationsProps {
   posts: CreatorFeedPost[];
@@ -35,10 +68,42 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
   const [isDescriptionVisible, setIsDescriptionVisible] = useState(true);
   const [showNeuroEffect, setShowNeuroEffect] = useState(false);
   const [ambientMood, setAmbientMood] = useState<'calm' | 'energetic' | 'mysterious'>('calm');
+  const [controlsVisible, setControlsVisible] = useState(true);
+  const [isVideoContent, setIsVideoContent] = useState(false);
+  const [videoMuted, setVideoMuted] = useState(true);
+  
+  // Référence pour les éléments interactifs
   const imageRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const controlsTimerRef = useRef<NodeJS.Timeout | null>(null);
+  
   const isMobile = useIsMobile();
   const { theme, setTheme } = useTheme();
+  
+  // Mélanger les publications et les vidéos XTease
+  const [mixedContent, setMixedContent] = useState<Array<CreatorFeedPost | typeof immersiveXTeaseVideos[0]>>([]);
+  
+  // Préparer le contenu mélangé au chargement
+  useEffect(() => {
+    const mixed = [...posts];
+    
+    // Insérer une vidéo XTease toutes les 2-3 publications
+    let insertIndex = Math.floor(Math.random() * 2) + 2; // Commence entre la 2e et 3e publication
+    
+    while (insertIndex < mixed.length) {
+      // Sélectionner une vidéo XTease aléatoire
+      const randomXTeaseIndex = Math.floor(Math.random() * immersiveXTeaseVideos.length);
+      const xteaseVideo = immersiveXTeaseVideos[randomXTeaseIndex];
+      
+      // Insérer la vidéo XTease
+      mixed.splice(insertIndex, 0, xteaseVideo);
+      
+      // Prochain point d'insertion: 2-3 publications plus loin
+      insertIndex += Math.floor(Math.random() * 2) + 3;
+    }
+    
+    setMixedContent(mixed);
+  }, [posts]);
   
   const {
     isImmersive,
@@ -50,9 +115,17 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
     enableLightEffects: true
   });
 
-  // Change post every 12 seconds in desktop mode only
+  // Vérifier si l'élément actuel est une vidéo ou une publication
   useEffect(() => {
-    if (!isMobile && !activePromo?.type) {
+    if (currentIndex < mixedContent.length) {
+      const currentItem = mixedContent[currentIndex];
+      setIsVideoContent('streamUrl' in currentItem);
+    }
+  }, [currentIndex, mixedContent]);
+  
+  // Change post every 12 seconds in desktop mode only - si ce n'est pas une vidéo
+  useEffect(() => {
+    if (!isMobile && !activePromo?.type && !isVideoContent) {
       const timer = setTimeout(() => {
         goToNextPost();
         
@@ -68,7 +141,28 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
       
       return () => clearTimeout(timer);
     }
-  }, [currentIndex, isMobile, activePromo]);
+  }, [currentIndex, isMobile, activePromo, isVideoContent]);
+  
+  // Gérer l'affichage/masquage automatique des contrôles
+  useEffect(() => {
+    // Montrer les contrôles au début
+    setControlsVisible(true);
+    
+    // Configurer le timer pour masquer les contrôles après 1.5 secondes
+    if (controlsTimerRef.current) {
+      clearTimeout(controlsTimerRef.current);
+    }
+    
+    controlsTimerRef.current = setTimeout(() => {
+      setControlsVisible(false);
+    }, 1500);
+    
+    return () => {
+      if (controlsTimerRef.current) {
+        clearTimeout(controlsTimerRef.current);
+      }
+    };
+  }, [currentIndex]);
   
   // Apply initial effects
   useEffect(() => {
@@ -116,21 +210,44 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
   }, [isMobile]);
   
   const goToNextPost = () => {
-    setCurrentIndex((prev) => (prev + 1) % posts.length);
+    setCurrentIndex((prev) => (prev + 1) % mixedContent.length);
   };
   
   const goToPrevPost = () => {
-    setCurrentIndex((prev) => (prev - 1 + posts.length) % posts.length);
+    setCurrentIndex((prev) => (prev - 1 + mixedContent.length) % mixedContent.length);
+  };
+  
+  // Fonction pour afficher les contrôles temporairement lors d'une interaction
+  const handleUserInteraction = () => {
+    // Afficher les contrôles
+    setControlsVisible(true);
+    
+    // Réinitialiser le timer pour les masquer après 1.5 secondes
+    if (controlsTimerRef.current) {
+      clearTimeout(controlsTimerRef.current);
+    }
+    
+    controlsTimerRef.current = setTimeout(() => {
+      setControlsVisible(false);
+    }, 1500);
   };
   
   const toggleSound = () => {
     setSoundEnabled(prev => !prev);
     toast.info(soundEnabled ? "Son désactivé" : "Son activé");
+    handleUserInteraction();
+  };
+  
+  const toggleVideoMute = () => {
+    setVideoMuted(prev => !prev);
+    toast.info(videoMuted ? "Son de la vidéo activé" : "Son de la vidéo désactivé");
+    handleUserInteraction();
   };
   
   const toggleVibrations = () => {
     setVibrationsEnabled(prev => !prev);
     toast.info(vibrationsEnabled ? "Vibrations désactivées" : "Vibrations activées");
+    handleUserInteraction();
     
     // Test vibration when enabling
     if (!vibrationsEnabled && navigator.vibrate) {
@@ -142,6 +259,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
     toast.info(`Mode ${newTheme === 'dark' ? 'sombre' : 'clair'} activé`);
+    handleUserInteraction();
     
     // Apply light effect when changing theme
     if (imageRef.current) {
@@ -149,7 +267,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
     }
   };
 
-  if (!posts.length) return null;
+  if (!mixedContent.length) return null;
 
   // Get ambient style based on current mood
   const getAmbientStyle = () => {
@@ -182,63 +300,123 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
         return {};
     }
   };
+
+  // Vérifier si l'élément actuel est une publication standard ou une vidéo XTease
+  const currentContent = mixedContent[currentIndex];
+  const isXTeaseVideo = 'streamUrl' in currentContent;
   
-  const renderPostContent = (post: CreatorFeedPost) => (
-    <div 
-      className="relative mb-4 w-full"
-      ref={imageRef}
-      onClick={() => {
-        interactWithContent(imageRef.current, 'image', 'medium');
-        setIsDescriptionVisible(!isDescriptionVisible);
-      }}
-    >
-      <motion.div
-        className={`overflow-hidden rounded-xl shadow-lg ${showNeuroEffect ? 'pulse-glow' : ''} w-full`}
-        initial={{ scale: 0.95, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        key={post.id}
-        transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        style={{ willChange: 'transform, opacity', perspective: '1000px' }}
-      >
-        <AspectRatio ratio={9/16} className="bg-muted w-full">
-          <img 
-            src={post.image} 
-            alt={`Publication de ${post.creatorName}`}
-            className="object-cover w-full h-full depth-layer"
-          />
-        </AspectRatio>
-      </motion.div>
-      
-      {/* Creator info overlay */}
-      <AnimatePresence>
-        {isDescriptionVisible && (
+  const renderPostContent = (content: typeof mixedContent[0]) => {
+    // Si c'est une vidéo XTease
+    if ('streamUrl' in content) {
+      return (
+        <div 
+          className="relative mb-4 w-full"
+          ref={imageRef}
+          onClick={handleUserInteraction}
+        >
+          <motion.div
+            className={`overflow-hidden rounded-xl shadow-lg ${showNeuroEffect ? 'pulse-glow' : ''} w-full`}
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            key={`xtease-${content.id}`}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          >
+            <AspectRatio ratio={9/16} className="bg-muted w-full">
+              <HLSVideoPlayer
+                src={content.streamUrl}
+                poster={content.thumbnail}
+                title={content.title}
+                videoId={content.id}
+                isPreview={false}
+                autoPlay
+                muted={videoMuted}
+                onVideoComplete={goToNextPost}
+                className="w-full h-full object-cover"
+              />
+            </AspectRatio>
+          </motion.div>
+          
+          {/* Overlay pour texte XTease */}
           <motion.div 
             className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/60 to-transparent backdrop-blur-sm"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white">
-                <img 
-                  src={post.creatorAvatar} 
-                  alt={post.creatorName} 
-                  className="w-full h-full object-cover"
-                />
+            <div className="flex items-center mb-2">
+              <div className="flex-grow">
+                <h3 className="font-bold text-white">{content.title}</h3>
+                <p className="text-white/70 text-sm">{content.performer} • {content.views}</p>
               </div>
-              <div>
-                <h3 className="font-bold text-white">{post.creatorName}</h3>
-                <p className="text-white/70 text-sm">{post.timestamp}</p>
-              </div>
+              {content.isPremium && (
+                <div className="badge badge-premium px-3 py-1 text-sm font-medium ml-2">
+                  Premium
+                </div>
+              )}
             </div>
-            <p className="text-white mb-2">{post.caption}</p>
-            <p className="text-white/90 text-sm">❤️ {post.likes.toLocaleString()} j'aime</p>
           </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
+        </div>
+      );
+    }
+    
+    // Publication standard
+    return (
+      <div 
+        className="relative mb-4 w-full"
+        ref={imageRef}
+        onClick={() => {
+          handleUserInteraction();
+          setIsDescriptionVisible(!isDescriptionVisible);
+        }}
+      >
+        <motion.div
+          className={`overflow-hidden rounded-xl shadow-lg ${showNeuroEffect ? 'pulse-glow' : ''} w-full`}
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          key={content.id}
+          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          style={{ willChange: 'transform, opacity', perspective: '1000px' }}
+        >
+          <AspectRatio ratio={9/16} className="bg-muted w-full">
+            <img 
+              src={content.image} 
+              alt={`Publication de ${content.creatorName}`}
+              className="object-cover w-full h-full depth-layer"
+            />
+          </AspectRatio>
+        </motion.div>
+        
+        {/* Creator info overlay */}
+        <AnimatePresence>
+          {isDescriptionVisible && (
+            <motion.div 
+              className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/60 to-transparent backdrop-blur-sm"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white">
+                  <img 
+                    src={content.creatorAvatar} 
+                    alt={content.creatorName} 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-bold text-white">{content.creatorName}</h3>
+                  <p className="text-white/70 text-sm">{content.timestamp}</p>
+                </div>
+              </div>
+              <p className="text-white mb-2">{content.caption}</p>
+              <p className="text-white/90 text-sm">❤️ {content.likes.toLocaleString()} j'aime</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  };
 
   // Render promo popup content
   const renderPromoContent = () => {
@@ -360,43 +538,80 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
         transition={{ duration: 0.5 }}
         style={getAmbientStyle()}
         ref={containerRef}
+        onClick={handleUserInteraction}
       >
-        <div className="absolute top-4 right-4 flex space-x-2 z-10">
-          <Button 
-            variant="outline" 
-            size="icon" 
-            className={`rounded-full ${theme === 'dark' ? 'bg-background/50' : 'bg-background/80'} backdrop-blur-sm`}
-            onClick={toggleSound}
-          >
-            {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
-          </Button>
-          
-          <Button 
-            variant="outline" 
-            size="icon" 
-            className={`rounded-full ${theme === 'dark' ? 'bg-background/50' : 'bg-background/80'} backdrop-blur-sm`}
-            onClick={toggleVibrations}
-          >
-            <Vibrate size={18} />
-          </Button>
-          
-          <Button 
-            variant="outline" 
-            size="icon" 
-            className={`rounded-full ${theme === 'dark' ? 'bg-background/50' : 'bg-background/80'} backdrop-blur-sm`}
-            onClick={toggleTheme}
-          >
-            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-          </Button>
-          
-          <Button 
-            variant="outline" 
-            className={`rounded-full ${theme === 'dark' ? 'bg-background/50' : 'bg-background/80'} backdrop-blur-sm`}
-            onClick={onExitImmersive}
-          >
-            Quitter
-          </Button>
-        </div>
+        <AnimatePresence>
+          {controlsVisible && (
+            <motion.div 
+              className="absolute top-4 right-4 flex space-x-2 z-10"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              {isXTeaseVideo ? (
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  className={`rounded-full ${theme === 'dark' ? 'bg-background/50' : 'bg-background/80'} backdrop-blur-sm`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleVideoMute();
+                  }}
+                >
+                  {videoMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                </Button>
+              ) : (
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  className={`rounded-full ${theme === 'dark' ? 'bg-background/50' : 'bg-background/80'} backdrop-blur-sm`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleSound();
+                  }}
+                >
+                  {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
+                </Button>
+              )}
+              
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className={`rounded-full ${theme === 'dark' ? 'bg-background/50' : 'bg-background/80'} backdrop-blur-sm`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleVibrations();
+                }}
+              >
+                <Vibrate size={18} />
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className={`rounded-full ${theme === 'dark' ? 'bg-background/50' : 'bg-background/80'} backdrop-blur-sm`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleTheme();
+                }}
+              >
+                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                className={`rounded-full ${theme === 'dark' ? 'bg-background/50' : 'bg-background/80'} backdrop-blur-sm`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onExitImmersive();
+                }}
+              >
+                Quitter
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Popup promo content */}
         <AnimatePresence>
@@ -426,15 +641,15 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
           {isMobile ? (
             <ScrollArea className="h-[calc(100vh-80px)] w-full max-w-md mx-auto">
               <div className="space-y-8 pb-8 pt-2 w-full">
-                {posts.map((post, index) => (
-                  <div key={post.id} className="w-full mx-auto">
-                    {renderPostContent(post)}
+                {mixedContent.map((content, index) => (
+                  <div key={'streamUrl' in content ? `video-${content.id}` : content.id} className="w-full mx-auto">
+                    {renderPostContent(content)}
                     
                     {/* Post indicator */}
                     <div className="flex space-x-1 justify-center mt-2">
                       <div className="h-1.5 w-16 bg-primary rounded-full"></div>
                       <div className="text-xs text-muted-foreground">
-                        {index + 1}/{posts.length}
+                        {index + 1}/{mixedContent.length}
                       </div>
                     </div>
                   </div>
@@ -445,12 +660,12 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
             <>
               {/* Desktop version with navigation arrows */}
               <div className="w-full max-w-md mx-auto">
-                {renderPostContent(posts[currentIndex])}
+                {renderPostContent(currentContent)}
               </div>
               
               {/* Navigation dots */}
               <div className="flex space-x-1 mt-2">
-                {posts.slice(0, Math.min(5, posts.length)).map((_, i) => (
+                {mixedContent.slice(0, Math.min(5, mixedContent.length)).map((_, i) => (
                   <motion.div
                     key={i}
                     className={`h-2 rounded-full ${i === currentIndex ? "bg-primary w-8" : "bg-muted w-2"}`}
@@ -459,25 +674,45 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
                     transition={{ duration: 0.3 }}
                   />
                 ))}
-                {posts.length > 5 && (
+                {mixedContent.length > 5 && (
                   <motion.div className="h-2 w-2 rounded-full bg-muted opacity-50" />
                 )}
               </div>
               
-              {/* Left/Right navigation */}
-              <button
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-background/30 rounded-full p-2 backdrop-blur-sm"
-                onClick={goToPrevPost}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-              </button>
-              
-              <button
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-background/30 rounded-full p-2 backdrop-blur-sm"
-                onClick={goToNextPost}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-              </button>
+              <AnimatePresence>
+                {controlsVisible && (
+                  <>
+                    {/* Left/Right navigation */}
+                    <motion.button
+                      className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-background/30 rounded-full p-2 backdrop-blur-sm"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -10 }}
+                      transition={{ duration: 0.2 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        goToPrevPost();
+                      }}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </motion.button>
+                    
+                    <motion.button
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-background/30 rounded-full p-2 backdrop-blur-sm"
+                      initial={{ opacity: 0, x: 10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 10 }}
+                      transition={{ duration: 0.2 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        goToNextPost();
+                      }}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    </motion.button>
+                  </>
+                )}
+              </AnimatePresence>
             </>
           )}
           

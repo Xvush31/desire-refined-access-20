@@ -12,6 +12,7 @@ export const useImmersiveMode = (options: ImmersiveModeOptions = {}) => {
   const [isImmersive, setIsImmersive] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isFirstVisit, setIsFirstVisit] = useState(false);
+  const [controlsVisible, setControlsVisible] = useState(true);
   const { theme } = useTheme();
   
   // Options with defaults
@@ -31,6 +32,18 @@ export const useImmersiveMode = (options: ImmersiveModeOptions = {}) => {
       setIsImmersive(true);
     }
   }, []);
+  
+  // Configurer le timer initial pour cacher les contrôles
+  useEffect(() => {
+    if (isImmersive) {
+      setControlsVisible(true);
+      const timer = setTimeout(() => {
+        setControlsVisible(false);
+      }, 1500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isImmersive]);
   
   // Function to play sound based on content type
   const playSound = (intensity: 'low' | 'medium' | 'high' = 'medium') => {
@@ -97,6 +110,14 @@ export const useImmersiveMode = (options: ImmersiveModeOptions = {}) => {
   const toggleImmersive = () => {
     setIsImmersive(prev => !prev);
     setHasInteracted(true);
+    setControlsVisible(true);
+    
+    // Masquer les contrôles après 1.5 secondes si on active le mode immersif
+    if (!isImmersive) {
+      setTimeout(() => {
+        setControlsVisible(false);
+      }, 1500);
+    }
   };
   
   // Function to handle content interaction with all effects
@@ -106,6 +127,12 @@ export const useImmersiveMode = (options: ImmersiveModeOptions = {}) => {
     intensity: 'low' | 'medium' | 'high' = 'medium'
   ) => {
     if (!isImmersive) return;
+    
+    // Montrer temporairement les contrôles lors d'une interaction
+    setControlsVisible(true);
+    setTimeout(() => {
+      setControlsVisible(false);
+    }, 1500);
     
     // Determine effect parameters based on content type and theme
     let vibrationPattern: number[];
@@ -142,14 +169,24 @@ export const useImmersiveMode = (options: ImmersiveModeOptions = {}) => {
     applyLightEffect(element, effectColor, 800);
   };
   
+  // Fonction pour afficher temporairement les contrôles
+  const showControlsTemporarily = () => {
+    setControlsVisible(true);
+    setTimeout(() => {
+      setControlsVisible(false);
+    }, 1500);
+  };
+  
   return {
     isImmersive,
     isFirstVisit,
     hasInteracted,
+    controlsVisible,
     toggleImmersive,
     playSound,
     triggerVibration,
     applyLightEffect,
-    interactWithContent
+    interactWithContent,
+    showControlsTemporarily
   };
 };

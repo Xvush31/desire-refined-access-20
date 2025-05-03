@@ -1,10 +1,6 @@
+
 import React, { useEffect, useState, useCallback } from "react";
 import Header from "@/components/Header";
-import SubscriptionTiers from "@/components/SubscriptionTiers";
-import XTeaseSection from "@/components/XTeaseSection";
-import TrendingSection from "@/components/TrendingSection";
-import HomeCategoriesSection from "@/components/HomeCategoriesSection";
-import PopularPerformersSection from "@/components/PopularPerformersSection";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocale } from "@/contexts/LocaleContext";
 import { Link } from "react-router-dom";
@@ -13,13 +9,10 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader } from "lucide-react";
 import CreatorFeedItem, { CreatorFeedPost } from "@/components/creator/CreatorFeedItem";
-import XTeasePromoRow from "@/components/creator/XTeasePromoRow";
-import PerformerPromoRow from "@/components/creator/PerformerPromoRow";
-import TrendingPromoRow from "@/components/creator/TrendingPromoRow";
-import ImmersivePublications from "@/components/creator/ImmersivePublications";
 import { useImmersiveMode } from "@/hooks/useImmersiveMode";
 import { motion } from "framer-motion";
 import Footer from "@/components/Footer";
+import ImmersivePublications from "@/components/creator/ImmersivePublications";
 
 // Données mockées pour le feed des créateurs
 const generateMockFeed = (): CreatorFeedPost[] => {
@@ -162,6 +155,16 @@ const trendingVideos = [
     performer: "OfficeLover"
   }
 ];
+
+interface ImmersivePublicationsProps {
+  posts: CreatorFeedPost[];
+  onExitImmersive: () => void;
+  activePromo: {
+    type: 'xtease' | 'creator' | 'trending' | null;
+    data: any;
+  };
+  onClosePromo: () => void;
+}
 
 const Index = () => {
   const isMobile = useIsMobile();
@@ -386,15 +389,6 @@ const Index = () => {
               Mode Immersif
             </Button>
           </motion.div>
-
-          {/* CreaVerse Access Button - Si l'utilisateur est connecté */}
-          {currentUser && (
-            <div className="container mx-auto px-4 py-4 text-center">
-              <Button asChild className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white">
-                <Link to="/creaverse/performer/1">Accéder à CreaVerse</Link>
-              </Button>
-            </div>
-          )}
 
           {/* Section feed immersif en première position */}
           <div className="container max-w-md mx-auto px-4 pb-4">
