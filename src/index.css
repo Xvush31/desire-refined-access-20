@@ -1,6 +1,230 @@
 
+@import './styles/base.css';
+@import './styles/components.css';
+@import './styles/utilities.css';
+@import './styles/xtease-animations.css';
+@import './styles/revolutionary-navigation.css';
 @import './styles/immersive-mode.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
+    --radius: 0.75rem;
+    --golden-small: 0.618rem;
+    --golden-medium: 1rem;
+    --golden-large: 1.618rem;
+    --brand-gradient: linear-gradient(135deg, #ff3366, #ff9933);
+  }
+
+  .dark {
+    --background: 240 20% 10%; /* Dark navy background from the image */
+    --foreground: 0 0% 98%;
+    --card: 240 20% 12%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 20% 12%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 330 100% 50%; /* Bright pink color from the image */
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 15% 15%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 15% 15%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 330 100% 50%; /* Same pink accent */
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 15% 20%;
+    --input: 240 15% 20%;
+    --ring: 330 100% 50%; /* Pink ring */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-muted rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/50 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/70;
+  }
+}
+
+@layer components {
+  /* Glass effects */
+  .glass {
+    @apply bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl;
+  }
+  
+  .dark .glass {
+    @apply bg-[#1a1b31]/60 backdrop-blur-lg border border-[#2a2b4a] rounded-2xl;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  }
+  
+  /* Depth effects */
+  .depth-shadow {
+    @apply shadow-[0_8px_30px_rgb(0,0,0,0.12)];
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  
+  .depth-shadow:hover {
+    @apply shadow-[0_30px_60px_rgba(0,0,0,0.15)];
+    transform: translateY(-3px);
+  }
+  
+  /* Animated gradient text */
+  .animated-gradient {
+    background: linear-gradient(
+      270deg,
+      #ff8ba7 0%,
+      #ffc6c7 50%,
+      #fae3d9 100%
+    );
+    background-size: 600% 600%;
+    animation: gradient 3s ease infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* Dark mode animated gradient */
+  .dark .animated-gradient {
+    background: linear-gradient(
+      270deg,
+      #ff3b8b 0%,
+      #ff71a6 50%,
+      #ff3b8b 100%
+    );
+    background-size: 600% 600%;
+    animation: gradient 3s ease infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Footer with copyright */
+footer p.copyright {
+  @apply text-xs text-muted-foreground mt-8;
+}
+
+/* Apple-style interactive transitions */
+.apple-interactive {
+  transition: all 0.4s cubic-bezier(0.42, 0, 0.58, 1);
+}
+
+.apple-interactive:active {
+  transform: scale(0.97);
+}
+
+/* Advanced Focus Styles */
+.focus-ring {
+  @apply outline-none ring-offset-2;
+  transition: box-shadow 0.15s ease;
+}
+
+.focus-ring:focus-visible {
+  @apply ring-2 ring-ring;
+}
+
+/* Neuro-aesthetic micro-interactions */
+@keyframes micro-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.micro-interaction {
+  animation: micro-pulse 0.4s ease-out;
+}
+
+/* Fluid typography for better readability */
+.fluid-type {
+  font-size: clamp(1rem, 0.8rem + 0.5vw, 1.25rem);
+  line-height: 1.5;
+}
+
+.fluid-type-h1 {
+  font-size: clamp(1.5rem, 1.3rem + 1vw, 2.5rem);
+  line-height: 1.2;
+}
+
+.fluid-type-h2 {
+  font-size: clamp(1.3rem, 1.1rem + 0.8vw, 2rem);
+  line-height: 1.25;
+}
+
+/* Dark mode specific header styles */
+.dark .sexy-glass {
+  @apply bg-[#1a1b31]/80 backdrop-blur-md border border-[#2a2b4a];
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Update the pink accent in dark mode */
+.dark .text-brand-accent,
+.dark .text-pink-500 {
+  color: #ff3b8b;
+}
+
+.dark .bg-brand-accent,
+.dark .bg-pink-500 {
+  background-color: #ff3b8b;
+}

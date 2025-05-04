@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useCallback } from "react";
 import Header from "@/components/Header";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -71,9 +72,6 @@ const generateMockFeed = (): CreatorFeedPost[] => {
       image: `https://picsum.photos/seed/post${i}/600/1067`, // Format 9:16 approximatif
       caption: captions[i % captions.length],
       likes: Math.floor(Math.random() * 10000) + 100,
-      comments: Math.floor(Math.random() * 500) + 10, // Add missing comments property
-      shares: Math.floor(Math.random() * 200) + 5,    // Add missing shares property
-      bookmarks: Math.floor(Math.random() * 300) + 20, // Add missing bookmarks property
       timestamp: timestamp,
       isPremium: isPremium
     };
@@ -158,12 +156,21 @@ const trendingVideos = [
   }
 ];
 
+interface ImmersivePublicationsProps {
+  posts: CreatorFeedPost[];
+  onExitImmersive: () => void;
+  activePromo: {
+    type: 'xtease' | 'creator' | 'trending' | null;
+    data: any;
+  };
+  onClosePromo: () => void;
+}
+
 const Index = () => {
   const isMobile = useIsMobile();
   const { t } = useLocale();
   const { currentUser, loading } = useAuth();
   
-  // Make sure the allPosts array also has the required properties
   const [posts, setPosts] = useState<CreatorFeedPost[]>(generateMockFeed().slice(0, 6));
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -173,8 +180,6 @@ const Index = () => {
     type: 'xtease' | 'creator' | 'trending' | null,
     data: any
   }>({ type: null, data: null });
-  
-  // Make sure allPosts uses the updated generateMockFeed function
   const allPosts = generateMockFeed();
   
   const { isFirstVisit } = useImmersiveMode();

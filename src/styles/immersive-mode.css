@@ -260,141 +260,133 @@
   }
 }
 
-/* AI Enhancement Effects */
-.ai-adaptation-active {
+/* Addictive Loop UX */
+.addictive-loop {
   position: relative;
+  overflow: hidden;
 }
 
-.ai-adaptation-active::after {
+.addictive-loop::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+  transform: translateX(-100%);
+}
+
+.addictive-loop:hover::after {
+  animation: addictive-shine 1s forwards;
+}
+
+@keyframes addictive-shine {
+  0% {
+    transform: translateX(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) rotate(45deg);
+  }
+}
+
+/* Personalized Ambience */
+.personalized-bg {
+  position: relative;
+  overflow: hidden;
+}
+
+.personalized-bg::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at center, rgba(138, 43, 226, 0.15) 0%, transparent 70%);
-  z-index: 1;
+  background-image: var(--user-pattern, linear-gradient(135deg, rgba(50,50,50,0.02) 25%, transparent 25%, transparent 50%, rgba(50,50,50,0.02) 50%, rgba(50,50,50,0.02) 75%, transparent 75%, transparent));
+  background-size: 10px 10px;
+  opacity: 0.1;
+  z-index: -1;
   pointer-events: none;
 }
 
-/* Biometric Visualization */
-.biometric-wave {
-  position: relative;
-  overflow: hidden;
-}
-
-.biometric-wave::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 10px;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 0, 0, 0),
-    rgba(255, 0, 0, 0.5) 10%,
-    rgba(255, 0, 0, 0.7) 20%,
-    rgba(255, 0, 0, 0.5) 30%,
-    rgba(255, 0, 0, 0) 40%
-  );
-  animation: heart-wave 2s infinite linear;
-  opacity: 0.8;
-  z-index: 2;
-}
-
-@keyframes heart-wave {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-/* Mood-specific content highlighting */
-.romantic-content {
-  box-shadow: 0 0 20px rgba(255, 105, 180, 0.4);
-}
-
-.energetic-content {
-  box-shadow: 0 0 20px rgba(255, 165, 0, 0.4);
-}
-
-.relaxed-content {
-  box-shadow: 0 0 20px rgba(135, 206, 235, 0.4);
-}
-
-.mysterious-content {
-  box-shadow: 0 0 20px rgba(138, 43, 226, 0.4);
-}
-
-.intense-content {
-  box-shadow: 0 0 20px rgba(220, 20, 60, 0.4);
-}
-
-/* Connected Device Indicator */
-.device-connected {
+/* Distinctly Recognizable Visual Identity */
+.xvush-identity {
   position: relative;
 }
 
-.device-connected::after {
+.xvush-identity::before {
   content: '';
   position: absolute;
-  top: -2px;
-  right: -2px;
-  width: 8px;
-  height: 8px;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  background-image: linear-gradient(135deg, #ff3366, #ff9933);
   border-radius: 50%;
-  background-color: #4CAF50;
-  box-shadow: 0 0 5px #4CAF50;
-  z-index: 2;
+  opacity: 0.8;
+  z-index: 10;
 }
 
-/* Advanced Immersive Effects */
-.parallax-bg {
-  transform-style: preserve-3d;
-  perspective: 1000px;
+/* Mobile-First Interactive Elements */
+.mobile-interactive {
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.parallax-layer-back {
-  transform: translateZ(-10px) scale(2);
+.mobile-interactive:active {
+  transform: scale(0.98);
+  box-shadow: 0 0 0 3px rgba(255,105,180,0.2);
 }
 
-.parallax-layer-mid {
-  transform: translateZ(-5px) scale(1.5);
+/* High Contrast Accessibility Mode */
+.high-contrast {
+  --contrast-background: #121212;
+  --contrast-foreground: #ffffff;
+  --contrast-accent: #ff3366;
+  background: var(--contrast-background);
+  color: var(--contrast-foreground);
 }
 
-.parallax-layer-front {
-  transform: translateZ(0px);
+.high-contrast img {
+  filter: contrast(1.2);
 }
 
-/* Rich Haptic Feedback Visualization */
-.haptic-ripple {
+/* Haptic Feedback Visual Indicator */
+.haptic-indicator {
   position: relative;
-  overflow: hidden;
 }
 
-.haptic-ripple::after {
-  content: '';
+.haptic-indicator::after {
+  content: '✓';
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
   transform: translate(-50%, -50%) scale(0);
-  animation: haptic-ripple 1s cubic-bezier(0, 0, 0.2, 1);
+  color: white;
+  background-color: rgba(0,0,0,0.5);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   opacity: 0;
-  z-index: 1;
+  z-index: 100;
   pointer-events: none;
 }
 
-@keyframes haptic-ripple {
+.haptic-indicator.active::after {
+  animation: haptic-confirm 0.5s forwards;
+}
+
+@keyframes haptic-confirm {
   0% {
     transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
     opacity: 1;
   }
   100% {
-    transform: translate(-50%, -50%) scale(4);
+    transform: translate(-50%, -50%) scale(1);
     opacity: 0;
   }
 }

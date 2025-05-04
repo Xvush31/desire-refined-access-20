@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -66,9 +65,6 @@ const generateMockFeed = (): CreatorFeedPost[] => {
       image: `https://picsum.photos/seed/post${i}/600/1067`, // Format 9:16 approximatif
       caption: captions[i % captions.length],
       likes: Math.floor(Math.random() * 10000) + 100,
-      comments: Math.floor(Math.random() * 500) + 10,   // Added comments property
-      shares: Math.floor(Math.random() * 200) + 5,      // Added shares property
-      bookmarks: Math.floor(Math.random() * 300) + 20,  // Added bookmarks property
       timestamp: timestamp,
       isPremium: isPremium
     };
