@@ -34,7 +34,7 @@ export const isCreatorPost = (item: MixedContentType): item is CreatorFeedPost =
 };
 
 // Données statiques pour les vidéos XTease à utiliser dans l'interface immersive
-const immersiveXTeaseVideos = [
+const immersiveXTeaseVideos: XTeaseVideo[] = [
   {
     id: 101,
     title: "Moment intime en soirée",
@@ -103,7 +103,8 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
   
   // Préparer le contenu mélangé au chargement
   useEffect(() => {
-    const mixed = [...posts];
+    // We need to work with a copy that's explicitly typed as MixedContentType[]
+    const mixed: MixedContentType[] = [...posts];
     
     // Insérer une vidéo XTease toutes les 2-3 publications
     let insertIndex = Math.floor(Math.random() * 2) + 2; // Commence entre la 2e et 3e publication
