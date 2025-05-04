@@ -1,9 +1,10 @@
+
 import React, { useRef, useState, useEffect } from 'react';
 import { useImmersiveMode } from '@/hooks/useImmersiveMode';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Moon, Sun, Volume2, VolumeX, Vibrate, X } from 'lucide-react';
+import { Moon, Sun, Volume2, VolumeX, Vibrate, X, Brain, Pulse } from 'lucide-react';
 import { toast } from 'sonner';
 import { CreatorFeedPost } from './CreatorFeedItem';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
@@ -13,6 +14,7 @@ import { Card } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Link } from 'react-router-dom';
 import HLSVideoPlayer from '@/components/HLSVideoPlayer';
+import { useAIEnhancedImmersion, ContentMood } from '@/hooks/useAIEnhancedImmersion';
 
 // XTease video type definition
 export interface XTeaseVideo {
@@ -89,6 +91,8 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
   const [controlsVisible, setControlsVisible] = useState(true);
   const [isVideoContent, setIsVideoContent] = useState(false);
   const [videoMuted, setVideoMuted] = useState(true);
+  const [showAIPanel, setShowAIPanel] = useState(false);
+  const [biometricConnected, setBiometricConnected] = useState(false);
   
   // Référence pour les éléments interactifs
   const imageRef = useRef<HTMLDivElement>(null);
@@ -100,6 +104,31 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
   
   // Mélanger les publications et les vidéos XTease
   const [mixedContent, setMixedContent] = useState<MixedContentType[]>([]);
+  
+  // Enhanced AI Immersion
+  const {
+    contentMood,
+    userMood,
+    ambientEffect,
+    isAdaptationActive,
+    updateContentMood,
+    updateUserMood,
+    setAmbientEffect,
+    toggleAdaptation,
+    calculateOptimalEffects,
+    setUserPreferences,
+    biometricData
+  } = useAIEnhancedImmersion({
+    enableMoodDetection: true,
+    enableBiometricIntegration: biometricConnected,
+    defaultContentMood: 'mysterious',
+    userPreferences: {
+      colorIntensity: 0.8,
+      soundLevel: soundEnabled ? 0.7 : 0,
+      hapticsIntensity: vibrationsEnabled ? 0.7 : 0,
+      enableAdvancedEffects: true
+    }
+  });
   
   // Préparer le contenu mélangé au chargement
   useEffect(() => {
@@ -139,8 +168,15 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
     if (currentIndex < mixedContent.length) {
       const currentItem = mixedContent[currentIndex];
       setIsVideoContent('streamUrl' in currentItem);
+      
+      // Update content mood based on current content
+      if (isAdaptationActive) {
+        updateContentMood(isCreatorPost(currentItem) ? 
+          currentItem.caption || currentItem.creatorName : 
+          currentItem.title || currentItem.performer);
+      }
     }
-  }, [currentIndex, mixedContent]);
+  }, [currentIndex, mixedContent, isAdaptationActive]);
   
   // Change post every 12 seconds in desktop mode only - si ce n'est pas une vidéo
   useEffect(() => {
@@ -195,22 +231,35 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
     }
   }, [isImmersive]);
   
-  // Neuro-Aesthetic Loop effects - change mood every 45 seconds
+  // AI-Driven Ambient Effects - update ambient mood based on content mood
   useEffect(() => {
-    const moodTimer = setInterval(() => {
-      const moods: Array<'calm' | 'energetic' | 'mysterious'> = ['calm', 'energetic', 'mysterious'];
-      const currentMoodIndex = moods.indexOf(ambientMood);
-      const nextMoodIndex = (currentMoodIndex + 1) % moods.length;
-      setAmbientMood(moods[nextMoodIndex]);
-      
-      // Trigger a brief neuro effect when mood changes
-      setShowNeuroEffect(true);
-      setTimeout(() => setShowNeuroEffect(false), 3000);
-      
-    }, 45000);
+    if (!isAdaptationActive) return;
     
-    return () => clearInterval(moodTimer);
-  }, [ambientMood]);
+    // Map content mood to ambient mood
+    const moodToAmbient = {
+      romantic: 'calm' as const,
+      relaxed: 'calm' as const,
+      energetic: 'energetic' as const,
+      intense: 'energetic' as const,
+      mysterious: 'mysterious' as const
+    };
+    
+    // Update ambient mood based on content mood
+    setAmbientMood(moodToAmbient[contentMood] || 'calm');
+    
+    // Trigger a brief neuro effect when mood changes
+    setShowNeuroEffect(true);
+    setTimeout(() => setShowNeuroEffect(false), 3000);
+    
+  }, [contentMood, isAdaptationActive]);
+  
+  // Update user preferences when sound/vibration settings change
+  useEffect(() => {
+    setUserPreferences({
+      soundLevel: soundEnabled ? 0.7 : 0,
+      hapticsIntensity: vibrationsEnabled ? 0.7 : 0
+    });
+  }, [soundEnabled, vibrationsEnabled]);
   
   // Parallax effect on scroll
   useEffect(() => {
@@ -238,6 +287,16 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
   
   // Fonction pour afficher les contrôles temporairement lors d'une interaction
   const handleUserInteraction = () => {
+    // Record interaction for user mood analysis
+    if (isAdaptationActive) {
+      updateUserMood({
+        timestamp: Date.now(),
+        action: 'tap',
+        contentType: isVideoContent ? 'video' : 'image',
+        contentIndex: currentIndex
+      });
+    }
+    
     // Afficher les contrôles
     setControlsVisible(true);
     
@@ -285,11 +344,44 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
       interactWithContent(imageRef.current, 'text', 'low');
     }
   };
+  
+  const toggleAIAdaptation = () => {
+    toggleAdaptation();
+    toast.info(isAdaptationActive 
+      ? "Adaptation IA désactivée" 
+      : "Adaptation IA activée - l'ambiance s'adaptera à votre contenu"
+    );
+    handleUserInteraction();
+  };
+  
+  const toggleBiometricConnection = () => {
+    setBiometricConnected(prev => !prev);
+    toast.info(biometricConnected 
+      ? "Connexion biométrique désactivée" 
+      : "Connexion aux appareils biométriques activée"
+    );
+    handleUserInteraction();
+  };
 
   if (!mixedContent.length) return null;
 
-  // Get ambient style based on current mood
+  // Get ambient style based on AI-enhanced content mood
   const getAmbientStyle = () => {
+    // Get optimal effects from AI
+    const optimalEffects = calculateOptimalEffects();
+    
+    // Use optimized background if AI adaptation is active, otherwise use the mood-based one
+    if (isAdaptationActive && optimalEffects.colorScheme) {
+      return {
+        background: optimalEffects.colorScheme.background,
+        transition: 'all 2s cubic-bezier(0.4, 0, 0.2, 1)',
+        boxShadow: theme === 'dark' 
+          ? `0 0 50px 5px ${optimalEffects.colorScheme.primary.replace(/[^,]+(?=\))/, '0.15')}` 
+          : `0 0 50px 5px ${optimalEffects.colorScheme.primary.replace(/[^,]+(?=\))/, '0.05')}`
+      };
+    }
+    
+    // Fallback to standard ambient styles
     switch(ambientMood) {
       case 'calm':
         return {
@@ -547,6 +639,111 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
     }
   };
   
+  // Render the AI panel 
+  const renderAIPanelContent = () => {
+    return (
+      <Card className="bg-background/90 backdrop-blur-lg border-primary/20 p-4 max-w-md w-full rounded-xl">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
+            <Brain size={18} className="text-purple-400" />
+            Optimisation IA
+          </h3>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="rounded-full" 
+            onClick={() => setShowAIPanel(false)}
+          >
+            <X size={18} />
+          </Button>
+        </div>
+        
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-sm font-medium">Adaptation IA</p>
+              <p className="text-xs text-muted-foreground">Ajuste automatiquement l'ambiance</p>
+            </div>
+            <Button 
+              variant={isAdaptationActive ? "default" : "outline"}
+              size="sm"
+              onClick={toggleAIAdaptation}
+            >
+              {isAdaptationActive ? "Activé" : "Désactivé"}
+            </Button>
+          </div>
+          
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-sm font-medium">Connexion biométrique</p>
+              <p className="text-xs text-muted-foreground">Synchronise avec vos appareils connectés</p>
+            </div>
+            <Button 
+              variant={biometricConnected ? "default" : "outline"}
+              size="sm"
+              onClick={toggleBiometricConnection}
+            >
+              {biometricConnected ? "Connecté" : "Déconnecté"}
+            </Button>
+          </div>
+          
+          {biometricConnected && biometricData.heartRate && (
+            <div className="bg-primary/10 p-3 rounded-lg">
+              <h4 className="font-medium text-sm flex items-center gap-1 mb-2">
+                <Pulse size={14} className="text-red-400" />
+                Données biométriques
+              </h4>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <p className="text-xs text-muted-foreground">Rythme cardiaque</p>
+                  <p className="text-sm font-medium">{biometricData.heartRate} BPM</p>
+                </div>
+                {biometricData.respirationRate && (
+                  <div>
+                    <p className="text-xs text-muted-foreground">Respiration</p>
+                    <p className="text-sm font-medium">{biometricData.respirationRate} resp/min</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          
+          <div>
+            <p className="text-sm font-medium mb-1">Ambiance détectée</p>
+            <div className="grid grid-cols-3 gap-2">
+              {(['calm', 'energetic', 'mysterious'] as const).map(mood => (
+                <Button
+                  key={mood}
+                  variant={ambientMood === mood ? "default" : "outline"}
+                  size="sm"
+                  className="w-full text-xs"
+                  onClick={() => {
+                    setAmbientMood(mood);
+                    toast.info(`Ambiance ${mood} activée`);
+                  }}
+                >
+                  {mood === 'calm' ? 'Calme' : mood === 'energetic' ? 'Énergique' : 'Mystérieux'}
+                </Button>
+              ))}
+            </div>
+          </div>
+          
+          <div>
+            <p className="text-sm font-medium mb-1">Analyse du contenu</p>
+            <div className="bg-background/50 p-2 rounded-lg text-xs">
+              <p className="mb-1">Humeur détectée: <span className="font-medium">{contentMood}</span></p>
+              <p>Engagement utilisateur: <span className="font-medium">
+                {userMood === 'excited' ? 'Excité' : 
+                 userMood === 'calm' ? 'Calme' : 
+                 userMood === 'curious' ? 'Curieux' : 'Attentif'}
+              </span></p>
+            </div>
+          </div>
+        </div>
+      </Card>
+    );
+  };
+  
   return (
     <AnimatePresence>
       <motion.div 
@@ -619,6 +816,18 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
               </Button>
               
               <Button 
+                variant={isAdaptationActive ? "default" : "outline"}
+                size="icon" 
+                className={`rounded-full ${theme === 'dark' ? 'bg-background/50' : 'bg-background/80'} backdrop-blur-sm`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowAIPanel(!showAIPanel);
+                }}
+              >
+                <Brain size={18} />
+              </Button>
+              
+              <Button 
                 variant="outline" 
                 className={`rounded-full ${theme === 'dark' ? 'bg-background/50' : 'bg-background/80'} backdrop-blur-sm`}
                 onClick={(e) => {
@@ -651,6 +860,30 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
                 onClick={(e) => e.stopPropagation()}
               >
                 {renderPromoContent()}
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        {/* AI Panel */}
+        <AnimatePresence>
+          {showAIPanel && (
+            <motion.div 
+              className="fixed inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowAIPanel(false)}
+            >
+              <motion.div 
+                className="p-4 max-w-sm w-full"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: "spring", damping: 25 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {renderAIPanelContent()}
               </motion.div>
             </motion.div>
           )}
@@ -737,7 +970,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
           
           {/* Welcome message */}
           <AnimatePresence>
-            {currentIndex === 0 && !activePromo?.type && (
+            {currentIndex === 0 && !activePromo?.type && !showAIPanel && (
               <motion.div
                 className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-background/80 backdrop-blur-md px-6 py-3 rounded-full shadow-lg"
                 initial={{ opacity: 0, y: 20 }}
@@ -746,7 +979,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
                 transition={{ delay: 0.5, duration: 0.5 }}
               >
                 <p className="text-foreground text-center">
-                  Bienvenue dans l'expérience immersive XVush!
+                  Expérience immersive XVush amplifiée par IA
                 </p>
               </motion.div>
             )}
