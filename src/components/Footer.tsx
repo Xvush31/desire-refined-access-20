@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
+import { CREAVERSE_DOMAIN } from "@/utils/creaverseLinks";
 
 const Footer = () => {
   return (
@@ -34,7 +35,16 @@ const Footer = () => {
                 <li><Link to="/about" className="text-muted-foreground hover:text-foreground">À propos</Link></li>
                 <li><Link to="/contact" className="text-muted-foreground hover:text-foreground">Contact</Link></li>
                 <li><Link to="/xtease" className="text-muted-foreground hover:text-foreground">XTease</Link></li>
-                <li><Link to="/creaverse" className="text-muted-foreground hover:text-foreground">CreaVerse</Link></li>
+                <li>
+                  <a 
+                    href={CREAVERSE_DOMAIN} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    CreaVerse
+                  </a>
+                </li>
               </ul>
             </div>
             

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, User } from "lucide-react";
@@ -11,6 +10,7 @@ import { useTheme } from "@/hooks/use-theme";
 import { NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuLink, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
 import { Link } from "react-router-dom";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
+import { CREAVERSE_DOMAIN } from "@/utils/creaverseLinks";
 
 const Header = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -78,6 +78,12 @@ const Header = () => {
     ? 'bg-[#1a1b31]/90 backdrop-blur-md border-b border-[#2a2b4a]' 
     : '';
 
+  // Handler for CreaVerse Demo link
+  const handleCreaVerseClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    window.open(`${CREAVERSE_DOMAIN}/performer/1`, '_blank');
+  };
+
   return (
     <motion.header 
       className={`sticky top-0 z-40 transition-all duration-300 ${
@@ -116,9 +122,15 @@ const Header = () => {
                     </Link>
                   </NavigationMenuItem>
                   <NavigationMenuItem>
-                    <Link to="/performer/1" className={navigationMenuTriggerStyle()}>
+                    <a 
+                      href={`${CREAVERSE_DOMAIN}/performer/1`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      onClick={handleCreaVerseClick}
+                      className={navigationMenuTriggerStyle()}
+                    >
                       CreaVerse Demo
-                    </Link>
+                    </a>
                   </NavigationMenuItem>
                 </NavigationMenuList>
               </NavigationMenu>

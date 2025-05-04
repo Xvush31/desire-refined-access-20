@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -7,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { signInWithGoogle, auth } from "../firebase";
 import { toast } from "sonner";
 import Logo from "@/components/Logo";
+import { CREAVERSE_DOMAIN } from "@/utils/creaverseLinks";
 
 interface AuthContextType {
   login: (token: string, role: string, uid: string) => void;
@@ -21,7 +21,7 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth() as AuthContextType;
+  const { login } = useAuth();
 
   // Get the intended destination from location state, or use default
   const from = location.state?.from || "/";
@@ -134,6 +134,12 @@ const Login: React.FC = () => {
     }
   };
 
+  // Handler for opening CreaVerse directly
+  const handleCreaVerseClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    window.open(CREAVERSE_DOMAIN, '_blank');
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-8">
@@ -215,11 +221,17 @@ const Login: React.FC = () => {
           </Link>
         </p>
 
-        {/* Ajout d'un lien direct vers CreaVerse pour debug */}
+        {/* CreaVerse direct access link */}
         <div className="text-center mt-4">
-          <Link to="/creaverse" className="text-sm text-brand-accent hover:underline">
+          <a 
+            href={CREAVERSE_DOMAIN}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-brand-accent hover:underline"
+            onClick={handleCreaVerseClick}
+          >
             Accéder directement à CreaVerse
-          </Link>
+          </a>
         </div>
       </div>
     </div>

@@ -29,13 +29,9 @@ import SubscriptionConfirmation from "./pages/SubscriptionConfirmation";
 import Subscription from "./pages/Subscription";
 import AuthCallback from "./pages/AuthCallback";
 import AccessDenied from "./pages/AccessDenied";
-import CreaVerse from "./features/creaverse";
-import CreaVerseApp from "./features/creaverse/CreaVerseApp";
-import CreatorProfile from "./features/creaverse/pages/CreatorProfile";
-import CreatorDashboard from "./features/creaverse/pages/CreatorDashboard";
-import CreatorSettings from "./features/creaverse/pages/CreatorSettings";
 import { useAuth } from "./contexts/AuthContext";
 import PerformerProfile from "./pages/PerformerProfile";
+import CreaVerseRedirect from "./components/CreaVerseRedirect";
 
 // Simple layout component to wrap routes that handles auth loading state
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -56,25 +52,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-// Redirect component for legacy routes
-const PerformerRedirect: React.FC = () => {
-  const { performerId } = useParams<{ performerId: string }>();
-  console.log("Redirecting from legacy performer route to:", `/creaverse/performer/${performerId}`);
-  return <Navigate to={`/creaverse/performer/${performerId}`} replace />;
-};
-
-const CreatorDashboardRedirect: React.FC = () => {
-  const { performerId } = useParams<{ performerId: string }>();
-  console.log("Redirecting from legacy creator dashboard to:", `/creaverse/creator/${performerId}/dashboard`);
-  return <Navigate to={`/creaverse/creator/${performerId}/dashboard`} replace />;
-};
-
-const CreatorSettingsRedirect: React.FC = () => {
-  const { performerId } = useParams<{ performerId: string }>();
-  console.log("Redirecting from legacy creator settings to:", `/creaverse/creator/${performerId}/settings`);
-  return <Navigate to={`/creaverse/creator/${performerId}/settings`} replace />;
-};
-
 function App() {
   const { currentUser, loading } = useAuth();
   const navigate = useNavigate();
@@ -82,9 +59,6 @@ function App() {
   
   // Debug logging
   console.log("App rendering, auth state:", { currentUser, loading, path: location.pathname });
-  
-  // Add a direct link to CreaVerse on the console for debugging
-  console.log("Try accessing CreaVerse directly at:", window.location.origin + "/creaverse");
   
   // Track access to legacy URLs
   useEffect(() => {
@@ -125,27 +99,18 @@ function App() {
         <Route path="/auth/callback" element={<Layout><AuthCallback /></Layout>} />
         <Route path="/access-denied" element={<Layout><AccessDenied /></Layout>} />
 
-        {/* Main CreaVerse route - uses CreaVerse component with RevolutionaryNavigation */}
-        <Route path="/creaverse" element={<CreaVerse />}>
-          <Route index element={<div className="container mx-auto px-4 py-8 text-center">
-            <h1 className="text-2xl font-bold mb-4">Bienvenue à CreaVerse</h1>
-            <p className="mb-6">L'univers des créateurs de XVush</p>
-          </div>} />
-          <Route path="performer/:performerId" element={<CreatorProfile />} />
-          <Route path="creator/:performerId/dashboard" element={<CreatorDashboard />} />
-          <Route path="creator/:performerId/settings" element={<CreatorSettings />} />
-        </Route>
+        {/* Main CreaVerse redirect routes */}
+        <Route path="/creaverse" element={<CreaVerseRedirect />} />
+        <Route path="/creaverse/*" element={<CreaVerseRedirect />} />
+        <Route path="/creaverse-app/*" element={<CreaVerseRedirect pathPrefix="creaverse-app" />} />
         
-        {/* New CreaVerse standalone app routes */}
-        <Route path="/creaverse-app/*" element={<CreaVerseApp />} />
-
-        {/* Legacy performer routes - now properly handled */}
+        {/* Legacy performer routes - redirect to CreaVerse */}
         <Route path="/performer/:performerId" element={<PerformerProfile />} />
         <Route path="/performers/:performerId" element={<PerformerProfile />} />
 
-        {/* Legacy creator routes - redirect to CreaVerse routes */}
-        <Route path="/creator/:performerId/dashboard" element={<CreatorDashboardRedirect />} />
-        <Route path="/creator/:performerId/settings" element={<CreatorSettingsRedirect />} />
+        {/* Legacy creator routes - redirect to CreaVerse */}
+        <Route path="/creator/:performerId/dashboard" element={<CreaVerseRedirect pathPrefix="creator" />} />
+        <Route path="/creator/:performerId/settings" element={<CreaVerseRedirect pathPrefix="creator" />} />
 
         {/* 404 Route */}
         <Route path="*" element={<NotFound />} />
