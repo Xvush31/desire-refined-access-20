@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
-import SignUp from './pages/SignUp';
+import Signup from './pages/Signup';
 import Subscription from './pages/Subscription';
 import Settings from './pages/Settings';
 import XTease from './pages/XTease';
@@ -34,7 +35,7 @@ function App() {
           {/* Add new immersive showcase route */}
           <Route path="/immersive" element={<ImmersiveShowcase />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/subscription" element={<Subscription />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/xtease" element={<XTease />} />

@@ -1,992 +1,176 @@
 
-import React, { useRef, useState, useEffect } from 'react';
-import { useImmersiveMode } from '@/hooks/useImmersiveMode';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Button } from '@/components/ui/button';
-import { Moon, Sun, Volume2, VolumeX, Vibrate, X, Brain, Pulse } from 'lucide-react';
-import { toast } from 'sonner';
-import { CreatorFeedPost } from './CreatorFeedItem';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { useTheme } from '@/hooks/use-theme';
-import { useIsMobile } from '@/hooks/use-mobile';
+import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Link } from 'react-router-dom';
-import HLSVideoPlayer from '@/components/HLSVideoPlayer';
-import { useAIEnhancedImmersion, ContentMood } from '@/hooks/useAIEnhancedImmersion';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { useTheme } from '@/hooks/use-theme';
+import { motion } from 'framer-motion';
+import { Heart, Share, MessageCircle, Sparkles, Play } from 'lucide-react';
+import CreatorFeedItem from './CreatorFeedItem';
 
-// XTease video type definition
-export interface XTeaseVideo {
+// Define the types needed
+interface CreatorFeedPost {
+  id: number;
+  creatorId: string;
+  creatorName: string;
+  creatorAvatar: string;
+  image: string;
+  caption: string;
+  timestamp: string;
+  likes: number;
+  comments: number;
+  shares: number;
+  bookmarks: number;
+}
+
+interface XTeaseVideo {
   id: number;
   title: string;
   performer: string;
   views: string;
   thumbnail: string;
   streamUrl: string;
-  isPremium?: boolean;
+  isPremium: boolean;
 }
 
-// Union type for mixed content
-export type MixedContentType = CreatorFeedPost | XTeaseVideo;
+const ImmersivePublications: React.FC = () => {
+  const { theme } = useTheme();
+  const [publications, setPublications] = useState<CreatorFeedPost[]>([]);
+  const [activeIndex, setActiveIndex] = useState(0);
 
-// Type guard to check if an item is a CreatorFeedPost or XTeaseVideo
-export const isCreatorPost = (item: MixedContentType): item is CreatorFeedPost => {
-  return 'creatorName' in item;
-};
-
-// Données statiques pour les vidéos XTease à utiliser dans l'interface immersive
-const immersiveXTeaseVideos: XTeaseVideo[] = [
-  {
-    id: 101,
-    title: "Moment intime en soirée",
-    performer: "PartyGirl",
-    views: "421K vues",
-    thumbnail: "https://picsum.photos/seed/xtease1/1080/1920",
-    streamUrl: "https://d38s5lp2g9pf7s.cloudfront.net/video-1/playlist.m3u8",
-    isPremium: false,
-  },
-  {
-    id: 102,
-    title: "Séance photo personnelle",
-    performer: "PhotoArtist",
-    views: "732K vues",
-    thumbnail: "https://picsum.photos/seed/xtease2/1080/1920",
-    streamUrl: "https://d38s5lp2g9pf7s.cloudfront.net/video-2/playlist.m3u8",
-    isPremium: true,
-  },
-  {
-    id: 103,
-    title: "Rencontre dans un hôtel 5 étoiles",
-    performer: "LuxuryCouple",
-    views: "628K vues",
-    thumbnail: "https://picsum.photos/seed/xtease3/1080/1920",
-    streamUrl: "https://d38s5lp2g9pf7s.cloudfront.net/video-3/playlist.m3u8",
-    isPremium: true,
-  },
-];
-
-interface ImmersivePublicationsProps {
-  posts: CreatorFeedPost[];
-  onExitImmersive: () => void;
-  activePromo?: {
-    type: 'xtease' | 'creator' | 'trending' | null;
-    data: any;
-  };
-  onClosePromo?: () => void;
-}
-
-const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({ 
-  posts, 
-  onExitImmersive,
-  activePromo = { type: null, data: null },
-  onClosePromo = () => {}
-}) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [vibrationsEnabled, setVibrationsEnabled] = useState(true);
-  const [isDescriptionVisible, setIsDescriptionVisible] = useState(true);
-  const [showNeuroEffect, setShowNeuroEffect] = useState(false);
-  const [ambientMood, setAmbientMood] = useState<'calm' | 'energetic' | 'mysterious'>('calm');
-  const [controlsVisible, setControlsVisible] = useState(true);
-  const [isVideoContent, setIsVideoContent] = useState(false);
-  const [videoMuted, setVideoMuted] = useState(true);
-  const [showAIPanel, setShowAIPanel] = useState(false);
-  const [biometricConnected, setBiometricConnected] = useState(false);
-  
-  // Référence pour les éléments interactifs
-  const imageRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const controlsTimerRef = useRef<NodeJS.Timeout | null>(null);
-  
-  const isMobile = useIsMobile();
-  const { theme, setTheme } = useTheme();
-  
-  // Mélanger les publications et les vidéos XTease
-  const [mixedContent, setMixedContent] = useState<MixedContentType[]>([]);
-  
-  // Enhanced AI Immersion
-  const {
-    contentMood,
-    userMood,
-    ambientEffect,
-    isAdaptationActive,
-    updateContentMood,
-    updateUserMood,
-    setAmbientEffect,
-    toggleAdaptation,
-    calculateOptimalEffects,
-    setUserPreferences,
-    biometricData
-  } = useAIEnhancedImmersion({
-    enableMoodDetection: true,
-    enableBiometricIntegration: biometricConnected,
-    defaultContentMood: 'mysterious',
-    userPreferences: {
-      colorIntensity: 0.8,
-      soundLevel: soundEnabled ? 0.7 : 0,
-      hapticsIntensity: vibrationsEnabled ? 0.7 : 0,
-      enableAdvancedEffects: true
-    }
-  });
-  
-  // Préparer le contenu mélangé au chargement
   useEffect(() => {
-    // We need to work with a copy that's explicitly typed as MixedContentType[]
-    const mixed: MixedContentType[] = [...posts];
-    
-    // Insérer une vidéo XTease toutes les 2-3 publications
-    let insertIndex = Math.floor(Math.random() * 2) + 2; // Commence entre la 2e et 3e publication
-    
-    while (insertIndex < mixed.length) {
-      // Sélectionner une vidéo XTease aléatoire
-      const randomXTeaseIndex = Math.floor(Math.random() * immersiveXTeaseVideos.length);
-      const xteaseVideo = immersiveXTeaseVideos[randomXTeaseIndex];
-      
-      // Insérer la vidéo XTease
-      mixed.splice(insertIndex, 0, xteaseVideo);
-      
-      // Prochain point d'insertion: 2-3 publications plus loin
-      insertIndex += Math.floor(Math.random() * 2) + 3;
-    }
-    
-    setMixedContent(mixed);
-  }, [posts]);
-  
-  const {
-    isImmersive,
-    toggleImmersive,
-    interactWithContent
-  } = useImmersiveMode({
-    enableSound: soundEnabled,
-    enableVibration: vibrationsEnabled,
-    enableLightEffects: true
-  });
+    // Simulate fetching creator feed posts
+    const mockPosts: CreatorFeedPost[] = [
+      {
+        id: 1,
+        creatorId: "creator1",
+        creatorName: "Sophie Dream",
+        creatorAvatar: "https://picsum.photos/seed/creator1/100/100",
+        image: "https://picsum.photos/seed/post1/800/600",
+        caption: "Découvrez ma nouvelle création immersive. Une expérience sensorielle unique!",
+        timestamp: "Il y a 2 heures",
+        likes: 1245,
+        comments: 89,
+        shares: 34,
+        bookmarks: 67,
+      },
+      {
+        id: 2,
+        creatorId: "creator2",
+        creatorName: "Max Immersion",
+        creatorAvatar: "https://picsum.photos/seed/creator2/100/100",
+        image: "https://picsum.photos/seed/post2/800/600",
+        caption: "Comment transformer vos émotions en expériences sensorielles? Découvrez ma méthode dans ce nouveau contenu exclusif.",
+        timestamp: "Il y a 4 heures",
+        likes: 2378,
+        comments: 156,
+        shares: 87,
+        bookmarks: 112,
+      },
+      {
+        id: 3,
+        creatorId: "creator3",
+        creatorName: "Léa Créative",
+        creatorAvatar: "https://picsum.photos/seed/creator3/100/100",
+        image: "https://picsum.photos/seed/post3/800/600",
+        caption: "Plongez dans mon univers immersif avec cette nouvelle série de contenus adaptés à vos émotions.",
+        timestamp: "Il y a 8 heures",
+        likes: 1892,
+        comments: 124,
+        shares: 76,
+        bookmarks: 94,
+      },
+    ];
 
-  // Vérifier si l'élément actuel est une vidéo ou une publication
-  useEffect(() => {
-    if (currentIndex < mixedContent.length) {
-      const currentItem = mixedContent[currentIndex];
-      setIsVideoContent('streamUrl' in currentItem);
-      
-      // Update content mood based on current content
-      if (isAdaptationActive) {
-        updateContentMood(isCreatorPost(currentItem) ? 
-          currentItem.caption || currentItem.creatorName : 
-          currentItem.title || currentItem.performer);
+    // XTease videos data
+    const xTeaseVideos: XTeaseVideo[] = [
+      {
+        id: 101,
+        title: "Voyage Sensoriel",
+        performer: "Emma Immersion",
+        views: "45.2K",
+        thumbnail: "https://picsum.photos/seed/xtease1/800/450",
+        streamUrl: "https://example.com/stream1",
+        isPremium: true,
+      },
+      {
+        id: 102,
+        title: "Rêve Lucide",
+        performer: "Thomas Créateur",
+        views: "32.1K",
+        thumbnail: "https://picsum.photos/seed/xtease2/800/450",
+        streamUrl: "https://example.com/stream2",
+        isPremium: false,
       }
-    }
-  }, [currentIndex, mixedContent, isAdaptationActive]);
-  
-  // Change post every 12 seconds in desktop mode only - si ce n'est pas une vidéo
+    ];
+
+    // Transform XTease videos to CreatorFeedPost format
+    const immersiveXTeaseVideos: CreatorFeedPost[] = xTeaseVideos.map((video): CreatorFeedPost => ({
+      id: video.id,
+      creatorId: `performer-${video.id}`,
+      creatorName: video.performer,
+      creatorAvatar: `https://picsum.photos/seed/performer${video.id}/100/100`,
+      image: video.thumbnail,
+      caption: video.title,
+      timestamp: `${Math.floor(Math.random() * 12) + 1} heures ago`,
+      likes: Math.floor(Math.random() * 5000) + 500,
+      comments: Math.floor(Math.random() * 200) + 10,
+      shares: Math.floor(Math.random() * 100) + 5,
+      bookmarks: Math.floor(Math.random() * 300) + 20
+    }));
+
+    // Combine both arrays
+    setPublications([...mockPosts, ...immersiveXTeaseVideos]);
+  }, []);
+
+  // Auto rotate through publications
   useEffect(() => {
-    if (!isMobile && !activePromo?.type && !isVideoContent) {
-      const timer = setTimeout(() => {
-        goToNextPost();
-        
-        // Apply effects when changing posts
-        if (imageRef.current) {
-          interactWithContent(
-            imageRef.current, 
-            'image', 
-            currentIndex % 3 === 0 ? 'high' : 'medium'
-          );
-        }
-      }, 12000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [currentIndex, isMobile, activePromo, isVideoContent]);
-  
-  // Gérer l'affichage/masquage automatique des contrôles
-  useEffect(() => {
-    // Montrer les contrôles au début
-    setControlsVisible(true);
+    if (publications.length === 0) return;
     
-    // Configurer le timer pour masquer les contrôles après 1.5 secondes
-    if (controlsTimerRef.current) {
-      clearTimeout(controlsTimerRef.current);
-    }
+    const interval = setInterval(() => {
+      setActiveIndex((current) => (current + 1) % publications.length);
+    }, 8000);
     
-    controlsTimerRef.current = setTimeout(() => {
-      setControlsVisible(false);
-    }, 1500);
-    
-    return () => {
-      if (controlsTimerRef.current) {
-        clearTimeout(controlsTimerRef.current);
-      }
-    };
-  }, [currentIndex]);
-  
-  // Apply initial effects
-  useEffect(() => {
-    if (isImmersive && imageRef.current) {
-      // Short delay to ensure element is rendered
-      const timer = setTimeout(() => {
-        interactWithContent(imageRef.current, 'image', 'medium');
-      }, 500);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [isImmersive]);
-  
-  // AI-Driven Ambient Effects - update ambient mood based on content mood
-  useEffect(() => {
-    if (!isAdaptationActive) return;
-    
-    // Map content mood to ambient mood
-    const moodToAmbient = {
-      romantic: 'calm' as const,
-      relaxed: 'calm' as const,
-      energetic: 'energetic' as const,
-      intense: 'energetic' as const,
-      mysterious: 'mysterious' as const
-    };
-    
-    // Update ambient mood based on content mood
-    setAmbientMood(moodToAmbient[contentMood] || 'calm');
-    
-    // Trigger a brief neuro effect when mood changes
-    setShowNeuroEffect(true);
-    setTimeout(() => setShowNeuroEffect(false), 3000);
-    
-  }, [contentMood, isAdaptationActive]);
-  
-  // Update user preferences when sound/vibration settings change
-  useEffect(() => {
-    setUserPreferences({
-      soundLevel: soundEnabled ? 0.7 : 0,
-      hapticsIntensity: vibrationsEnabled ? 0.7 : 0
-    });
-  }, [soundEnabled, vibrationsEnabled]);
-  
-  // Parallax effect on scroll
-  useEffect(() => {
-    if (!containerRef.current || isMobile) return;
-    
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      if (imageRef.current) {
-        // Apply subtle parallax effect
-        imageRef.current.style.transform = `translateY(${scrollPosition * 0.05}px)`;
-      }
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isMobile]);
-  
-  const goToNextPost = () => {
-    setCurrentIndex((prev) => (prev + 1) % mixedContent.length);
-  };
-  
-  const goToPrevPost = () => {
-    setCurrentIndex((prev) => (prev - 1 + mixedContent.length) % mixedContent.length);
-  };
-  
-  // Fonction pour afficher les contrôles temporairement lors d'une interaction
-  const handleUserInteraction = () => {
-    // Record interaction for user mood analysis
-    if (isAdaptationActive) {
-      updateUserMood({
-        timestamp: Date.now(),
-        action: 'tap',
-        contentType: isVideoContent ? 'video' : 'image',
-        contentIndex: currentIndex
-      });
-    }
-    
-    // Afficher les contrôles
-    setControlsVisible(true);
-    
-    // Réinitialiser le timer pour les masquer après 1.5 secondes
-    if (controlsTimerRef.current) {
-      clearTimeout(controlsTimerRef.current);
-    }
-    
-    controlsTimerRef.current = setTimeout(() => {
-      setControlsVisible(false);
-    }, 1500);
-  };
-  
-  const toggleSound = () => {
-    setSoundEnabled(prev => !prev);
-    toast.info(soundEnabled ? "Son désactivé" : "Son activé");
-    handleUserInteraction();
-  };
-  
-  const toggleVideoMute = () => {
-    setVideoMuted(prev => !prev);
-    toast.info(videoMuted ? "Son de la vidéo activé" : "Son de la vidéo désactivé");
-    handleUserInteraction();
-  };
-  
-  const toggleVibrations = () => {
-    setVibrationsEnabled(prev => !prev);
-    toast.info(vibrationsEnabled ? "Vibrations désactivées" : "Vibrations activées");
-    handleUserInteraction();
-    
-    // Test vibration when enabling
-    if (!vibrationsEnabled && navigator.vibrate) {
-      navigator.vibrate([50, 30, 50]);
-    }
-  };
-  
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    toast.info(`Mode ${newTheme === 'dark' ? 'sombre' : 'clair'} activé`);
-    handleUserInteraction();
-    
-    // Apply light effect when changing theme
-    if (imageRef.current) {
-      interactWithContent(imageRef.current, 'text', 'low');
-    }
-  };
-  
-  const toggleAIAdaptation = () => {
-    toggleAdaptation();
-    toast.info(isAdaptationActive 
-      ? "Adaptation IA désactivée" 
-      : "Adaptation IA activée - l'ambiance s'adaptera à votre contenu"
-    );
-    handleUserInteraction();
-  };
-  
-  const toggleBiometricConnection = () => {
-    setBiometricConnected(prev => !prev);
-    toast.info(biometricConnected 
-      ? "Connexion biométrique désactivée" 
-      : "Connexion aux appareils biométriques activée"
-    );
-    handleUserInteraction();
-  };
+    return () => clearInterval(interval);
+  }, [publications]);
 
-  if (!mixedContent.length) return null;
+  if (publications.length === 0) {
+    return <div className="text-center p-8">Chargement des publications...</div>;
+  }
 
-  // Get ambient style based on AI-enhanced content mood
-  const getAmbientStyle = () => {
-    // Get optimal effects from AI
-    const optimalEffects = calculateOptimalEffects();
-    
-    // Use optimized background if AI adaptation is active, otherwise use the mood-based one
-    if (isAdaptationActive && optimalEffects.colorScheme) {
-      return {
-        background: optimalEffects.colorScheme.background,
-        transition: 'all 2s cubic-bezier(0.4, 0, 0.2, 1)',
-        boxShadow: theme === 'dark' 
-          ? `0 0 50px 5px ${optimalEffects.colorScheme.primary.replace(/[^,]+(?=\))/, '0.15')}` 
-          : `0 0 50px 5px ${optimalEffects.colorScheme.primary.replace(/[^,]+(?=\))/, '0.05')}`
-      };
-    }
-    
-    // Fallback to standard ambient styles
-    switch(ambientMood) {
-      case 'calm':
-        return {
-          background: 'linear-gradient(135deg, rgba(20,30,48,0.95) 0%, rgba(36,59,85,0.90) 100%)',
-          transition: 'all 2s cubic-bezier(0.4, 0, 0.2, 1)',
-          boxShadow: theme === 'dark' 
-            ? '0 0 50px 5px rgba(100, 149, 237, 0.15)' 
-            : '0 0 50px 5px rgba(100, 149, 237, 0.05)'
-        };
-      case 'energetic':
-        return {
-          background: 'linear-gradient(135deg, rgba(40,10,20,0.95) 0%, rgba(90,30,40,0.90) 100%)',
-          transition: 'all 2s cubic-bezier(0.4, 0, 0.2, 1)',
-          boxShadow: theme === 'dark' 
-            ? '0 0 50px 5px rgba(255, 105, 180, 0.15)' 
-            : '0 0 50px 5px rgba(255, 105, 180, 0.05)'
-        };
-      case 'mysterious':
-        return {
-          background: 'linear-gradient(135deg, rgba(30,20,40,0.95) 0%, rgba(50,30,70,0.90) 100%)',
-          transition: 'all 2s cubic-bezier(0.4, 0, 0.2, 1)',
-          boxShadow: theme === 'dark' 
-            ? '0 0 50px 5px rgba(147, 112, 219, 0.15)' 
-            : '0 0 50px 5px rgba(147, 112, 219, 0.05)'
-        };
-      default:
-        return {};
-    }
-  };
-
-  // Vérifier si l'élément actuel est une publication standard ou une vidéo XTease
-  const currentContent = mixedContent[currentIndex];
-  const isXTeaseVideo = !isCreatorPost(currentContent);
-  
-  const renderPostContent = (content: MixedContentType) => {
-    // Si c'est une vidéo XTease
-    if (!isCreatorPost(content)) {
-      return (
-        <div 
-          className="relative mb-4 w-full"
-          ref={imageRef}
-          onClick={handleUserInteraction}
-        >
-          <motion.div
-            className={`overflow-hidden rounded-xl shadow-lg ${showNeuroEffect ? 'pulse-glow' : ''} w-full`}
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            key={`xtease-${content.id}`}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          >
-            <AspectRatio ratio={9/16} className="bg-muted w-full">
-              <HLSVideoPlayer
-                src={content.streamUrl}
-                poster={content.thumbnail}
-                title={content.title}
-                videoId={content.id}
-                isPreview={false}
-                autoPlay
-                muted={videoMuted}
-                onVideoComplete={goToNextPost}
-                className="w-full h-full object-cover"
-              />
-            </AspectRatio>
-          </motion.div>
-          
-          {/* Overlay pour texte XTease */}
-          <motion.div 
-            className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/60 to-transparent backdrop-blur-sm"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="flex items-center mb-2">
-              <div className="flex-grow">
-                <h3 className="font-bold text-white">{content.title}</h3>
-                <p className="text-white/70 text-sm">{content.performer} • {content.views}</p>
-              </div>
-              {content.isPremium && (
-                <div className="badge badge-premium px-3 py-1 text-sm font-medium ml-2">
-                  Premium
-                </div>
-              )}
-            </div>
-          </motion.div>
-        </div>
-      );
-    }
-    
-    // Publication standard
-    return (
-      <div 
-        className="relative mb-4 w-full"
-        ref={imageRef}
-        onClick={() => {
-          handleUserInteraction();
-          setIsDescriptionVisible(!isDescriptionVisible);
-        }}
-      >
-        <motion.div
-          className={`overflow-hidden rounded-xl shadow-lg ${showNeuroEffect ? 'pulse-glow' : ''} w-full`}
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          key={content.id}
-          transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          style={{ willChange: 'transform, opacity', perspective: '1000px' }}
-        >
-          <AspectRatio ratio={9/16} className="bg-muted w-full">
-            <img 
-              src={content.image} 
-              alt={`Publication de ${content.creatorName}`}
-              className="object-cover w-full h-full depth-layer"
-            />
-          </AspectRatio>
-        </motion.div>
-        
-        {/* Creator info overlay */}
-        <AnimatePresence>
-          {isDescriptionVisible && (
-            <motion.div 
-              className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/60 to-transparent backdrop-blur-sm"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white">
-                  <img 
-                    src={content.creatorAvatar} 
-                    alt={content.creatorName} 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <h3 className="font-bold text-white">{content.creatorName}</h3>
-                  <p className="text-white/70 text-sm">{content.timestamp}</p>
-                </div>
-              </div>
-              <p className="text-white mb-2">{content.caption}</p>
-              <p className="text-white/90 text-sm">❤️ {content.likes.toLocaleString()} j'aime</p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    );
-  };
-
-  // Render promo popup content
-  const renderPromoContent = () => {
-    if (!activePromo || !activePromo.type) return null;
-
-    const { type, data } = activePromo;
-
-    switch (type) {
-      case 'xtease':
-        return (
-          <Card className="bg-background/80 backdrop-blur-md border-primary/20 p-4 max-w-md w-full rounded-xl">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="absolute right-2 top-2 rounded-full" 
-              onClick={onClosePromo}
-            >
-              <X size={18} />
-            </Button>
-            <div className="aspect-[9/16] relative mb-4 rounded-lg overflow-hidden">
-              <img 
-                src={data.thumbnail}
-                alt={data.title}
-                className="object-cover w-full h-full"
-              />
-              <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              </div>
-            </div>
-            <h3 className="text-xl font-semibold mb-2">{data.title}</h3>
-            <p className="text-muted-foreground mb-4">Par {data.performer} • {data.views}</p>
-            <Button 
-              asChild
-              className="w-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white hover:opacity-90"
-            >
-              <Link to="/xtease">Voir sur XTease</Link>
-            </Button>
-          </Card>
-        );
-
-      case 'creator':
-        return (
-          <Card className="bg-background/80 backdrop-blur-md border-primary/20 p-4 max-w-md w-full rounded-xl">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="absolute right-2 top-2 rounded-full" 
-              onClick={onClosePromo}
-            >
-              <X size={18} />
-            </Button>
-            <div className="flex flex-col items-center pt-4 pb-2">
-              <Avatar className="w-24 h-24 border-2 border-primary mb-4">
-                <AvatarImage src={data.avatar} alt={data.name} />
-                <AvatarFallback className="bg-muted">
-                  {data.name.substring(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <h3 className="text-xl font-semibold">{data.name}</h3>
-              <p className="text-muted-foreground mb-1">{data.category}</p>
-              <p className="text-sm mb-4">{data.followers.toLocaleString()} fans</p>
-            </div>
-            <Button 
-              asChild
-              className="w-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white hover:opacity-90"
-            >
-              <Link to="/creators">Voir le profil</Link>
-            </Button>
-          </Card>
-        );
-
-      case 'trending':
-        return (
-          <Card className="bg-background/80 backdrop-blur-md border-primary/20 p-4 max-w-md w-full rounded-xl">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="absolute right-2 top-2 rounded-full" 
-              onClick={onClosePromo}
-            >
-              <X size={18} />
-            </Button>
-            <div className="aspect-video relative mb-4 rounded-lg overflow-hidden">
-              <img 
-                src={data.thumbnail}
-                alt={data.title}
-                className="object-cover w-full h-full"
-              />
-              <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              </div>
-              <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-1 py-0.5 rounded">
-                {data.duration}
-              </div>
-            </div>
-            <h3 className="text-xl font-semibold mb-2">{data.title}</h3>
-            <p className="text-muted-foreground mb-4">Par {data.performer} • {data.views}</p>
-            <Button 
-              asChild
-              className="w-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white hover:opacity-90"
-            >
-              <Link to="/trending">Voir la vidéo</Link>
-            </Button>
-          </Card>
-        );
-        
-      default:
-        return null;
-    }
-  };
-  
-  // Render the AI panel 
-  const renderAIPanelContent = () => {
-    return (
-      <Card className="bg-background/90 backdrop-blur-lg border-primary/20 p-4 max-w-md w-full rounded-xl">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            <Brain size={18} className="text-purple-400" />
-            Optimisation IA
-          </h3>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="rounded-full" 
-            onClick={() => setShowAIPanel(false)}
-          >
-            <X size={18} />
-          </Button>
-        </div>
-        
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="text-sm font-medium">Adaptation IA</p>
-              <p className="text-xs text-muted-foreground">Ajuste automatiquement l'ambiance</p>
-            </div>
-            <Button 
-              variant={isAdaptationActive ? "default" : "outline"}
-              size="sm"
-              onClick={toggleAIAdaptation}
-            >
-              {isAdaptationActive ? "Activé" : "Désactivé"}
-            </Button>
-          </div>
-          
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="text-sm font-medium">Connexion biométrique</p>
-              <p className="text-xs text-muted-foreground">Synchronise avec vos appareils connectés</p>
-            </div>
-            <Button 
-              variant={biometricConnected ? "default" : "outline"}
-              size="sm"
-              onClick={toggleBiometricConnection}
-            >
-              {biometricConnected ? "Connecté" : "Déconnecté"}
-            </Button>
-          </div>
-          
-          {biometricConnected && biometricData.heartRate && (
-            <div className="bg-primary/10 p-3 rounded-lg">
-              <h4 className="font-medium text-sm flex items-center gap-1 mb-2">
-                <Pulse size={14} className="text-red-400" />
-                Données biométriques
-              </h4>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <p className="text-xs text-muted-foreground">Rythme cardiaque</p>
-                  <p className="text-sm font-medium">{biometricData.heartRate} BPM</p>
-                </div>
-                {biometricData.respirationRate && (
-                  <div>
-                    <p className="text-xs text-muted-foreground">Respiration</p>
-                    <p className="text-sm font-medium">{biometricData.respirationRate} resp/min</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-          
-          <div>
-            <p className="text-sm font-medium mb-1">Ambiance détectée</p>
-            <div className="grid grid-cols-3 gap-2">
-              {(['calm', 'energetic', 'mysterious'] as const).map(mood => (
-                <Button
-                  key={mood}
-                  variant={ambientMood === mood ? "default" : "outline"}
-                  size="sm"
-                  className="w-full text-xs"
-                  onClick={() => {
-                    setAmbientMood(mood);
-                    toast.info(`Ambiance ${mood} activée`);
-                  }}
-                >
-                  {mood === 'calm' ? 'Calme' : mood === 'energetic' ? 'Énergique' : 'Mystérieux'}
-                </Button>
-              ))}
-            </div>
-          </div>
-          
-          <div>
-            <p className="text-sm font-medium mb-1">Analyse du contenu</p>
-            <div className="bg-background/50 p-2 rounded-lg text-xs">
-              <p className="mb-1">Humeur détectée: <span className="font-medium">{contentMood}</span></p>
-              <p>Engagement utilisateur: <span className="font-medium">
-                {userMood === 'excited' ? 'Excité' : 
-                 userMood === 'calm' ? 'Calme' : 
-                 userMood === 'curious' ? 'Curieux' : 'Attentif'}
-              </span></p>
-            </div>
-          </div>
-        </div>
-      </Card>
-    );
-  };
-  
   return (
-    <AnimatePresence>
+    <div className="w-full max-w-2xl mx-auto mb-12">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold">Publications Immersives</h3>
+        <Badge variant="outline" className="flex items-center gap-1">
+          <Sparkles className="h-3 w-3 text-pink-400" />
+          <span>Adaptatif</span>
+        </Badge>
+      </div>
+      
       <motion.div 
-        className="fixed inset-0 z-50 bg-background"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+        key={publications[activeIndex].id}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.5 }}
-        style={getAmbientStyle()}
-        ref={containerRef}
-        onClick={handleUserInteraction}
+        className="w-full"
       >
-        <AnimatePresence>
-          {controlsVisible && (
-            <motion.div 
-              className="absolute top-4 right-4 flex space-x-2 z-10"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-            >
-              {isXTeaseVideo ? (
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  className={`rounded-full ${theme === 'dark' ? 'bg-background/50' : 'bg-background/80'} backdrop-blur-sm`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleVideoMute();
-                  }}
-                >
-                  {videoMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-                </Button>
-              ) : (
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  className={`rounded-full ${theme === 'dark' ? 'bg-background/50' : 'bg-background/80'} backdrop-blur-sm`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleSound();
-                  }}
-                >
-                  {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
-                </Button>
-              )}
-              
-              <Button 
-                variant="outline" 
-                size="icon" 
-                className={`rounded-full ${theme === 'dark' ? 'bg-background/50' : 'bg-background/80'} backdrop-blur-sm`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleVibrations();
-                }}
-              >
-                <Vibrate size={18} />
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                size="icon" 
-                className={`rounded-full ${theme === 'dark' ? 'bg-background/50' : 'bg-background/80'} backdrop-blur-sm`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleTheme();
-                }}
-              >
-                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-              </Button>
-              
-              <Button 
-                variant={isAdaptationActive ? "default" : "outline"}
-                size="icon" 
-                className={`rounded-full ${theme === 'dark' ? 'bg-background/50' : 'bg-background/80'} backdrop-blur-sm`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowAIPanel(!showAIPanel);
-                }}
-              >
-                <Brain size={18} />
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                className={`rounded-full ${theme === 'dark' ? 'bg-background/50' : 'bg-background/80'} backdrop-blur-sm`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onExitImmersive();
-                }}
-              >
-                Quitter
-              </Button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Popup promo content */}
-        <AnimatePresence>
-          {activePromo?.type && (
-            <motion.div 
-              className="fixed inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => onClosePromo()}
-            >
-              <motion.div 
-                className="p-4 max-w-sm w-full"
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                transition={{ type: "spring", damping: 25 }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                {renderPromoContent()}
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        
-        {/* AI Panel */}
-        <AnimatePresence>
-          {showAIPanel && (
-            <motion.div 
-              className="fixed inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowAIPanel(false)}
-            >
-              <motion.div 
-                className="p-4 max-w-sm w-full"
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                transition={{ type: "spring", damping: 25 }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                {renderAIPanelContent()}
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        
-        <div className="h-full flex flex-col items-center justify-center p-4">
-          {isMobile ? (
-            <ScrollArea className="h-[calc(100vh-80px)] w-full max-w-md mx-auto">
-              <div className="space-y-8 pb-8 pt-2 w-full">
-                {mixedContent.map((content, index) => (
-                  <div key={isCreatorPost(content) ? content.id : `video-${content.id}`} className="w-full mx-auto">
-                    {renderPostContent(content)}
-                    
-                    {/* Post indicator */}
-                    <div className="flex space-x-1 justify-center mt-2">
-                      <div className="h-1.5 w-16 bg-primary rounded-full"></div>
-                      <div className="text-xs text-muted-foreground">
-                        {index + 1}/{mixedContent.length}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-          ) : (
-            <>
-              {/* Desktop version with navigation arrows */}
-              <div className="w-full max-w-md mx-auto">
-                {renderPostContent(currentContent)}
-              </div>
-              
-              {/* Navigation dots */}
-              <div className="flex space-x-1 mt-2">
-                {mixedContent.slice(0, Math.min(5, mixedContent.length)).map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className={`h-2 rounded-full ${i === currentIndex ? "bg-primary w-8" : "bg-muted w-2"}`}
-                    initial={{ opacity: 0.5 }}
-                    animate={{ opacity: i === currentIndex ? 1 : 0.5 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                ))}
-                {mixedContent.length > 5 && (
-                  <motion.div className="h-2 w-2 rounded-full bg-muted opacity-50" />
-                )}
-              </div>
-              
-              <AnimatePresence>
-                {controlsVisible && (
-                  <>
-                    {/* Left/Right navigation */}
-                    <motion.button
-                      className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-background/30 rounded-full p-2 backdrop-blur-sm"
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -10 }}
-                      transition={{ duration: 0.2 }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        goToPrevPost();
-                      }}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                    </motion.button>
-                    
-                    <motion.button
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-background/30 rounded-full p-2 backdrop-blur-sm"
-                      initial={{ opacity: 0, x: 10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 10 }}
-                      transition={{ duration: 0.2 }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        goToNextPost();
-                      }}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                    </motion.button>
-                  </>
-                )}
-              </AnimatePresence>
-            </>
-          )}
-          
-          {/* Welcome message */}
-          <AnimatePresence>
-            {currentIndex === 0 && !activePromo?.type && !showAIPanel && (
-              <motion.div
-                className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-background/80 backdrop-blur-md px-6 py-3 rounded-full shadow-lg"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                transition={{ delay: 0.5, duration: 0.5 }}
-              >
-                <p className="text-foreground text-center">
-                  Expérience immersive XVush amplifiée par IA
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+        <CreatorFeedItem post={publications[activeIndex]} />
       </motion.div>
-    </AnimatePresence>
+      
+      <div className="flex justify-center mt-4">
+        {publications.map((_, idx) => (
+          <button
+            key={idx}
+            className={`w-2 h-2 mx-1 rounded-full ${
+              idx === activeIndex ? "bg-primary w-6" : "bg-muted"
+            } transition-all`}
+            onClick={() => setActiveIndex(idx)}
+          />
+        ))}
+      </div>
+    </div>
   );
 };
 
