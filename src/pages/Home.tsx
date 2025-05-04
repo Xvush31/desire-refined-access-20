@@ -1,85 +1,228 @@
-import React from 'react';
-import Header from '@/components/Header';
-import { Button } from '@/components/ui/button';
+
+import React, { useState, useEffect, useCallback } from "react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Loader } from "lucide-react";
+import { useTheme } from "@/hooks/use-theme";
+import CreatorFeedItem, { CreatorFeedPost } from "@/components/creator/CreatorFeedItem";
+import XTeasePromoRow from "@/components/creator/XTeasePromoRow";
 import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
 
+// Données mockées pour le feed des créateurs
+const generateMockFeed = (): CreatorFeedPost[] => {
+  const creators = [
+    {
+      id: 1,
+      name: "Lola Mystik",
+      avatar: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=facearea&w=256&h=256&q=80",
+    },
+    {
+      id: 2,
+      name: "Lucas Zen",
+      avatar: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=facearea&w=256&h=256&q=80",
+    },
+    {
+      id: 3,
+      name: "Clara Sparkle",
+      avatar: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=facearea&w=256&h=256&q=80",
+    },
+    {
+      id: 4,
+      name: "Yann Solo",
+      avatar: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=facearea&w=256&h=256&q=80",
+    },
+    {
+      id: 5,
+      name: "Sophia Dreams",
+      avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=facearea&w=256&h=256&q=80",
+    },
+  ];
+
+  const captions = [
+    "Contenu exclusif pour mes abonnés 💋",
+    "Nouveau shooting aujourd'hui, qu'en pensez-vous ? ✨",
+    "Moment de détente avant mon prochain live ce soir 🌙",
+    "Merci pour votre soutien incroyable ! 💖",
+    "Session spéciale ce weekend, ne manquez pas ça 🔥",
+    "Petit aperçu de mon nouveau contenu premium 🎬",
+  ];
+
+  return Array.from({ length: 15 }, (_, i) => {
+    const creatorIndex = i % creators.length;
+    const creator = creators[creatorIndex];
+    const isPremium = i % 3 === 0;
+    const daysAgo = i % 7;
+    const hoursAgo = i % 24;
+    
+    let timestamp = daysAgo > 0 
+      ? `il y a ${daysAgo} jour${daysAgo > 1 ? 's' : ''}` 
+      : `il y a ${hoursAgo} heure${hoursAgo > 1 ? 's' : ''}`;
+    
+    return {
+      id: `post-${i}`,
+      creatorId: creator.id,
+      creatorName: creator.name,
+      creatorAvatar: creator.avatar,
+      image: `https://picsum.photos/seed/post${i}/600/1067`, // Format 9:16 approximatif
+      caption: captions[i % captions.length],
+      likes: Math.floor(Math.random() * 10000) + 100,
+      comments: Math.floor(Math.random() * 500) + 10,   // Added comments property
+      shares: Math.floor(Math.random() * 200) + 5,      // Added shares property
+      bookmarks: Math.floor(Math.random() * 300) + 20,  // Added bookmarks property
+      timestamp: timestamp,
+      isPremium: isPremium
+    };
+  });
+};
+
+// Données mockées pour les vidéos XTease
+const xteaseVideos = [
+  {
+    id: 1,
+    title: "Moment intime en soirée",
+    performer: "PartyGirl",
+    views: "421K vues",
+    thumbnail: "https://picsum.photos/seed/xtease1/600/1067", // Format 9:16 approximatif
+  },
+  {
+    id: 2,
+    title: "Séance photo qui devient personnelle",
+    performer: "PhotoArtist",
+    views: "732K vues",
+    thumbnail: "https://picsum.photos/seed/xtease2/600/1067", // Format 9:16 approximatif
+  },
+  {
+    id: 3,
+    title: "Rencontre dans un hôtel 5 étoiles",
+    performer: "LuxuryCouple",
+    views: "628K vues",
+    thumbnail: "https://picsum.photos/seed/xtease3/600/1067", // Format 9:16 approximatif
+  },
+];
+
+const initialFeed = generateMockFeed().slice(0, 5);
+
 const Home: React.FC = () => {
+  const { theme } = useTheme();
+  const [posts, setPosts] = useState<CreatorFeedPost[]>(initialFeed);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const allPosts = generateMockFeed();
   
+  const loadMorePosts = useCallback(() => {
+    if (loading || !hasMore) return;
+    
+    setLoading(true);
+    
+    // Simuler un délai de chargement
+    setTimeout(() => {
+      const nextPage = page + 1;
+      const start = page * 5;
+      const end = start + 5;
+      const newPosts = allPosts.slice(start, end);
+      
+      if (newPosts.length === 0) {
+        setHasMore(false);
+      } else {
+        setPosts(prev => [...prev, ...newPosts]);
+        setPage(nextPage);
+      }
+      
+      setLoading(false);
+    }, 800);
+  }, [page, loading, hasMore, allPosts]);
+  
+  // Gérer l'événement de défilement pour le chargement infini
+  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    
+    // Lorsque l'utilisateur défile près du bas (avec une marge de 200px)
+    if (scrollHeight - scrollTop - clientHeight < 200 && !loading && hasMore) {
+      loadMorePosts();
+    }
+  }, [loadMorePosts, loading, hasMore]);
+
+  // Fonction pour insérer les promotions XTease après chaque groupe de 5 posts
+  const renderFeedWithPromos = () => {
+    const result = [];
+    let postGroups = [];
+    
+    // Regrouper les posts par 5
+    for (let i = 0; i < posts.length; i += 5) {
+      postGroups.push(posts.slice(i, i + 5));
+    }
+    
+    // Ajouter chaque groupe de 5 posts suivi d'une promo XTease
+    postGroups.forEach((group, index) => {
+      // Ajouter les posts du groupe
+      group.forEach((post) => {
+        result.push(
+          <CreatorFeedItem key={post.id} post={post} />
+        );
+      });
+      
+      // Ajouter une promo XTease après chaque groupe
+      if (group.length > 0) {
+        result.push(
+          <XTeasePromoRow key={`xtease-promo-${index}`} videos={xteaseVideos} />
+        );
+      }
+    });
+    
+    return result;
+  };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <main className="container mx-auto px-4 py-8">
-        <section className="hero py-12 md:py-24">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">Bienvenue sur XVush</h1>
-            <p className="text-xl text-muted-foreground mb-8">
-              Découvrez un contenu exclusif des meilleurs créateurs
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Button asChild size="lg" className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white">
-                <Link to="/signup">S'inscrire Gratuitement</Link>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link to="/login">Se Connecter</Link>
-              </Button>
+      
+      {/* Section d'expérience immersive */}
+      <div className="py-4 container mx-auto px-4 text-center mb-4">
+        <Button 
+          asChild 
+          variant="ghost" 
+          size="lg" 
+          className="flex items-center gap-2 group"
+        >
+          <Link to="/immersive">
+            <Sparkles className="h-4 w-4 text-pink-400 group-hover:animate-pulse" />
+            <span>Découvrir l'Expérience Immersive</span>
+          </Link>
+        </Button>
+      </div>
+      
+      <main className="py-4 flex-1">
+        <div className="container max-w-md mx-auto px-4">
+          <h1 className="text-2xl font-bold mb-4 text-center animated-gradient">Feed des créateurs</h1>
+          
+          <ScrollArea 
+            className="h-[calc(100vh-220px)]" 
+            onScrollCapture={handleScroll}
+          >
+            <div className="pb-6">
+              {renderFeedWithPromos()}
               
-              {/* Nouvelle section pour le showcase immersif */}
-              <Button 
-                asChild 
-                variant="ghost" 
-                size="lg" 
-                className="flex items-center gap-2 group"
-              >
-                <Link to="/immersive">
-                  <Sparkles className="h-4 w-4 text-pink-400 group-hover:animate-pulse" />
-                  <span>Découvrir l'Expérience Immersive</span>
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </section>
-
-        
-        
-        {/* Add a new section promoting the immersive experience */}
-        <section className="py-12 my-12 bg-gradient-to-r from-purple-900/20 to-pink-900/20 rounded-3xl overflow-hidden relative">
-          <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/immersive/1280/720')] bg-cover opacity-20 mix-blend-overlay"></div>
-          <div className="relative container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="md:w-1/2">
-              <h2 className="text-2xl md:text-3xl font-bold mb-4">Expérience Immersive Révolutionnée</h2>
-              <p className="text-muted-foreground mb-6">
-                Notre nouvelle technologie d'IA adaptative transforme votre façon de consommer du contenu en s'adaptant à vos émotions et préférences.
-              </p>
-              <Button asChild variant="default" className="bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white">
-                <Link to="/immersive">Explorer Maintenant</Link>
-              </Button>
-            </div>
-            <div className="md:w-1/2 max-w-md">
-              <div className="aspect-video rounded-xl overflow-hidden border-2 border-white/20 shadow-xl shadow-pink-500/10">
-                <img 
-                  src="https://picsum.photos/seed/xvushimmersive/800/450" 
-                  alt="Expérience immersive XVush" 
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-16 h-16 rounded-full bg-white/30 backdrop-blur-md flex items-center justify-center">
-                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-pink-600" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                  </div>
+              {loading && (
+                <div className="flex justify-center py-4">
+                  <Loader className="animate-spin w-6 h-6 text-brand-accent" />
                 </div>
-              </div>
+              )}
+              
+              {!hasMore && !loading && posts.length > 0 && (
+                <p className="text-center text-muted-foreground py-4">
+                  Vous avez atteint la fin du feed
+                </p>
+              )}
             </div>
-          </div>
-        </section>
-        
-        
-        
+          </ScrollArea>
+        </div>
       </main>
+      
+      <Footer />
     </div>
   );
 };
