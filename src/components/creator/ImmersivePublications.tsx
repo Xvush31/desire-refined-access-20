@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from 'react';
 import { useImmersiveMode } from '@/hooks/useImmersiveMode';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,6 +13,25 @@ import { Card } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Link } from 'react-router-dom';
 import HLSVideoPlayer from '@/components/HLSVideoPlayer';
+
+// XTease video type definition
+export interface XTeaseVideo {
+  id: number;
+  title: string;
+  performer: string;
+  views: string;
+  thumbnail: string;
+  streamUrl: string;
+  isPremium?: boolean;
+}
+
+// Union type for mixed content
+export type MixedContentType = CreatorFeedPost | XTeaseVideo;
+
+// Type guard to check if an item is a CreatorFeedPost or XTeaseVideo
+export const isCreatorPost = (item: MixedContentType): item is CreatorFeedPost => {
+  return 'creatorName' in item;
+};
 
 // Données statiques pour les vidéos XTease à utiliser dans l'interface immersive
 const immersiveXTeaseVideos = [
@@ -81,7 +99,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
   const { theme, setTheme } = useTheme();
   
   // Mélanger les publications et les vidéos XTease
-  const [mixedContent, setMixedContent] = useState<Array<CreatorFeedPost | typeof immersiveXTeaseVideos[0]>>([]);
+  const [mixedContent, setMixedContent] = useState<MixedContentType[]>([]);
   
   // Préparer le contenu mélangé au chargement
   useEffect(() => {
@@ -303,11 +321,11 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
 
   // Vérifier si l'élément actuel est une publication standard ou une vidéo XTease
   const currentContent = mixedContent[currentIndex];
-  const isXTeaseVideo = 'streamUrl' in currentContent;
+  const isXTeaseVideo = !isCreatorPost(currentContent);
   
-  const renderPostContent = (content: typeof mixedContent[0]) => {
+  const renderPostContent = (content: MixedContentType) => {
     // Si c'est une vidéo XTease
-    if ('streamUrl' in content) {
+    if (!isCreatorPost(content)) {
       return (
         <div 
           className="relative mb-4 w-full"
@@ -642,7 +660,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
             <ScrollArea className="h-[calc(100vh-80px)] w-full max-w-md mx-auto">
               <div className="space-y-8 pb-8 pt-2 w-full">
                 {mixedContent.map((content, index) => (
-                  <div key={'streamUrl' in content ? `video-${content.id}` : content.id} className="w-full mx-auto">
+                  <div key={isCreatorPost(content) ? content.id : `video-${content.id}`} className="w-full mx-auto">
                     {renderPostContent(content)}
                     
                     {/* Post indicator */}
