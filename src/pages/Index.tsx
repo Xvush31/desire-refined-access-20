@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useCallback } from "react";
 import Header from "@/components/Header";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -156,22 +155,16 @@ const trendingVideos = [
   }
 ];
 
-interface ImmersivePublicationsProps {
-  posts: CreatorFeedPost[];
-  onExitImmersive: () => void;
-  activePromo: {
-    type: 'xtease' | 'creator' | 'trending' | null;
-    data: any;
-  };
-  onClosePromo: () => void;
-}
-
 const Index = () => {
   const isMobile = useIsMobile();
   const { t } = useLocale();
   const { currentUser, loading } = useAuth();
   
-  const [posts, setPosts] = useState<CreatorFeedPost[]>(generateMockFeed().slice(0, 6));
+  // Update the mock feed to use string IDs instead of numeric IDs
+  const [posts, setPosts] = useState<CreatorFeedPost[]>(generateMockFeed().slice(0, 6).map(post => ({
+    ...post,
+    id: String(post.id) // Convert ID to string to match expected type
+  })));
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -180,7 +173,12 @@ const Index = () => {
     type: 'xtease' | 'creator' | 'trending' | null,
     data: any
   }>({ type: null, data: null });
-  const allPosts = generateMockFeed();
+  
+  // Convert post IDs to strings in the mock data
+  const allPosts = generateMockFeed().map(post => ({
+    ...post,
+    id: String(post.id) // Convert ID to string to match expected type
+  }));
   
   const { isFirstVisit } = useImmersiveMode();
   

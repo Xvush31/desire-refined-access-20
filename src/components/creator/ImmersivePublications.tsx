@@ -10,8 +10,8 @@ import CreatorFeedItem from './CreatorFeedItem';
 
 // Define the types needed
 interface CreatorFeedPost {
-  id: number;
-  creatorId: string;
+  id: string; // Changed from number to string to match CreatorFeedItem's type
+  creatorId: number;
   creatorName: string;
   creatorAvatar: string;
   image: string;
@@ -33,17 +33,34 @@ interface XTeaseVideo {
   isPremium: boolean;
 }
 
-const ImmersivePublications: React.FC = () => {
+interface ImmersivePublicationsProps {
+  // Adding the props interface to match what's being passed from Index.tsx
+  posts?: CreatorFeedPost[];
+  onExitImmersive?: () => void;
+  activePromo?: {
+    type: 'xtease' | 'creator' | 'trending' | null;
+    data: any;
+  };
+  onClosePromo?: () => void;
+}
+
+const ImmersivePublications: React.FC<ImmersivePublicationsProps> = (props) => {
   const { theme } = useTheme();
   const [publications, setPublications] = useState<CreatorFeedPost[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
+    // If posts are provided via props, use them, otherwise fetch mock data
+    if (props.posts && props.posts.length > 0) {
+      setPublications(props.posts);
+      return;
+    }
+
     // Simulate fetching creator feed posts
     const mockPosts: CreatorFeedPost[] = [
       {
-        id: 1,
-        creatorId: "creator1",
+        id: "1", // Changed to string
+        creatorId: 1,
         creatorName: "Sophie Dream",
         creatorAvatar: "https://picsum.photos/seed/creator1/100/100",
         image: "https://picsum.photos/seed/post1/800/600",
@@ -55,8 +72,8 @@ const ImmersivePublications: React.FC = () => {
         bookmarks: 67,
       },
       {
-        id: 2,
-        creatorId: "creator2",
+        id: "2", // Changed to string
+        creatorId: 2,
         creatorName: "Max Immersion",
         creatorAvatar: "https://picsum.photos/seed/creator2/100/100",
         image: "https://picsum.photos/seed/post2/800/600",
@@ -68,8 +85,8 @@ const ImmersivePublications: React.FC = () => {
         bookmarks: 112,
       },
       {
-        id: 3,
-        creatorId: "creator3",
+        id: "3", // Changed to string
+        creatorId: 3,
         creatorName: "Léa Créative",
         creatorAvatar: "https://picsum.photos/seed/creator3/100/100",
         image: "https://picsum.photos/seed/post3/800/600",
@@ -106,8 +123,8 @@ const ImmersivePublications: React.FC = () => {
 
     // Transform XTease videos to CreatorFeedPost format
     const immersiveXTeaseVideos: CreatorFeedPost[] = xTeaseVideos.map((video): CreatorFeedPost => ({
-      id: video.id,
-      creatorId: `performer-${video.id}`,
+      id: `video-${video.id}`, // Changed to string with prefix
+      creatorId: video.id,
       creatorName: video.performer,
       creatorAvatar: `https://picsum.photos/seed/performer${video.id}/100/100`,
       image: video.thumbnail,
@@ -121,7 +138,7 @@ const ImmersivePublications: React.FC = () => {
 
     // Combine both arrays
     setPublications([...mockPosts, ...immersiveXTeaseVideos]);
-  }, []);
+  }, [props.posts]);
 
   // Auto rotate through publications
   useEffect(() => {
@@ -137,6 +154,13 @@ const ImmersivePublications: React.FC = () => {
   if (publications.length === 0) {
     return <div className="text-center p-8">Chargement des publications...</div>;
   }
+
+  // Add handlers for props if provided
+  const handleExitImmersive = () => {
+    if (props.onExitImmersive) {
+      props.onExitImmersive();
+    }
+  };
 
   return (
     <div className="w-full max-w-2xl mx-auto mb-12">
@@ -170,6 +194,19 @@ const ImmersivePublications: React.FC = () => {
           />
         ))}
       </div>
+      
+      {/* Add exit button if onExitImmersive prop exists */}
+      {props.onExitImmersive && (
+        <div className="text-center mt-4">
+          <Button 
+            variant="ghost" 
+            className="text-sm"
+            onClick={handleExitImmersive}
+          >
+            Quitter le mode immersif
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
