@@ -17,6 +17,9 @@ export interface CreatorFeedPost {
   image: string;
   caption: string;
   likes: number;
+  comments: number;
+  shares: number;
+  bookmarks: number;
   timestamp: string;
   isPremium?: boolean;
 }
