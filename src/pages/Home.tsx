@@ -10,6 +10,7 @@ import XTeasePromoRow from "@/components/creator/XTeasePromoRow";
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
+import ScrollToTopButton from "@/components/ui/scroll-to-top-button";
 
 // Données mockées pour le feed des créateurs
 const generateMockFeed = (): CreatorFeedPost[] => {
@@ -69,9 +70,9 @@ const generateMockFeed = (): CreatorFeedPost[] => {
       image: `https://picsum.photos/seed/post${i}/600/1067`, // Format 9:16 approximatif
       caption: captions[i % captions.length],
       likes: Math.floor(Math.random() * 10000) + 100,
-      comments: Math.floor(Math.random() * 500) + 10,   // Added comments property
-      shares: Math.floor(Math.random() * 200) + 5,      // Added shares property
-      bookmarks: Math.floor(Math.random() * 300) + 20,  // Added bookmarks property
+      comments: Math.floor(Math.random() * 500) + 10,
+      shares: Math.floor(Math.random() * 200) + 5,
+      bookmarks: Math.floor(Math.random() * 300) + 20,
       timestamp: timestamp,
       isPremium: isPremium
     };
@@ -103,15 +104,21 @@ const xteaseVideos = [
   },
 ];
 
-const initialFeed = generateMockFeed().slice(0, 5);
-
 const Home: React.FC = () => {
   const { theme } = useTheme();
-  const [posts, setPosts] = useState<CreatorFeedPost[]>(initialFeed);
+  const [posts, setPosts] = useState<CreatorFeedPost[]>([]);
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const allPosts = generateMockFeed();
+  
+  // Load initial posts
+  useEffect(() => {
+    setTimeout(() => {
+      setPosts(allPosts.slice(0, 5));
+      setLoading(false);
+    }, 800);
+  }, []);
   
   const loadMorePosts = useCallback(() => {
     if (loading || !hasMore) return;
@@ -148,6 +155,14 @@ const Home: React.FC = () => {
 
   // Fonction pour insérer les promotions XTease après chaque groupe de 5 posts
   const renderFeedWithPromos = () => {
+    if (posts.length === 0 && loading) {
+      return (
+        <div className="flex justify-center py-8">
+          <Loader className="animate-spin w-8 h-8 text-brand-accent" />
+        </div>
+      );
+    }
+    
     const result = [];
     let postGroups = [];
     
@@ -222,6 +237,7 @@ const Home: React.FC = () => {
         </div>
       </main>
       
+      <ScrollToTopButton />
       <Footer />
     </div>
   );

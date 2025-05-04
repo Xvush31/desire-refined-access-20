@@ -18,7 +18,7 @@ window.toast = toast;
 
 // Initialize theme before rendering
 const initializeTheme = () => {
-  const storedTheme = localStorage.getItem('theme');
+  const storedTheme = localStorage.getItem('vite-ui-theme');
   const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   
   if (storedTheme === 'dark' || (storedTheme === null && systemPrefersDark)) {

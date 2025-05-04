@@ -13,7 +13,7 @@ import Trending from './pages/Trending';
 import PerformerProfile from './pages/PerformerProfile';
 import CreaVerse from './features/creaverse';
 import NotFound from './pages/NotFound';
-import { ThemeProvider } from "@/components/theme-provider"
+import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from 'sonner';
 import ImmersiveShowcase from './pages/ImmersiveShowcase';
 import Creators from './pages/Creators';
@@ -28,11 +28,18 @@ function App() {
     }, 1000);
   }, []);
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-background">
+        <div className="animate-pulse text-primary-foreground">Chargement...</div>
+      </div>
+    );
+  }
+
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <Routes>
         <Route path="/" element={<Home />} />
-        {/* Add new immersive showcase route */}
         <Route path="/immersive" element={<ImmersiveShowcase />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
