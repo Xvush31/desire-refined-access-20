@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,20 +7,8 @@ import { motion } from 'framer-motion';
 import { Heart, Share, MessageCircle, Sparkles, Play } from 'lucide-react';
 import CreatorFeedItem from './CreatorFeedItem';
 
-// Define the types needed
-interface CreatorFeedPost {
-  id: string; // Changed from number to string to match CreatorFeedItem's type
-  creatorId: number;
-  creatorName: string;
-  creatorAvatar: string;
-  image: string;
-  caption: string;
-  timestamp: string;
-  likes: number;
-  comments: number;
-  shares: number;
-  bookmarks: number;
-}
+// Import the CreatorFeedPost type from CreatorFeedItem to ensure consistency
+import { CreatorFeedPost } from './CreatorFeedItem';
 
 interface XTeaseVideo {
   id: number;
@@ -59,7 +46,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = (props) => {
     // Simulate fetching creator feed posts
     const mockPosts: CreatorFeedPost[] = [
       {
-        id: "1", // Changed to string
+        id: "1",
         creatorId: 1,
         creatorName: "Sophie Dream",
         creatorAvatar: "https://picsum.photos/seed/creator1/100/100",
@@ -72,7 +59,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = (props) => {
         bookmarks: 67,
       },
       {
-        id: "2", // Changed to string
+        id: "2",
         creatorId: 2,
         creatorName: "Max Immersion",
         creatorAvatar: "https://picsum.photos/seed/creator2/100/100",
@@ -85,7 +72,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = (props) => {
         bookmarks: 112,
       },
       {
-        id: "3", // Changed to string
+        id: "3",
         creatorId: 3,
         creatorName: "Léa Créative",
         creatorAvatar: "https://picsum.photos/seed/creator3/100/100",
@@ -123,7 +110,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = (props) => {
 
     // Transform XTease videos to CreatorFeedPost format
     const immersiveXTeaseVideos: CreatorFeedPost[] = xTeaseVideos.map((video): CreatorFeedPost => ({
-      id: `video-${video.id}`, // Changed to string with prefix
+      id: `video-${video.id}`,
       creatorId: video.id,
       creatorName: video.performer,
       creatorAvatar: `https://picsum.photos/seed/performer${video.id}/100/100`,

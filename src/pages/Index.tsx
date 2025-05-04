@@ -71,6 +71,9 @@ const generateMockFeed = (): CreatorFeedPost[] => {
       image: `https://picsum.photos/seed/post${i}/600/1067`, // Format 9:16 approximatif
       caption: captions[i % captions.length],
       likes: Math.floor(Math.random() * 10000) + 100,
+      comments: Math.floor(Math.random() * 500) + 10, // Add missing comments property
+      shares: Math.floor(Math.random() * 200) + 5,    // Add missing shares property
+      bookmarks: Math.floor(Math.random() * 300) + 20, // Add missing bookmarks property
       timestamp: timestamp,
       isPremium: isPremium
     };
@@ -160,11 +163,8 @@ const Index = () => {
   const { t } = useLocale();
   const { currentUser, loading } = useAuth();
   
-  // Update the mock feed to use string IDs instead of numeric IDs
-  const [posts, setPosts] = useState<CreatorFeedPost[]>(generateMockFeed().slice(0, 6).map(post => ({
-    ...post,
-    id: String(post.id) // Convert ID to string to match expected type
-  })));
+  // Make sure the allPosts array also has the required properties
+  const [posts, setPosts] = useState<CreatorFeedPost[]>(generateMockFeed().slice(0, 6));
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -174,11 +174,8 @@ const Index = () => {
     data: any
   }>({ type: null, data: null });
   
-  // Convert post IDs to strings in the mock data
-  const allPosts = generateMockFeed().map(post => ({
-    ...post,
-    id: String(post.id) // Convert ID to string to match expected type
-  }));
+  // Make sure allPosts uses the updated generateMockFeed function
+  const allPosts = generateMockFeed();
   
   const { isFirstVisit } = useImmersiveMode();
   
