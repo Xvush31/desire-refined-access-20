@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useCallback } from "react";
 import Header from "@/components/Header";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -13,6 +12,8 @@ import { useImmersiveMode } from "@/hooks/useImmersiveMode";
 import { motion } from "framer-motion";
 import Footer from "@/components/Footer";
 import ImmersivePublications from "@/components/creator/ImmersivePublications";
+import { fetchCreaverseVideos, mockCreaverseVideos } from "@/services/creaverseService";
+import { toast } from "sonner";
 
 // Données mockées pour le feed des créateurs
 const generateMockFeed = (): CreatorFeedPost[] => {
@@ -172,6 +173,7 @@ const Index = () => {
   const { currentUser, loading } = useAuth();
   
   const [posts, setPosts] = useState<CreatorFeedPost[]>(generateMockFeed().slice(0, 6));
+  const [creaverseVideos, setCreaverseVideos] = useState<CreatorFeedPost[]>([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -183,6 +185,37 @@ const Index = () => {
   const allPosts = generateMockFeed();
   
   const { isFirstVisit } = useImmersiveMode();
+  
+  // Load CreaVerse videos when component mounts
+  useEffect(() => {
+    const loadCreaverseVideos = async () => {
+      try {
+        // First try to fetch from the real API
+        const videos = await fetchCreaverseVideos();
+        
+        if (videos.length > 0) {
+          setCreaverseVideos(videos);
+          console.log("Successfully loaded CreaVerse videos:", videos.length);
+        } else {
+          // If the API returns no videos, use mock data
+          const mockVideos = mockCreaverseVideos();
+          setCreaverseVideos(mockVideos);
+          console.log("Using mock CreaVerse videos:", mockVideos.length);
+        }
+      } catch (error) {
+        console.error("Failed to load CreaVerse videos:", error);
+        // Fallback to mock data
+        const mockVideos = mockCreaverseVideos();
+        setCreaverseVideos(mockVideos);
+        
+        toast.error("Impossible de charger les vidéos CreaVerse", {
+          description: "Utilisation de données de test en attendant la connexion à l'API"
+        });
+      }
+    };
+    
+    loadCreaverseVideos();
+  }, []);
   
   // Changed to always show immersive mode when landing on homepage
   useEffect(() => {
@@ -236,18 +269,33 @@ const Index = () => {
     setActivePromo({ type: null, data: null });
   };
 
-  // Function to insert promotional blocks that use our new handlePromoClick
+  // Modified function to insert promotional blocks and CreaVerse videos
   const renderFeedWithPromos = () => {
+    // Combine regular posts with CreaVerse videos
+    const combinedPosts = [...posts];
+    
+    // Insert CreaVerse videos at strategic positions (every 4 posts)
+    creaverseVideos.forEach((video, index) => {
+      const insertPosition = (index + 1) * 4;
+      // Only insert if position is within the combined array's range
+      if (insertPosition < combinedPosts.length) {
+        combinedPosts.splice(insertPosition, 0, video);
+      } else {
+        // If beyond range, just add at the end
+        combinedPosts.push(video);
+      }
+    });
+    
     const result = [];
     
-    for (let i = 0; i < posts.length; i++) {
+    for (let i = 0; i < combinedPosts.length; i++) {
       // Add the post
       result.push(
-        <CreatorFeedItem key={posts[i].id} post={posts[i]} />
+        <CreatorFeedItem key={combinedPosts[i].id} post={combinedPosts[i]} />
       );
       
       // After each group of 3 posts, insert a different promo block
-      if ((i + 1) % 3 === 0 && i < posts.length - 1) {
+      if ((i + 1) % 3 === 0 && i < combinedPosts.length - 1) {
         const promoType = Math.floor((i / 3) % 3); // Alternating between 0, 1, 2
         
         if (promoType === 0) {
@@ -363,7 +411,7 @@ const Index = () => {
       {/* Immersive mode */}
       {showImmersive && (
         <ImmersivePublications 
-          posts={allPosts.slice(0, 10)} 
+          posts={[...allPosts.slice(0, 7), ...creaverseVideos.slice(0, 3)]} 
           onExitImmersive={() => setShowImmersive(false)}
           activePromo={activePromo}
           onClosePromo={closePromo}
