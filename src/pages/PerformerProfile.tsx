@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { CREAVERSE_DOMAIN } from "../utils/creaverseLinks";
+import { getCreatorProfileUrl } from "../utils/creaverseLinks";
 
 /**
  * Ce composant gère la redirection des anciennes URLs vers CreaVerse
@@ -21,8 +21,8 @@ const PerformerProfile: React.FC = () => {
     // Affichage d'un toast pour informer l'utilisateur
     toast.info("Redirection vers le profil du créateur...");
     
-    // Construct the external URL
-    const externalUrl = `${CREAVERSE_DOMAIN}/performer/${targetId}`;
+    // Construct the external URL with the new format
+    const externalUrl = getCreatorProfileUrl(targetId);
     
     // Redirection vers CreaVerse avec remplacement pour éviter de pouvoir revenir en arrière
     console.log("Redirecting to:", externalUrl);

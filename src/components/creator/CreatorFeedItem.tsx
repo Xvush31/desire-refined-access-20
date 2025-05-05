@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Heart, MessageCircle, DollarSign } from "lucide-react";
 import { toast } from "sonner";
@@ -8,6 +7,7 @@ import { useTheme } from "@/hooks/use-theme";
 import TipDialog from '@/components/messaging/TipDialog';
 import SendMessageDialog from '@/components/SendMessageDialog';
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { getCreatorProfileUrl } from '@/utils/creaverseLinks';
 
 export interface CreatorFeedPost {
   id: string;
@@ -52,12 +52,15 @@ const CreatorFeedItem: React.FC<CreatorFeedItemProps> = ({ post }) => {
 
   const bgClass = theme === 'light' ? 'bg-white' : 'bg-zinc-900';
   const borderClass = theme === 'light' ? 'border-gray-200' : 'border-gray-800';
+  
+  // Génération du lien vers le profil créateur avec le nouveau format
+  const creatorProfileUrl = getCreatorProfileUrl(post.creatorId);
 
   return (
     <div className={`${bgClass} rounded-lg overflow-hidden shadow-sm mb-4 border ${borderClass} max-w-sm mx-auto w-full`}>
       {/* Creator Header */}
       <div className="p-3 flex items-center justify-between">
-        <Link to={`/performers/${post.creatorId}`} className="flex items-center gap-2">
+        <a href={creatorProfileUrl} className="flex items-center gap-2">
           <Avatar className="h-8 w-8 border border-pink-500">
             <AvatarImage src={post.creatorAvatar} alt={post.creatorName} />
             <AvatarFallback className="bg-gradient-to-br from-pink-500 to-purple-500 text-white">
@@ -65,7 +68,7 @@ const CreatorFeedItem: React.FC<CreatorFeedItemProps> = ({ post }) => {
             </AvatarFallback>
           </Avatar>
           <span className="font-medium text-sm">{post.creatorName}</span>
-        </Link>
+        </a>
         <span className="text-xs text-muted-foreground">{post.timestamp}</span>
       </div>
 
@@ -124,9 +127,9 @@ const CreatorFeedItem: React.FC<CreatorFeedItemProps> = ({ post }) => {
         
         {/* Caption */}
         <div className="text-sm mb-1">
-          <Link to={`/performers/${post.creatorId}`} className="font-semibold mr-2">
+          <a href={creatorProfileUrl} className="font-semibold mr-2">
             {post.creatorName}
-          </Link>
+          </a>
           {post.caption}
         </div>
       </div>

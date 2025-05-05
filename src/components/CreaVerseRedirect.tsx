@@ -1,7 +1,7 @@
 
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { CREAVERSE_DOMAIN } from "../utils/creaverseLinks";
+import { getCreatorProfileUrl, CREAVERSE_DOMAIN } from "../utils/creaverseLinks";
 import { toast } from "sonner";
 
 interface CreaVerseRedirectProps {
@@ -16,7 +16,27 @@ const CreaVerseRedirect: React.FC<CreaVerseRedirectProps> = ({ pathPrefix = "" }
   const navigate = useNavigate();
   
   useEffect(() => {
-    // Build the path with any URL parameters
+    // Special handling for creator profiles
+    if (pathPrefix === "performer" && params && Object.values(params)[0]) {
+      const performerId = Object.values(params)[0];
+      const targetUrl = getCreatorProfileUrl(performerId);
+      
+      // Show toast notification
+      toast.info("Redirection vers le profil du créateur...", {
+        description: "Vous allez être redirigé vers CreaVerse"
+      });
+      
+      console.log(`Redirecting to creator profile: ${targetUrl}`);
+      
+      // Set a timeout to make sure the user sees the toast
+      const redirectTimeout = setTimeout(() => {
+        window.location.href = targetUrl;
+      }, 1500);
+      
+      return () => clearTimeout(redirectTimeout);
+    }
+    
+    // Handle other redirects with standard path building
     const buildPath = () => {
       const paramsInPath = Object.entries(params)
         .map(([key, value]) => ({key, value}))

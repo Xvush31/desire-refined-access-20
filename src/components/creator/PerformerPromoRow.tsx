@@ -3,6 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from 'sonner';
+import { getCreatorProfileUrl } from '@/utils/creaverseLinks';
 
 interface Performer {
   id: number;
@@ -22,8 +23,10 @@ const PerformerPromoRow: React.FC<PerformerPromoRowProps> = ({ performers }) => 
   const handleCreatorClick = (e: React.MouseEvent, performer: Performer) => {
     e.preventDefault();
     toast.info(`Redirection vers le profil de ${performer.name}`);
-    // Redirection vers la page Creators existante
-    navigate(`/creators`);
+    
+    // Redirection vers le profil créateur avec le nouveau format d'URL
+    const creatorUrl = getCreatorProfileUrl(performer.id);
+    window.location.href = creatorUrl;
   };
 
   return (

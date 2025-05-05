@@ -5,6 +5,7 @@ import CreatorCard, { CreatorData } from "@/components/CreatorCard";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { getCreatorProfileUrl } from "@/utils/creaverseLinks";
 
 const creators: CreatorData[] = [
   {
@@ -38,9 +39,9 @@ const HomeCreatorsSection = () => (
     <div className="flex flex-col items-center sm:grid sm:grid-cols-2 md:grid-cols-3 gap-6">
       {creators.map((creator) => (
         <div key={creator.id} className="w-full max-w-md">
-          <Link to={`/creaverse/performer/${creator.id}`}>
+          <a href={getCreatorProfileUrl(creator.id)}>
             <CreatorCard key={creator.id} creator={creator} />
-          </Link>
+          </a>
         </div>
       ))}
       <div className="flex items-center justify-center">

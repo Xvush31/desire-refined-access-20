@@ -4,10 +4,10 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
+import { getCreatorProfileUrl } from "@/utils/creaverseLinks";
 
 export interface CreatorData {
   id: number;
@@ -40,6 +40,9 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => {
     }
   };
   
+  // Génération du lien vers le profil créateur avec le nouveau format
+  const creatorProfileUrl = getCreatorProfileUrl(creator.id);
+  
   return (
     <Card 
       className={`bg-card-gradient rounded-2xl p-5 shadow transition-all duration-300 relative min-w-[270px] flex flex-col justify-between creator-card ${!isMobile ? 'desktop-hover-effect' : ''}`}
@@ -48,8 +51,8 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => {
       onClick={handleDesktopClick}
       data-is-mobile={isMobile ? "true" : "false"}
     >
-      <Link 
-        to={`/performer/${creator.id}`}
+      <a 
+        href={creatorProfileUrl}
         className="block mb-2 text-center creator-card-content"
         data-testid="creator-profile-link"
         onClick={(e) => {
@@ -76,11 +79,11 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => {
         </h3>
         <div className="text-xs text-muted-foreground mb-2">{creator.category}</div>
         <p className="text-sm text-foreground/90 text-center mb-4 line-clamp-3">{creator.description}</p>
-      </Link>
+      </a>
       
       <div className="flex flex-col gap-2 w-full mt-auto">
-        <Link 
-          to={`/subscription?creator=${creator.id}`}
+        <a 
+          href={`/subscription?creator=${creator.id}`}
           className="w-full"
           data-testid="creator-subscribe-link"
           onClick={(e) => {
@@ -98,7 +101,7 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => {
             <Plus className="mr-2" size={18} />
             Abonnez-vous
           </Button>
-        </Link>
+        </a>
       </div>
     </Card>
   );

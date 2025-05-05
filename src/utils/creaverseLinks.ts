@@ -17,6 +17,15 @@ export const getCreaVerseUrl = (path: string): string => {
 };
 
 /**
+ * Creates a URL for a creator profile using the new format
+ * @param creatorId The ID of the creator
+ * @returns The URL for the creator profile using the new format
+ */
+export const getCreatorProfileUrl = (creatorId: number | string): string => {
+  return `${CREAVERSE_DOMAIN}/creator?id=creator${creatorId}`;
+};
+
+/**
  * Determines if a path is a CreaVerse path
  * @param path The path to check
  * @returns True if the path is a CreaVerse path
@@ -32,3 +41,4 @@ export const isCreaVersePath = (path: string): boolean => {
 export const openCreaVerseInNewTab = (path: string): void => {
   window.open(getCreaVerseUrl(path), '_blank');
 };
+
