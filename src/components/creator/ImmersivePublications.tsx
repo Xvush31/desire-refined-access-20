@@ -15,8 +15,27 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Link } from 'react-router-dom';
 import HLSVideoPlayer from '@/components/HLSVideoPlayer';
 
+// Define the XTeaseVideo type to match the structure of immersiveXTeaseVideos items
+export interface XTeaseVideo {
+  id: number;
+  title: string;
+  performer: string;
+  views: string;
+  thumbnail: string;
+  streamUrl: string;
+  isPremium: boolean;
+}
+
+// Define a union type for our mixed content
+export type MixedContentItem = CreatorFeedPost | XTeaseVideo;
+
+// Helper function to determine if an item is an XTeaseVideo
+export const isXTeaseVideo = (item: MixedContentItem): item is XTeaseVideo => {
+  return 'streamUrl' in item;
+};
+
 // Données statiques pour les vidéos XTease à utiliser dans l'interface immersive
-const immersiveXTeaseVideos = [
+const immersiveXTeaseVideos: XTeaseVideo[] = [
   {
     id: 101,
     title: "Moment intime en soirée",
@@ -81,7 +100,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
   const { theme, setTheme } = useTheme();
   
   // Mélanger les publications et les vidéos XTease
-  const [mixedContent, setMixedContent] = useState<Array<CreatorFeedPost | typeof immersiveXTeaseVideos[0]>>([]);
+  const [mixedContent, setMixedContent] = useState<MixedContentItem[]>([]);
   
   // Préparer le contenu mélangé au chargement
   useEffect(() => {
@@ -119,7 +138,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
   useEffect(() => {
     if (currentIndex < mixedContent.length) {
       const currentItem = mixedContent[currentIndex];
-      setIsVideoContent('streamUrl' in currentItem);
+      setIsVideoContent(isXTeaseVideo(currentItem));
     }
   }, [currentIndex, mixedContent]);
   
@@ -303,11 +322,11 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
 
   // Vérifier si l'élément actuel est une publication standard ou une vidéo XTease
   const currentContent = mixedContent[currentIndex];
-  const isXTeaseVideo = 'streamUrl' in currentContent;
+  const isXTeaseContent = isXTeaseVideo(currentContent);
   
-  const renderPostContent = (content: typeof mixedContent[0]) => {
+  const renderPostContent = (content: MixedContentItem) => {
     // Si c'est une vidéo XTease
-    if ('streamUrl' in content) {
+    if (isXTeaseVideo(content)) {
       return (
         <div 
           className="relative mb-4 w-full"
@@ -549,7 +568,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
             >
-              {isXTeaseVideo ? (
+              {isXTeaseContent ? (
                 <Button 
                   variant="outline" 
                   size="icon" 
@@ -642,7 +661,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
             <ScrollArea className="h-[calc(100vh-80px)] w-full max-w-md mx-auto">
               <div className="space-y-8 pb-8 pt-2 w-full">
                 {mixedContent.map((content, index) => (
-                  <div key={'streamUrl' in content ? `video-${content.id}` : content.id} className="w-full mx-auto">
+                  <div key={isXTeaseVideo(content) ? `video-${content.id}` : content.id} className="w-full mx-auto">
                     {renderPostContent(content)}
                     
                     {/* Post indicator */}
