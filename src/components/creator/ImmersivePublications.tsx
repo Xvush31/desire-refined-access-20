@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from 'react';
 import { useImmersiveMode } from '@/hooks/useImmersiveMode';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -104,7 +103,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
   
   // Préparer le contenu mélangé au chargement
   useEffect(() => {
-    const mixed = [...posts];
+    const mixed = [...posts] as MixedContentItem[];
     
     // Insérer une vidéo XTease toutes les 2-3 publications
     let insertIndex = Math.floor(Math.random() * 2) + 2; // Commence entre la 2e et 3e publication
