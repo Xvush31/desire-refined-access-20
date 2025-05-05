@@ -21,10 +21,10 @@ const PerformerProfile: React.FC = () => {
     // Affichage d'un toast pour informer l'utilisateur
     toast.info("Redirection vers le profil du créateur...");
     
-    // Construct the external URL with the new format
+    // Construct the external URL with the exact required format
     const externalUrl = getCreatorProfileUrl(targetId);
     
-    // Redirection vers CreaVerse avec remplacement pour éviter de pouvoir revenir en arrière
+    // Log the URL for debugging
     console.log("Redirecting to:", externalUrl);
     
     // Short timeout to ensure the toast is displayed
