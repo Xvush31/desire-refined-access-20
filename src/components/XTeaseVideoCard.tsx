@@ -21,7 +21,7 @@ interface VideoData {
 }
 
 interface XTeaseVideoCardProps {
-  video: VideoData;
+  video?: VideoData; // Rendre la vidéo optionnelle
   index: number;
   currentVideoIndex: number;
   isPlayerActive: boolean;
@@ -45,6 +45,16 @@ const XTeaseVideoCard: React.FC<XTeaseVideoCardProps> = ({
   onVideoComplete,
   aiSuggestions,
 }) => {
+  // S'assurer que video existe avant de l'utiliser
+  if (!video) {
+    console.error("Video data is undefined in XTeaseVideoCard");
+    return (
+      <div className="relative w-full h-full max-w-md mx-auto flex flex-col items-center justify-center">
+        <p className="text-white bg-black/40 p-4 rounded-lg">Vidéo non disponible</p>
+      </div>
+    );
+  }
+
   const { isFavorite } = useXTeaseInteractivity({ videoId: video.id });
   
   // Calculate if the video should be preloaded

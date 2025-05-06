@@ -53,11 +53,26 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
   loadMoreVideos = () => {}, // Valeur par défaut
   hasMoreVideos = false     // Valeur par défaut
 }) => {
-  const [displayedVideos, setDisplayedVideos] = useState(videos);
+  const [displayedVideos, setDisplayedVideos] = useState<VideoData[]>([]);
 
-  // Mettre à jour les vidéos affichées lorsque la prop videos change
+  // Filtrer les vidéos undefined avant de les afficher
   useEffect(() => {
-    setDisplayedVideos(videos);
+    if (!videos || videos.length === 0) {
+      console.log("No videos provided to XTeaseVideoList");
+      setDisplayedVideos([]);
+      return;
+    }
+    
+    // Filtrer les vidéos valides (non undefined et avec toutes les propriétés requises)
+    const validVideos = videos.filter(video => 
+      video && video.id && video.title && video.thumbnail && video.streamUrl
+    );
+    
+    if (validVideos.length !== videos.length) {
+      console.warn(`Filtered out ${videos.length - validVideos.length} invalid videos`);
+    }
+    
+    setDisplayedVideos(validVideos);
   }, [videos]);
 
   const {
@@ -89,48 +104,54 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <InfiniteScroll
-        dataLength={displayedVideos.length}
-        next={loadMoreVideos}
-        hasMore={hasMoreVideos}
-        loader={
-          <div className="flex justify-center items-center py-4">
-            <Loader className="animate-spin w-6 h-6 text-pink-500" />
-          </div>
-        }
-        scrollableTarget="scrollableDiv"
-      >
-        {displayedVideos.map((video, index) => (
-          <div
-            key={video.id}
-            ref={(ref) => registerVideoRef(index, ref)}
-            data-index={index}
-            className="min-h-full w-full flex items-center justify-center p-2 sm:p-4"
-            style={{ minHeight: 'calc(100vh - 80px)' }}
-          >
-            <XTeaseVideoCard
-              video={video}
-              index={index}
-              currentVideoIndex={currentVideoIndex}
-              isPlayerActive={isPlayerActive && currentVideoIndex === index}
-              showSecurityIncident={showSecurityIncident}
-              dataSavingMode={settings.dataSavingMode}
-              onPlay={() => {
-                setIsPlayerActive(true);
-                if (Math.random() < 0.3 && !showSecurityIncident) {
-                  setTimeout(() => {
-                    setShowSecurityIncident(true);
-                    setTimeout(() => setShowSecurityIncident(false), 5000);
-                  }, 3000);
-                }
-              }}
-              onVideoProgress={(progress) => updateWatchProgress(video.id, progress)}
-              onVideoComplete={handleVideoComplete}
-              aiSuggestions={aiSuggestions}
-            />
-          </div>
-        ))}
-      </InfiniteScroll>
+      {displayedVideos.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-full">
+          <p className="text-white bg-black/40 p-4 rounded-lg">Aucune vidéo disponible</p>
+        </div>
+      ) : (
+        <InfiniteScroll
+          dataLength={displayedVideos.length}
+          next={loadMoreVideos}
+          hasMore={hasMoreVideos}
+          loader={
+            <div className="flex justify-center items-center py-4">
+              <Loader className="animate-spin w-6 h-6 text-pink-500" />
+            </div>
+          }
+          scrollableTarget="scrollableDiv"
+        >
+          {displayedVideos.map((video, index) => (
+            <div
+              key={video.id}
+              ref={(ref) => registerVideoRef(index, ref)}
+              data-index={index}
+              className="min-h-full w-full flex items-center justify-center p-2 sm:p-4"
+              style={{ minHeight: 'calc(100vh - 80px)' }}
+            >
+              <XTeaseVideoCard
+                video={video}
+                index={index}
+                currentVideoIndex={currentVideoIndex}
+                isPlayerActive={isPlayerActive && currentVideoIndex === index}
+                showSecurityIncident={showSecurityIncident}
+                dataSavingMode={settings.dataSavingMode}
+                onPlay={() => {
+                  setIsPlayerActive(true);
+                  if (Math.random() < 0.3 && !showSecurityIncident) {
+                    setTimeout(() => {
+                      setShowSecurityIncident(true);
+                      setTimeout(() => setShowSecurityIncident(false), 5000);
+                    }, 3000);
+                  }
+                }}
+                onVideoProgress={(progress) => updateWatchProgress(video.id, progress)}
+                onVideoComplete={handleVideoComplete}
+                aiSuggestions={aiSuggestions}
+              />
+            </div>
+          ))}
+        </InfiniteScroll>
+      )}
 
       <XTeaseSecurityIncidentBanner show={showSecurityIncident} />
     </div>

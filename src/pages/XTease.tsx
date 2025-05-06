@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
 import XTeaseVideoList from "@/components/XTeaseVideoList";
@@ -202,15 +203,30 @@ const XTease: React.FC = () => {
           // Fallback to static data if no videos found
           setSupabaseVideos(allXTeaseVideos);
           setDisplayedVideos(allXTeaseVideos.slice(0, 5));
-        } else if (videos && videos.length > 0) {
+          return;
+        }
+        
+        if (videos && videos.length > 0) {
           console.log("Loaded Xtease videos from Supabase:", videos.length);
           
           // Format videos for the XTeaseVideoCard component
-          const formattedVideos = videos.map(video => adaptSupabaseVideoToXTeaseFormat(video));
+          const formattedVideos = videos
+            .filter(video => video !== null) // Filtrer les vidéos null
+            .map(video => adaptSupabaseVideoToXTeaseFormat(video))
+            .filter(video => video && video.streamUrl); // Vérifier que streamUrl existe
           
-          setSupabaseVideos(formattedVideos);
-          setDisplayedVideos(formattedVideos.slice(0, 5));
-          setHasMore(formattedVideos.length > 5);
+          console.log("Formatted videos:", formattedVideos.length);
+          
+          if (formattedVideos.length > 0) {
+            setSupabaseVideos(formattedVideos);
+            setDisplayedVideos(formattedVideos.slice(0, 5));
+            setHasMore(formattedVideos.length > 5);
+          } else {
+            // Fallback if no valid videos
+            console.log("No valid videos found in Supabase, using fallback data");
+            setSupabaseVideos(allXTeaseVideos);
+            setDisplayedVideos(allXTeaseVideos.slice(0, 5));
+          }
         } else {
           console.log("No videos found in Supabase, using fallback data");
           // Fallback to static data if no videos found
