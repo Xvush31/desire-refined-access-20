@@ -244,8 +244,16 @@ const Index = () => {
         
         // Combiner et convertir les vidéos pour le feed
         const combinedVideos = [
-          ...(promoVideos?.map(v => supabaseVideoToFeedPost(v)) || []),
-          ...(xteaseVideos?.map(v => supabaseVideoToFeedPost(v)) || [])
+          ...(promoVideos?.map(v => {
+            const post = supabaseVideoToFeedPost(v);
+            console.log(`Feed post created with video_url: ${post?.videoUrl}`);
+            return post;
+          }).filter(Boolean) || []),
+          ...(xteaseVideos?.map(v => {
+            const post = supabaseVideoToFeedPost(v);
+            console.log(`XTease feed post created with video_url: ${post?.videoUrl}`);
+            return post;
+          }).filter(Boolean) || [])
         ];
         
         // Filtrer pour éviter les doublons basés sur l'ID
@@ -253,15 +261,24 @@ const Index = () => {
           [video.id.toString(), video]
         )).values());
         
-        console.log(`Loaded ${uniqueVideos.length} videos from Supabase`);
-        setSupabaseVideos(uniqueVideos);
+        // Filtrer les vidéos sans URL valide
+        const validVideos = uniqueVideos.filter(video => {
+          const hasValidUrl = !!video.videoUrl;
+          if (!hasValidUrl) {
+            console.warn(`Skipping video ${video.id} without valid videoUrl`);
+          }
+          return hasValidUrl;
+        });
+        
+        console.log(`Loaded ${validVideos.length} valid videos from Supabase for feed`);
+        setSupabaseVideos(validVideos);
         
         // Si on a des vidéos Supabase, on les mélange avec les posts mock
-        if (uniqueVideos.length > 0) {
+        if (validVideos.length > 0) {
           const mixedPosts = [...posts];
           
           // Insérer des vidéos Supabase à intervalles réguliers
-          uniqueVideos.slice(0, 6).forEach((video, index) => {
+          validVideos.slice(0, 6).forEach((video, index) => {
             const insertPos = Math.min((index + 1) * 2, mixedPosts.length);
             mixedPosts.splice(insertPos, 0, video);
           });

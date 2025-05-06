@@ -84,6 +84,19 @@ export const getStandardVideos = async (): Promise<{
  * Convertit une vidéo Supabase au format utilisé par le composant CreatorFeedPost
  */
 export const supabaseVideoToFeedPost = (video: SupabaseVideo): any => {
+  // Vérifier que la vidéo est définie
+  if (!video) {
+    console.error("Video object is undefined in supabaseVideoToFeedPost");
+    return null;
+  }
+  
+  // S'assurer que streamUrl est toujours défini en priorisant video_url, puis videoUrl
+  const streamUrl = video.video_url || video.videoUrl || '';
+  
+  // Log pour débogage
+  console.log(`Converting video ${video.id} to feed post format`);
+  console.log(`Stream URL for feed: ${streamUrl}`);
+  
   return {
     id: `video-${video.id}`,
     image: video.thumbnail_url || 'https://picsum.photos/600/1067',
@@ -94,7 +107,7 @@ export const supabaseVideoToFeedPost = (video: SupabaseVideo): any => {
     likes: Math.floor(Math.random() * 1000) + 100,
     timestamp: 'il y a quelques heures',
     isPremium: video.is_premium === true,
-    videoUrl: video.video_url || video.videoUrl || '', // Support des deux formats
+    videoUrl: streamUrl, // Utiliser la variable streamUrl créée ci-dessus
     format: video.format || 'standard',
     isVideo: true
   };

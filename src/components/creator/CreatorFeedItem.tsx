@@ -1,152 +1,140 @@
 
-import React, { useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Heart, MessageCircle, DollarSign } from "lucide-react";
-import { toast } from "sonner";
-import { useTheme } from "@/hooks/use-theme";
-import TipDialog from '@/components/messaging/TipDialog';
-import SendMessageDialog from '@/components/SendMessageDialog';
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { getCreatorProfileUrl } from '@/utils/creaverseLinks';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { Heart, MessageCircle, Send, Share2, Play, Pause } from "lucide-react";
+import HLSVideoPlayer from "@/components/HLSVideoPlayer";
+import { useXTeaseInteractivity } from "@/hooks/useXTeaseInteractivity";
 
 export interface CreatorFeedPost {
   id: string;
+  image: string;
+  caption: string;
   creatorId: number;
   creatorName: string;
   creatorAvatar: string;
-  image: string;
-  caption: string;
   likes: number;
   timestamp: string;
   isPremium?: boolean;
+  videoUrl?: string; // URL de la vidéo
+  format?: string; // Format de la vidéo (16:9, 9:16, etc.)
+  isVideo?: boolean; // Indique si c'est une vidéo
 }
 
-interface CreatorFeedItemProps {
-  post: CreatorFeedPost;
-}
+const CreatorFeedItem: React.FC<{ post: CreatorFeedPost }> = ({ post }) => {
+  const [liked, setLiked] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const { isFavorite } = useXTeaseInteractivity({ videoId: parseInt(post.id.replace('video-', '')) });
 
-const CreatorFeedItem: React.FC<CreatorFeedItemProps> = ({ post }) => {
-  const [isLiked, setIsLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(post.likes);
-  const [isTipDialogOpen, setIsTipDialogOpen] = useState(false);
-  const [isMessageDialogOpen, setIsMessageDialogOpen] = useState(false);
-  const { theme } = useTheme();
+  const isVideoPost = post.isVideo && post.videoUrl;
 
-  const handleLike = () => {
-    if (isLiked) {
-      setLikesCount(likesCount - 1);
-    } else {
-      setLikesCount(likesCount + 1);
-      toast.success("Publication aimée!");
-    }
-    setIsLiked(!isLiked);
+  const handleLikeToggle = () => {
+    setLiked(!liked);
   };
 
-  const handleTip = () => {
-    setIsTipDialogOpen(true);
+  const handlePlayVideo = () => {
+    setIsPlaying(true);
   };
 
-  const handleMessage = () => {
-    setIsMessageDialogOpen(true);
+  const handleVideoComplete = () => {
+    setIsPlaying(false);
   };
 
-  const bgClass = theme === 'light' ? 'bg-white' : 'bg-zinc-900';
-  const borderClass = theme === 'light' ? 'border-gray-200' : 'border-gray-800';
-  
-  // Génération du lien vers le profil créateur avec le nouveau format
-  const creatorProfileUrl = getCreatorProfileUrl(post.creatorId);
+  const shouldShowVideo = isVideoPost && isPlaying;
 
   return (
-    <div className={`${bgClass} rounded-lg overflow-hidden shadow-sm mb-4 border ${borderClass} max-w-sm mx-auto w-full`}>
-      {/* Creator Header */}
-      <div className="p-3 flex items-center justify-between">
-        <a href={creatorProfileUrl} className="flex items-center gap-2">
-          <Avatar className="h-8 w-8 border border-pink-500">
-            <AvatarImage src={post.creatorAvatar} alt={post.creatorName} />
-            <AvatarFallback className="bg-gradient-to-br from-pink-500 to-purple-500 text-white">
-              {post.creatorName.substring(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <span className="font-medium text-sm">{post.creatorName}</span>
-        </a>
-        <span className="text-xs text-muted-foreground">{post.timestamp}</span>
-      </div>
-
-      {/* Post Image with 9:16 aspect ratio */}
-      <div className="relative">
-        <AspectRatio ratio={9/16} className="w-full">
+    <div className="mb-6 bg-card border border-border rounded-lg overflow-hidden">
+      {/* En-tête du post */}
+      <div className="flex items-center p-3">
+        <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-primary">
           <img 
-            src={post.image} 
-            alt={`Publication de ${post.creatorName}`} 
+            src={post.creatorAvatar} 
+            alt={post.creatorName}
             className="w-full h-full object-cover"
-            loading="lazy"
           />
-          {post.isPremium && (
-            <div className="absolute top-2 right-2">
-              <span className="animated-gradient-bg text-white text-xs px-2 py-1 rounded-full">
-                Premium
-              </span>
-            </div>
-          )}
-        </AspectRatio>
-      </div>
-
-      {/* Post Actions */}
-      <div className="p-3">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={handleLike}
-              className="flex items-center gap-1"
-              aria-label="Aimer cette publication"
-            >
-              <Heart 
-                size={24} 
-                className={isLiked ? "fill-red-500 text-red-500" : ""}
-              />
-            </button>
-            <button 
-              onClick={handleMessage}
-              className="flex items-center gap-1"
-              aria-label="Envoyer un message"
-            >
-              <MessageCircle size={24} />
-            </button>
-            <button 
-              onClick={handleTip}
-              className="flex items-center gap-1"
-              aria-label="Envoyer un pourboire"
-            >
-              <DollarSign size={24} />
-            </button>
-          </div>
-          <div className="text-sm font-medium">
-            {likesCount.toLocaleString()} j'aime
-          </div>
         </div>
-        
-        {/* Caption */}
-        <div className="text-sm mb-1">
-          <a href={creatorProfileUrl} className="font-semibold mr-2">
-            {post.creatorName}
-          </a>
-          {post.caption}
+        <div className="ml-3 flex-grow">
+          <h3 className="font-semibold text-sm">{post.creatorName}</h3>
+          <p className="text-xs text-muted-foreground">{post.timestamp}</p>
         </div>
       </div>
-
-      {/* Dialogs */}
-      <TipDialog 
-        isOpen={isTipDialogOpen} 
-        onClose={() => setIsTipDialogOpen(false)} 
-        performerName={post.creatorName} 
-      />
       
-      <SendMessageDialog
-        performerName={post.creatorName}
-        performerId={post.creatorId}
-        isOpen={isMessageDialogOpen}
-        onOpenChange={setIsMessageDialogOpen}
-      />
+      {/* Contenu du post (image ou vidéo) */}
+      <div className="relative">
+        {shouldShowVideo ? (
+          <div className="aspect-[9/16] w-full">
+            <HLSVideoPlayer
+              src={post.videoUrl}
+              poster={post.image}
+              videoId={parseInt(post.id.replace('video-', ''))}
+              title={post.caption}
+              onVideoComplete={handleVideoComplete}
+              autoPlay={true}
+            />
+          </div>
+        ) : (
+          <div className="relative aspect-[9/16] w-full bg-black">
+            <img 
+              src={post.image} 
+              alt={post.caption}
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+            {isVideoPost && (
+              <div 
+                className="absolute inset-0 flex items-center justify-center cursor-pointer"
+                onClick={handlePlayVideo}
+              >
+                <div className="bg-black/30 p-5 rounded-full">
+                  <Play size={32} className="text-white" />
+                </div>
+              </div>
+            )}
+            {post.isPremium && (
+              <div className="absolute top-3 right-3 badge badge-premium px-3 py-1 text-sm font-medium">
+                Premium
+              </div>
+            )}
+            {isFavorite && (
+              <div className="absolute top-3 left-3 bg-red-500/80 px-2 py-1 rounded text-xs text-white font-medium">
+                Favori
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      
+      {/* Actions du post */}
+      <div className="flex items-center p-3">
+        <motion.button 
+          whileTap={{ scale: 1.5 }}
+          className={`p-2 rounded-full ${liked ? 'text-red-500' : 'text-gray-400'}`}
+          onClick={handleLikeToggle}
+        >
+          <Heart className={`${liked ? 'fill-current' : ''}`} size={22} />
+        </motion.button>
+        <button className="p-2 rounded-full text-gray-400">
+          <MessageCircle size={22} />
+        </button>
+        <button className="p-2 rounded-full text-gray-400">
+          <Send size={22} />
+        </button>
+        <div className="flex-grow"></div>
+        <button className="p-2 rounded-full text-gray-400">
+          <Share2 size={22} />
+        </button>
+      </div>
+      
+      {/* Compteur de likes */}
+      <div className="px-4 py-1">
+        <p className="text-sm font-medium">{post.likes + (liked ? 1 : 0)} j'aime</p>
+      </div>
+      
+      {/* Caption */}
+      <div className="px-4 pb-3">
+        <p className="text-sm">
+          <span className="font-semibold">{post.creatorName}</span> {post.caption}
+        </p>
+      </div>
     </div>
   );
 };

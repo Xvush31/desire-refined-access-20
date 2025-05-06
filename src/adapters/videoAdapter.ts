@@ -28,7 +28,6 @@ export const adaptSupabaseVideoToXTeaseFormat = (video: SupabaseVideo) => {
   // Journaliser l'URL du stream pour débogage
   console.log("Adapting video with ID:", video.id);
   console.log("Stream URL:", streamUrl);
-  console.log("Original video data:", JSON.stringify(video, null, 2));
 
   return {
     id: video.id,
