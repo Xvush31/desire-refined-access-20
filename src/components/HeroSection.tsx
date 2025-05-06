@@ -1,8 +1,11 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import VideoCard from "./VideoCard";
+import { getStandardVideos, SupabaseVideo } from "@/services/supabaseVideoService";
+import { adaptSupabaseVideoToVideoCard } from "@/adapters/videoAdapter";
 
-const freemiumVideos = [
+// Fallback pour les vidéos si Supabase ne retourne rien
+const fallbackVideos = [
   {
     id: 1,
     title: "Balade romantique à Paris",
@@ -38,6 +41,39 @@ const freemiumVideos = [
 ];
 
 const HeroSection = () => {
+  const [videos, setVideos] = useState<any[]>(fallbackVideos);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadVideos = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await getStandardVideos();
+        
+        if (error) {
+          console.error("Error loading standard videos:", error);
+          return;
+        }
+        
+        if (data && data.length > 0) {
+          // Adapter les vidéos pour le composant VideoCard
+          const formattedVideos = data
+            .slice(0, 8)
+            .map(video => adaptSupabaseVideoToVideoCard(video));
+          
+          setVideos(formattedVideos);
+          console.log(`Loaded ${formattedVideos.length} standard videos from Supabase`);
+        }
+      } catch (error) {
+        console.error("Failed to load standard videos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadVideos();
+  }, []);
+
   return (
     <section className="relative py-8 md:py-12 lg:py-16 overflow-hidden">
       {/* Background gradient avec les couleurs du logo */}
@@ -45,19 +81,27 @@ const HeroSection = () => {
       
       {/* Content */}
       <div className="container px-4 mx-auto relative z-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
-          {freemiumVideos.map((video) => (
-            <VideoCard
-              key={video.id}
-              id={video.id} // Add ID to props
-              title={video.title}
-              thumbnail={video.thumbnail}
-              duration={video.duration}
-              views={video.views}
-              performer={video.performer}
-            />
-          ))}
-        </div>
+        {loading ? (
+          <div className="flex justify-center py-4">
+            <div className="animate-spin h-8 w-8 border-4 border-primary rounded-full border-t-transparent"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
+            {videos.map((video) => (
+              <VideoCard
+                key={video.id}
+                id={video.id}
+                title={video.title}
+                thumbnail={video.thumbnail}
+                duration={video.duration}
+                views={video.views}
+                performer={video.performer}
+                isPremium={video.isPremium}
+                navigateTo={video.navigateTo}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

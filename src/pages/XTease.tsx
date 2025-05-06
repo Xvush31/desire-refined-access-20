@@ -1,10 +1,11 @@
-
 import React, { useState, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
 import XTeaseVideoList from "@/components/XTeaseVideoList";
 import { toast } from "@/hooks/use-toast";
+import { getXteaseVideos, SupabaseVideo } from "@/services/supabaseVideoService";
+import { adaptSupabaseVideoToXTeaseFormat } from "@/adapters/videoAdapter";
 
-// Données statiques pour les vidéos XTease - augmenté pour démontrer l'infinite scrolling
+// Données statiques pour les vidéos XTease - fallback si Supabase ne retourne rien
 const allXTeaseVideos = [
   {
     id: 1,
@@ -155,8 +156,9 @@ const XTease: React.FC = () => {
   const [showSecurityIncident, setShowSecurityIncident] = useState(false);
   const [settings, setSettings] = useState<XTeaseSettings>(defaultSettings);
   
-  // Infinite Scrolling avec chargement paginé
-  const [displayedVideos, setDisplayedVideos] = useState(allXTeaseVideos.slice(0, 5));
+  // Supabase videos
+  const [supabaseVideos, setSupabaseVideos] = useState<any[]>([]);
+  const [displayedVideos, setDisplayedVideos] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -184,29 +186,49 @@ const XTease: React.FC = () => {
     localStorage.setItem('xtease-settings', JSON.stringify(settings));
   }, [settings]);
 
-  // Fonction pour charger plus de vidéos (infinite scrolling)
-  const loadMoreVideos = useCallback(() => {
-    if (loading) return;
-    
-    setLoading(true);
-    
-    // Simuler un délai de chargement
-    setTimeout(() => {
-      const nextPage = page + 1;
-      const startIndex = page * 5;
-      const endIndex = startIndex + 5;
-      const nextVideos = allXTeaseVideos.slice(startIndex, endIndex);
-      
-      if (nextVideos.length === 0) {
-        setHasMore(false);
-      } else {
-        setDisplayedVideos(prev => [...prev, ...nextVideos]);
-        setPage(nextPage);
+  // Load videos from Supabase
+  useEffect(() => {
+    const loadSupabaseVideos = async () => {
+      try {
+        setLoading(true);
+        const { data: videos, error } = await getXteaseVideos();
+        
+        if (error) {
+          console.error("Error loading Xtease videos:", error);
+          toast.error("Erreur lors du chargement des vidéos", {
+            description: "Impossible de récupérer les vidéos depuis la base de données"
+          });
+          
+          // Fallback to static data if no videos found
+          setSupabaseVideos(allXTeaseVideos);
+          setDisplayedVideos(allXTeaseVideos.slice(0, 5));
+        } else if (videos && videos.length > 0) {
+          console.log("Loaded Xtease videos from Supabase:", videos.length);
+          
+          // Format videos for the XTeaseVideoCard component
+          const formattedVideos = videos.map(video => adaptSupabaseVideoToXTeaseFormat(video));
+          
+          setSupabaseVideos(formattedVideos);
+          setDisplayedVideos(formattedVideos.slice(0, 5));
+          setHasMore(formattedVideos.length > 5);
+        } else {
+          console.log("No videos found in Supabase, using fallback data");
+          // Fallback to static data if no videos found
+          setSupabaseVideos(allXTeaseVideos);
+          setDisplayedVideos(allXTeaseVideos.slice(0, 5));
+        }
+      } catch (error) {
+        console.error("Failed to load videos from Supabase:", error);
+        // Fallback to static data if error
+        setSupabaseVideos(allXTeaseVideos);
+        setDisplayedVideos(allXTeaseVideos.slice(0, 5));
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
-    }, 800);
-  }, [page, loading]);
+    };
+    
+    loadSupabaseVideos();
+  }, []);
 
   const handleVideoComplete = () => {
     console.log("Vidéo terminée:", displayedVideos[currentVideoIndex].title);
@@ -285,6 +307,30 @@ const XTease: React.FC = () => {
       watchHistory: updatedHistory
     });
   };
+
+  // Fonction pour charger plus de vidéos (infinite scrolling)
+  const loadMoreVideos = useCallback(() => {
+    if (loading) return;
+    
+    setLoading(true);
+    
+    // Simuler un délai de chargement
+    setTimeout(() => {
+      const nextPage = page + 1;
+      const startIndex = page * 5;
+      const endIndex = startIndex + 5;
+      const nextVideos = supabaseVideos.slice(startIndex, endIndex);
+      
+      if (nextVideos.length === 0) {
+        setHasMore(false);
+      } else {
+        setDisplayedVideos(prev => [...prev, ...nextVideos]);
+        setPage(nextPage);
+      }
+      
+      setLoading(false);
+    }, 800);
+  }, [page, loading, supabaseVideos]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">

@@ -1,7 +1,8 @@
-
 import axios from "axios";
 import { CreatorFeedPost } from "@/components/creator/CreatorFeedItem";
 import { CREAVERSE_DOMAIN } from "@/utils/creaverseLinks";
+import { getXteaseVideos } from "./supabaseVideoService";
+import { supabaseVideoToFeedPost } from "./supabaseVideoService";
 
 const CREAVERSE_API = `${CREAVERSE_DOMAIN}/api`;
 
@@ -9,25 +10,28 @@ const CREAVERSE_API = `${CREAVERSE_DOMAIN}/api`;
  * Fetches free videos and teasers from the CreaVerse platform
  * This allows synchronization between CreaVerse content and the XVush feed
  */
-export const fetchCreaverseVideos = async (): Promise<CreatorFeedPost[]> => {
+export const fetchCreaverseVideos = async () => {
   try {
-    const response = await axios.get(`${CREAVERSE_API}/free-videos`);
+    // Récupère les vidéos Xtease (format 9:16) depuis Supabase
+    const { data: videos, error } = await getXteaseVideos();
     
-    // Transform data from CreaVerse format to CreatorFeedPost format
-    return response.data.map((item: any) => ({
-      id: `creaverse-${item.id}`,
-      creatorId: parseInt(item.performerId || item.creatorId || "1"),
-      creatorName: item.author || item.creatorName || "Créateur CreaVerse",
-      creatorAvatar: item.performerImage || item.creatorAvatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=facearea&w=256&h=256&q=80",
-      image: item.thumbnail,
-      caption: item.title || item.description || "Contenu exclusif",
-      likes: item.metrics?.likes || Math.floor(Math.random() * 1000),
-      timestamp: item.publishDate || "récemment",
-      isPremium: false
-    }));
+    if (error) {
+      console.error("Error fetching CreaVerse videos from Supabase:", error);
+      return [];
+    }
+
+    if (!videos || videos.length === 0) {
+      console.log("No CreaVerse videos found in Supabase");
+      return [];
+    }
+
+    // Convertit les vidéos Supabase au format CreatorFeedPost
+    const formattedVideos = videos.map(video => supabaseVideoToFeedPost(video));
+    
+    console.log(`Fetched ${formattedVideos.length} CreaVerse videos from Supabase`);
+    return formattedVideos;
   } catch (error) {
-    console.error("Erreur lors de la récupération des vidéos CreaVerse:", error);
-    // Return empty array on error to prevent app from crashing
+    console.error("Failed to fetch CreaVerse videos:", error);
     return [];
   }
 };
@@ -36,7 +40,7 @@ export const fetchCreaverseVideos = async (): Promise<CreatorFeedPost[]> => {
  * Mock implementation for development/testing before the API is ready
  * This generates fake data similar to what the real API would return
  */
-export const mockCreaverseVideos = (): CreatorFeedPost[] => {
+export const mockCreaverseVideos = () => {
   const creators = [
     {
       id: 3,

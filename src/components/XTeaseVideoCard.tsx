@@ -17,6 +17,7 @@ interface VideoData {
   streamUrl: string;
   isPremium?: boolean;
   isPreview?: boolean;
+  creatorProfileUrl?: string; // Ajout du lien vers le profil créateur
 }
 
 interface XTeaseVideoCardProps {
@@ -114,9 +115,21 @@ const XTeaseVideoCard: React.FC<XTeaseVideoCardProps> = ({
       <div className="w-full mt-4 px-4 py-3 bg-white/10 backdrop-blur-md rounded-lg">
         <h3 className="text-lg font-bold text-white drop-shadow-lg break-words">{video.title}</h3>
         <div className="flex justify-between items-center mt-2 flex-wrap gap-x-2">
-          <p className="text-sm font-medium text-white/90 drop-shadow-lg truncate">
-            {video.performer}
-          </p>
+          {/* Ajouter un lien vers le profil créateur si disponible */}
+          {video.creatorProfileUrl ? (
+            <a 
+              href={video.creatorProfileUrl} 
+              className="text-sm font-medium text-white/90 drop-shadow-lg truncate hover:text-primary"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {video.performer}
+            </a>
+          ) : (
+            <p className="text-sm font-medium text-white/90 drop-shadow-lg truncate">
+              {video.performer}
+            </p>
+          )}
           <p className="text-sm font-medium text-white/90 drop-shadow-lg truncate">
             {video.views}
           </p>

@@ -1,0 +1,81 @@
+
+import { supabase } from "@/integrations/supabase/client";
+
+export interface SupabaseVideo {
+  id: number;
+  title: string | null;
+  description: string | null;
+  thumbnail_url: string | null;
+  video_url: string | null;
+  videoUrl: string | null; // For backward compatibility
+  format: string | null;
+  type: string | null;
+  is_premium: boolean | null;
+  isFree: boolean | null;
+  uploadedat: string | null;
+  user_id: string | null;
+  creatorId: number | null;
+}
+
+/**
+ * Récupère les vidéos standards et teaser (vidéos gratuites)
+ */
+export const getPromotionalVideos = async (): Promise<{
+  data: SupabaseVideo[] | null;
+  error: any;
+}> => {
+  return supabase
+    .from('videos')
+    .select('*')
+    .in('type', ['standard', 'teaser'])
+    .order('uploadedat', { ascending: false });
+};
+
+/**
+ * Récupère spécifiquement les vidéos Xtease (format vertical 9:16)
+ */
+export const getXteaseVideos = async (): Promise<{
+  data: SupabaseVideo[] | null;
+  error: any;
+}> => {
+  return supabase
+    .from('videos')
+    .select('*')
+    .eq('format', '9:16')
+    .order('uploadedat', { ascending: false });
+};
+
+/**
+ * Récupère uniquement les vidéos standards (gratuites)
+ */
+export const getStandardVideos = async (): Promise<{
+  data: SupabaseVideo[] | null;
+  error: any;
+}> => {
+  return supabase
+    .from('videos')
+    .select('*')
+    .eq('type', 'standard')
+    .eq('is_premium', false)
+    .order('uploadedat', { ascending: false });
+};
+
+/**
+ * Convertit une vidéo Supabase au format utilisé par le composant CreatorFeedPost
+ */
+export const supabaseVideoToFeedPost = (video: SupabaseVideo): any => {
+  return {
+    id: `video-${video.id}`,
+    image: video.thumbnail_url || 'https://picsum.photos/600/1067',
+    caption: video.title || 'Vidéo sans titre',
+    creatorId: video.creatorId || 1,
+    creatorName: 'XDose Creator',
+    creatorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=facearea&w=256&h=256&q=80',
+    likes: Math.floor(Math.random() * 1000) + 100,
+    timestamp: 'il y a quelques heures',
+    isPremium: video.is_premium === true,
+    videoUrl: video.video_url || video.videoUrl || '', // Support des deux formats
+    format: video.format || 'standard',
+    isVideo: true
+  };
+};

@@ -14,6 +14,8 @@ import Footer from "@/components/Footer";
 import ImmersivePublications from "@/components/creator/ImmersivePublications";
 import { fetchCreaverseVideos, mockCreaverseVideos } from "@/services/creaverseService";
 import { toast } from "sonner";
+import { getPromotionalVideos, getXteaseVideos, supabaseVideoToFeedPost, SupabaseVideo } from "@/services/supabaseVideoService";
+import { adaptSupabaseVideoToXTeaseFormat } from "@/adapters/videoAdapter";
 
 // Données mockées pour le feed des créateurs
 const generateMockFeed = (): CreatorFeedPost[] => {
@@ -174,6 +176,7 @@ const Index = () => {
   
   const [posts, setPosts] = useState<CreatorFeedPost[]>(generateMockFeed().slice(0, 6));
   const [creaverseVideos, setCreaverseVideos] = useState<CreatorFeedPost[]>([]);
+  const [supabaseVideos, setSupabaseVideos] = useState<CreatorFeedPost[]>([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -217,6 +220,65 @@ const Index = () => {
     loadCreaverseVideos();
   }, []);
   
+  // Charger les vidéos de Supabase
+  useEffect(() => {
+    const loadSupabaseVideos = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Récupérer les vidéos promotionnelles (standard et teaser)
+        const { data: promoVideos, error: promoError } = await getPromotionalVideos();
+        
+        if (promoError) {
+          console.error("Error loading promotional videos from Supabase:", promoError);
+          return;
+        }
+        
+        // Récupérer les vidéos au format Xtease (9:16)
+        const { data: xteaseVideos, error: xteaseError } = await getXteaseVideos();
+        
+        if (xteaseError) {
+          console.error("Error loading xtease videos from Supabase:", xteaseError);
+          return;
+        }
+        
+        // Combiner et convertir les vidéos pour le feed
+        const combinedVideos = [
+          ...(promoVideos?.map(v => supabaseVideoToFeedPost(v)) || []),
+          ...(xteaseVideos?.map(v => supabaseVideoToFeedPost(v)) || [])
+        ];
+        
+        // Filtrer pour éviter les doublons basés sur l'ID
+        const uniqueVideos = Array.from(new Map(combinedVideos.map(video => 
+          [video.id.toString(), video]
+        )).values());
+        
+        console.log(`Loaded ${uniqueVideos.length} videos from Supabase`);
+        setSupabaseVideos(uniqueVideos);
+        
+        // Si on a des vidéos Supabase, on les mélange avec les posts mock
+        if (uniqueVideos.length > 0) {
+          const mixedPosts = [...posts];
+          
+          // Insérer des vidéos Supabase à intervalles réguliers
+          uniqueVideos.slice(0, 6).forEach((video, index) => {
+            const insertPos = Math.min((index + 1) * 2, mixedPosts.length);
+            mixedPosts.splice(insertPos, 0, video);
+          });
+          
+          setPosts(mixedPosts);
+        }
+      } catch (error) {
+        console.error("Error while loading videos from Supabase:", error);
+        toast.error("Impossible de charger les vidéos depuis Supabase");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadSupabaseVideos();
+  }, []);
+  
   // Changed to always show immersive mode when landing on homepage
   useEffect(() => {
     setShowImmersive(true);
@@ -236,7 +298,22 @@ const Index = () => {
       const nextPage = page + 1;
       const start = page * 6;
       const end = start + 6;
-      const newPosts = allPosts.slice(start, end);
+      let newPosts = allPosts.slice(start, end);
+      
+      // Ajouter quelques vidéos Supabase si disponibles
+      if (supabaseVideos.length > 0) {
+        const startIdx = Math.min(page * 3, supabaseVideos.length - 1);
+        const endIdx = Math.min(startIdx + 3, supabaseVideos.length);
+        const videoSlice = supabaseVideos.slice(startIdx, endIdx);
+        
+        if (videoSlice.length > 0) {
+          // Insérer les vidéos à différentes positions
+          videoSlice.forEach((video, idx) => {
+            const pos = Math.min(idx * 2, newPosts.length);
+            newPosts.splice(pos, 0, video);
+          });
+        }
+      }
       
       if (newPosts.length === 0) {
         setHasMore(false);
@@ -247,7 +324,7 @@ const Index = () => {
       
       setIsLoading(false);
     }, 800);
-  }, [page, isLoading, hasMore, allPosts]);
+  }, [page, isLoading, hasMore, allPosts, supabaseVideos]);
   
   // Handle scroll event for infinite loading
   const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
@@ -271,7 +348,7 @@ const Index = () => {
 
   // Modified function to insert promotional blocks and CreaVerse videos
   const renderFeedWithPromos = () => {
-    // Combine regular posts with CreaVerse videos
+    // Combine regular posts with CreaVerse videos and Supabase videos
     const combinedPosts = [...posts];
     
     // Insert CreaVerse videos at strategic positions (every 4 posts)
@@ -411,7 +488,11 @@ const Index = () => {
       {/* Immersive mode */}
       {showImmersive && (
         <ImmersivePublications 
-          posts={[...allPosts.slice(0, 7), ...creaverseVideos.slice(0, 3)]} 
+          posts={[
+            ...allPosts.slice(0, 4),
+            ...supabaseVideos.slice(0, 3),
+            ...creaverseVideos.slice(0, 3)
+          ]}
           onExitImmersive={() => setShowImmersive(false)}
           activePromo={activePromo}
           onClosePromo={closePromo}
