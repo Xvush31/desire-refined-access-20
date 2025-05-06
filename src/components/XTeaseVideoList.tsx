@@ -129,7 +129,7 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
         >
           {displayedVideos.map((video, index) => (
             <div
-              key={`video-${video.id}`}
+              key={`video-item-${video.id}-${index}`}
               ref={(ref) => registerVideoRef(index, ref)}
               data-index={index}
               className="min-h-full w-full flex items-center justify-center p-2 sm:p-4"

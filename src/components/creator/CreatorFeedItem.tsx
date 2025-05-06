@@ -1,9 +1,10 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Heart, MessageCircle, Send, Share2, Play, Pause } from "lucide-react";
 import HLSVideoPlayer from "@/components/HLSVideoPlayer";
 import { useXTeaseInteractivity } from "@/hooks/useXTeaseInteractivity";
+import { useOptimizedLazyLoading } from "@/hooks/useOptimizedLazyLoading";
 
 export interface CreatorFeedPost {
   id: string;
@@ -23,9 +24,28 @@ export interface CreatorFeedPost {
 const CreatorFeedItem: React.FC<{ post: CreatorFeedPost }> = ({ post }) => {
   const [liked, setLiked] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const { isFavorite } = useXTeaseInteractivity({ videoId: parseInt(post.id.replace('video-', '')) });
+  const { isFavorite } = useXTeaseInteractivity({ 
+    videoId: parseInt(post.id.replace('video-', '')) || 0
+  });
+  
+  // Use optimized lazy loading to detect when the component is in view
+  const { ref, isVisible, hasBeenVisible } = useOptimizedLazyLoading({
+    threshold: 0.7, // Element must be 70% visible to trigger
+    rootMargin: '50px' // Start loading a bit before it enters the viewport
+  });
 
   const isVideoPost = post.isVideo && post.videoUrl;
+
+  // Auto-play when the component becomes visible for video posts
+  useEffect(() => {
+    if (isVideoPost && isVisible && !isPlaying) {
+      console.log(`Video ${post.id} is now visible, auto-playing`);
+      setIsPlaying(true);
+    } else if (!isVisible && isPlaying) {
+      console.log(`Video ${post.id} is no longer visible, pausing`);
+      setIsPlaying(false);
+    }
+  }, [isVisible, isVideoPost, isPlaying, post.id]);
 
   const handleLikeToggle = () => {
     setLiked(!liked);
@@ -42,7 +62,7 @@ const CreatorFeedItem: React.FC<{ post: CreatorFeedPost }> = ({ post }) => {
   const shouldShowVideo = isVideoPost && isPlaying;
 
   return (
-    <div className="mb-6 bg-card border border-border rounded-lg overflow-hidden">
+    <div ref={ref} className="mb-6 bg-card border border-border rounded-lg overflow-hidden">
       {/* En-tête du post */}
       <div className="flex items-center p-3">
         <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-primary">
@@ -63,12 +83,13 @@ const CreatorFeedItem: React.FC<{ post: CreatorFeedPost }> = ({ post }) => {
         {shouldShowVideo ? (
           <div className="aspect-[9/16] w-full">
             <HLSVideoPlayer
-              src={post.videoUrl}
+              src={post.videoUrl || ''}
               poster={post.image}
-              videoId={parseInt(post.id.replace('video-', ''))}
+              videoId={parseInt(post.id.replace('video-', '')) || 0}
               title={post.caption}
               onVideoComplete={handleVideoComplete}
               autoPlay={true}
+              muted={true}
             />
           </div>
         ) : (
