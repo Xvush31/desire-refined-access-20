@@ -22,14 +22,21 @@ export const adaptSupabaseVideoToXTeaseFormat = (video: SupabaseVideo) => {
     };
   }
 
+  // S'assurer que streamUrl est toujours défini en priorisant video_url, puis videoUrl
+  const streamUrl = video.video_url || video.videoUrl || "";
+  
+  // Journaliser l'URL du stream pour débogage
+  console.log("Adapting video with ID:", video.id);
+  console.log("Stream URL:", streamUrl);
+  console.log("Original video data:", JSON.stringify(video, null, 2));
+
   return {
     id: video.id,
     title: video.title || "Vidéo sans titre",
     performer: `Creator ${video.creatorId || 1}`,
     views: `${Math.floor(Math.random() * 100) + 10}K vues`,
     thumbnail: video.thumbnail_url || "",
-    // S'assurer que streamUrl est toujours défini, même si c'est une chaîne vide
-    streamUrl: video.video_url || video.videoUrl || "",
+    streamUrl: streamUrl, // Utilisation de la variable créée ci-dessus
     isPremium: video.is_premium === true,
     isPreview: video.is_premium === true && video.type === 'teaser',
     creatorProfileUrl: getCreatorProfileUrl(video.creatorId || 1)

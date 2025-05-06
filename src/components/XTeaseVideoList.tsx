@@ -16,6 +16,7 @@ interface VideoData {
   streamUrl: string;
   isPremium?: boolean;
   isPreview?: boolean;
+  creatorProfileUrl?: string;
 }
 
 interface XTeaseVideoListProps {
@@ -32,8 +33,8 @@ interface XTeaseVideoListProps {
   toggleDataSavingMode: () => void;
   toggleAutoPlay: () => boolean;
   updateWatchProgress: (videoId: number, progress: number) => void;
-  loadMoreVideos?: () => void; // Nouvelle prop pour charger plus de vidéos
-  hasMoreVideos?: boolean;     // Nouvelle prop pour indiquer s'il y a plus de vidéos
+  loadMoreVideos?: () => void;
+  hasMoreVideos?: boolean;
 }
 
 const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
@@ -50,12 +51,12 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
   toggleDataSavingMode,
   toggleAutoPlay,
   updateWatchProgress,
-  loadMoreVideos = () => {}, // Valeur par défaut
-  hasMoreVideos = false     // Valeur par défaut
+  loadMoreVideos = () => {},
+  hasMoreVideos = false
 }) => {
   const [displayedVideos, setDisplayedVideos] = useState<VideoData[]>([]);
 
-  // Filtrer les vidéos undefined avant de les afficher
+  // Filtrer les vidéos undefined et sans streamUrl avant de les afficher
   useEffect(() => {
     if (!videos || videos.length === 0) {
       console.log("No videos provided to XTeaseVideoList");
@@ -63,13 +64,19 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
       return;
     }
     
-    // Filtrer les vidéos valides (non undefined et avec toutes les propriétés requises)
+    // Filtrer les vidéos valides (non undefined, avec toutes les propriétés requises et une URL de streaming)
     const validVideos = videos.filter(video => 
       video && video.id && video.title && video.thumbnail && video.streamUrl
     );
     
     if (validVideos.length !== videos.length) {
       console.warn(`Filtered out ${videos.length - validVideos.length} invalid videos`);
+      // Log the invalid videos for debugging
+      videos.forEach((video, index) => {
+        if (!video || !video.streamUrl) {
+          console.error(`Invalid video at index ${index}:`, video);
+        }
+      });
     }
     
     setDisplayedVideos(validVideos);
@@ -122,7 +129,7 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
         >
           {displayedVideos.map((video, index) => (
             <div
-              key={video.id}
+              key={`video-${video.id}`}
               ref={(ref) => registerVideoRef(index, ref)}
               data-index={index}
               className="min-h-full w-full flex items-center justify-center p-2 sm:p-4"

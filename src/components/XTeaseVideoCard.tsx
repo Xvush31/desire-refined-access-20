@@ -17,11 +17,11 @@ interface VideoData {
   streamUrl: string;
   isPremium?: boolean;
   isPreview?: boolean;
-  creatorProfileUrl?: string; // Ajout du lien vers le profil créateur
+  creatorProfileUrl?: string;
 }
 
 interface XTeaseVideoCardProps {
-  video?: VideoData; // Rendre la vidéo optionnelle
+  video?: VideoData;
   index: number;
   currentVideoIndex: number;
   isPlayerActive: boolean;
@@ -54,6 +54,14 @@ const XTeaseVideoCard: React.FC<XTeaseVideoCardProps> = ({
       </div>
     );
   }
+
+  // Vérifier que streamUrl est défini
+  if (!video.streamUrl) {
+    console.error(`Video with ID ${video.id} has no streamUrl`);
+  }
+
+  console.log("XTeaseVideoCard rendering video:", video.id);
+  console.log("Stream URL:", video.streamUrl);
 
   const { isFavorite } = useXTeaseInteractivity({ videoId: video.id });
   
@@ -125,7 +133,6 @@ const XTeaseVideoCard: React.FC<XTeaseVideoCardProps> = ({
       <div className="w-full mt-4 px-4 py-3 bg-white/10 backdrop-blur-md rounded-lg">
         <h3 className="text-lg font-bold text-white drop-shadow-lg break-words">{video.title}</h3>
         <div className="flex justify-between items-center mt-2 flex-wrap gap-x-2">
-          {/* Ajouter un lien vers le profil créateur si disponible */}
           {video.creatorProfileUrl ? (
             <a 
               href={video.creatorProfileUrl} 

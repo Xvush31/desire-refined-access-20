@@ -7,7 +7,7 @@ export interface SupabaseVideo {
   description: string | null;
   thumbnail_url: string | null;
   video_url: string | null;
-  videoUrl: string | null; // For backward compatibility
+  videoUrl: string | null; // Pour la rétrocompatibilité
   format: string | null;
   type: string | null;
   is_premium: boolean | null;
@@ -24,11 +24,21 @@ export const getPromotionalVideos = async (): Promise<{
   data: SupabaseVideo[] | null;
   error: any;
 }> => {
-  return supabase
+  console.log("Fetching promotional videos from Supabase");
+  const response = await supabase
     .from('videos')
     .select('*')
     .in('type', ['standard', 'teaser'])
     .order('uploadedat', { ascending: false });
+  
+  console.log("Promotional videos response:", response);
+  
+  if (response.data && response.data.length > 0) {
+    // Log quelques exemples de vidéos pour vérifier les champs
+    console.log("Sample promotional video data:", JSON.stringify(response.data[0], null, 2));
+  }
+  
+  return response;
 };
 
 /**
@@ -38,11 +48,21 @@ export const getXteaseVideos = async (): Promise<{
   data: SupabaseVideo[] | null;
   error: any;
 }> => {
-  return supabase
+  console.log("Fetching XTease videos from Supabase");
+  const response = await supabase
     .from('videos')
     .select('*')
     .eq('format', '9:16')
     .order('uploadedat', { ascending: false });
+  
+  console.log("XTease videos response:", response);
+  
+  if (response.data && response.data.length > 0) {
+    // Log quelques exemples de vidéos pour vérifier les champs
+    console.log("Sample XTease video data:", JSON.stringify(response.data[0], null, 2));
+  }
+  
+  return response;
 };
 
 /**
