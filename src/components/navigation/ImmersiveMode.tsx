@@ -23,9 +23,8 @@ const ImmersiveMode: React.FC<ImmersiveModeProps> = ({
   const [isTouching, setIsTouching] = useState(false);
   const isMobile = useIsMobile();
   
-  // Ne plus ajouter la classe au body pour éviter de bloquer le scroll
+  // Clean up timers when exiting immersive mode
   useEffect(() => {
-    // Clean up when exiting immersive mode
     return () => {
       if (controlsTimer) clearTimeout(controlsTimer);
       if (longPressTimer) clearTimeout(longPressTimer);
@@ -111,12 +110,12 @@ const ImmersiveMode: React.FC<ImmersiveModeProps> = ({
   
   return (
     <div 
-      className="immersive-mode fixed inset-0 z-40 w-full max-w-full h-full bg-[#1A2335]"
+      className="immersive-mode fixed inset-0 z-40 w-full h-full bg-[#1A2335] overflow-hidden"
       onTouchStart={isMobile ? handleTouchStart : undefined}
       onTouchEnd={isMobile ? handleTouchEnd : undefined}
       onTouchMove={isMobile ? handleTouchMove : undefined}
     >
-      <div className="immersive-container w-full max-w-full h-full overflow-y-auto">
+      <div className="immersive-container w-full h-full overflow-hidden">
         {children}
         
         <AnimatePresence>

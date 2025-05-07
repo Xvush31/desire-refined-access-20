@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useCallback } from "react";
 import Header from "@/components/Header";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -215,13 +216,13 @@ const Index = () => {
   const { t } = useLocale();
   const { currentUser, loading } = useAuth();
   
-  const [posts, setPosts] = useState<CreatorFeedPost[]>(generateMockFeed().slice(0, 6));
+  const [posts, setPosts] = useState<CreatorFeedPost[]>([]);
   const [creaverseVideos, setCreaverseVideos] = useState<CreatorFeedPost[]>([]);
   const [supabaseVideos, setSupabaseVideos] = useState<CreatorFeedPost[]>([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [showImmersive, setShowImmersive] = useState(true); // Changed to true by default
+  const [showImmersive, setShowImmersive] = useState(true); // Already set to true by default
   const [activePromo, setActivePromo] = useState<{
     type: 'xtease' | 'creator' | 'trending' | null,
     data: any
@@ -229,6 +230,12 @@ const Index = () => {
   const allPosts = generateMockFeed();
   
   const { isFirstVisit } = useImmersiveMode();
+  
+  // Load initial posts when component mounts
+  useEffect(() => {
+    // Initialize with first batch of mock posts
+    setPosts(generateMockFeed().slice(0, 6));
+  }, []);
   
   // Load CreaVerse videos when component mounts
   useEffect(() => {
@@ -331,7 +338,7 @@ const Index = () => {
     loadSupabaseVideos();
   }, []);
   
-  // Changed to always show immersive mode when landing on homepage
+  // ALWAYS show immersive mode on landing
   useEffect(() => {
     setShowImmersive(true);
   }, []);
@@ -541,7 +548,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Immersive mode */}
+      {/* Immersive mode - always shown by default */}
       {showImmersive && (
         <ImmersivePublications 
           posts={[
@@ -563,7 +570,7 @@ const Index = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 2, duration: 0.5 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
             className="container mx-auto px-4 py-2 text-center"
           >
             <Button

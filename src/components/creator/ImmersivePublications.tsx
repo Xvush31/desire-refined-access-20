@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect } from 'react';
 import { useImmersiveMode } from '@/hooks/useImmersiveMode';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -655,19 +656,24 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
           )}
         </AnimatePresence>
         
-        <div className="h-full flex flex-col items-center justify-center p-4">
+        <div className="h-full flex flex-col items-center justify-center p-0">
           {isMobile ? (
-            <ScrollArea className="h-[calc(100vh-80px)] w-full max-w-md mx-auto">
-              <div className="space-y-8 pb-8 pt-2 w-full">
+            <ScrollArea className="h-screen w-full overflow-hidden">
+              <div className="space-y-0 w-full">
                 {mixedContent.map((content, index) => (
-                  <div key={isXTeaseVideo(content) ? `video-${content.id}` : content.id} className="w-full mx-auto">
-                    {renderPostContent(content)}
-                    
-                    {/* Post indicator */}
-                    <div className="flex space-x-1 justify-center mt-2">
-                      <div className="h-1.5 w-16 bg-primary rounded-full"></div>
-                      <div className="text-xs text-muted-foreground">
-                        {index + 1}/{mixedContent.length}
+                  <div 
+                    key={isXTeaseVideo(content) ? `video-${content.id}` : content.id} 
+                    className="w-full h-screen flex items-center justify-center"
+                  >
+                    <div className="w-full max-w-md px-0 mx-auto">
+                      {renderPostContent(content)}
+                      
+                      {/* Post indicator */}
+                      <div className="flex space-x-1 justify-center mt-2">
+                        <div className="h-1.5 w-16 bg-primary rounded-full"></div>
+                        <div className="text-xs text-muted-foreground">
+                          {index + 1}/{mixedContent.length}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -677,12 +683,12 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
           ) : (
             <>
               {/* Desktop version with navigation arrows */}
-              <div className="w-full max-w-md mx-auto">
+              <div className="w-full h-screen max-w-md mx-auto flex items-center justify-center">
                 {renderPostContent(currentContent)}
               </div>
               
               {/* Navigation dots */}
-              <div className="flex space-x-1 mt-2">
+              <div className="fixed bottom-8 left-0 right-0 flex justify-center space-x-1">
                 {mixedContent.slice(0, Math.min(5, mixedContent.length)).map((_, i) => (
                   <motion.div
                     key={i}
