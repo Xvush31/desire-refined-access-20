@@ -169,6 +169,47 @@ interface ImmersivePublicationsProps {
   onClosePromo: () => void;
 }
 
+// Fonction pour améliorer le filtrage et la validation des vidéos Supabase
+const processSupabaseVideos = (videos) => {
+  if (!Array.isArray(videos) || videos.length === 0) {
+    console.log("No videos provided or empty array");
+    return [];
+  }
+
+  console.log(`Processing ${videos.length} Supabase videos for feed`);
+
+  return videos
+    .filter(video => {
+      // S'assurer que la vidéo est valide
+      const isValid = video && 
+                     typeof video === 'object' && 
+                     video.id !== undefined &&
+                     (video.video_url || video.videoUrl);
+      
+      if (!isValid) {
+        console.warn("Filtered out invalid video:", video);
+      }
+      
+      return isValid;
+    })
+    .map(video => {
+      const feedPost = supabaseVideoToFeedPost(video);
+      console.log(`Created feed post from video ${video.id}:`, {
+        hasVideoUrl: !!feedPost?.videoUrl,
+        isVideo: feedPost?.isVideo
+      });
+      return feedPost;
+    })
+    .filter(post => {
+      // Filtrer les posts null ou undefined
+      if (!post) {
+        console.warn("Filtered out null post");
+        return false;
+      }
+      return true;
+    });
+};
+
 const Index = () => {
   const isMobile = useIsMobile();
   const { t } = useLocale();
@@ -220,7 +261,7 @@ const Index = () => {
     loadCreaverseVideos();
   }, []);
   
-  // Charger les vidéos de Supabase
+  // Charger les vidéos de Supabase avec une meilleure validation
   useEffect(() => {
     const loadSupabaseVideos = async () => {
       try {
@@ -242,43 +283,37 @@ const Index = () => {
           return;
         }
         
-        // Combiner et convertir les vidéos pour le feed
-        const combinedVideos = [
-          ...(promoVideos?.map(v => {
-            const post = supabaseVideoToFeedPost(v);
-            console.log(`Feed post created with video_url: ${post?.videoUrl}`);
-            return post;
-          }).filter(Boolean) || []),
-          ...(xteaseVideos?.map(v => {
-            const post = supabaseVideoToFeedPost(v);
-            console.log(`XTease feed post created with video_url: ${post?.videoUrl}`);
-            return post;
-          }).filter(Boolean) || [])
-        ];
-        
-        // Filtrer pour éviter les doublons basés sur l'ID
-        const uniqueVideos = Array.from(new Map(combinedVideos.map(video => 
-          [video.id.toString(), video]
-        )).values());
-        
-        // Filtrer les vidéos sans URL valide
-        const validVideos = uniqueVideos.filter(video => {
-          const hasValidUrl = !!video.videoUrl;
-          if (!hasValidUrl) {
-            console.warn(`Skipping video ${video.id} without valid videoUrl`);
-          }
-          return hasValidUrl;
+        console.log("Fetch results:", {
+          promoVideosCount: promoVideos?.length || 0,
+          xteaseVideosCount: xteaseVideos?.length || 0
         });
         
-        console.log(`Loaded ${validVideos.length} valid videos from Supabase for feed`);
-        setSupabaseVideos(validVideos);
+        // Traiter les vidéos promotionnelles
+        const processedPromoVideos = promoVideos ? processSupabaseVideos(promoVideos) : [];
+        console.log(`Processed ${processedPromoVideos.length} promo videos`);
+        
+        // Traiter les vidéos Xtease
+        const processedXteaseVideos = xteaseVideos ? processSupabaseVideos(xteaseVideos) : [];
+        console.log(`Processed ${processedXteaseVideos.length} xtease videos`);
+        
+        // Combiner les deux types de vidéos
+        const combinedVideos = [...processedPromoVideos, ...processedXteaseVideos];
+        
+        // Filtrer pour éviter les doublons basés sur l'ID
+        const uniqueVideos = Array.from(new Map(
+          combinedVideos.map(video => [video.id.toString(), video])
+        ).values());
+        
+        console.log(`Final combined unique videos for feed: ${uniqueVideos.length}`);
+        setSupabaseVideos(uniqueVideos);
         
         // Si on a des vidéos Supabase, on les mélange avec les posts mock
-        if (validVideos.length > 0) {
+        if (uniqueVideos.length > 0) {
           const mixedPosts = [...posts];
           
           // Insérer des vidéos Supabase à intervalles réguliers
-          validVideos.slice(0, 6).forEach((video, index) => {
+          uniqueVideos.slice(0, 6).forEach((video, index) => {
+            console.log(`Inserting video ${video.id} into feed at position ${Math.min((index + 1) * 2, mixedPosts.length)}`);
             const insertPos = Math.min((index + 1) * 2, mixedPosts.length);
             mixedPosts.splice(insertPos, 0, video);
           });
@@ -383,9 +418,13 @@ const Index = () => {
     const result = [];
     
     for (let i = 0; i < combinedPosts.length; i++) {
-      // Add the post
+      // Add the post with a more unique key
+      const post = combinedPosts[i];
       result.push(
-        <CreatorFeedItem key={combinedPosts[i].id} post={combinedPosts[i]} />
+        <CreatorFeedItem 
+          key={`feed-post-${post.id}-${i}`} 
+          post={post} 
+        />
       );
       
       // After each group of 3 posts, insert a different promo block

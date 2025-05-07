@@ -35,11 +35,23 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
   const [showControls, setShowControls] = useState(false);
   const controlsTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [hlsLoaded, setHlsLoaded] = useState(false);
+  const [hlsError, setHlsError] = useState<string | null>(null);
   
   // Log for debugging purposes
   useEffect(() => {
-    console.log(`HLSVideoPlayer - videoId: ${videoId}, src: ${src}, autoPlay: ${autoPlay}, muted: ${muted}`);
-  }, [videoId, src, autoPlay, muted]);
+    console.log(`HLSVideoPlayer initialized - videoId: ${videoId}, src: ${src}, autoPlay: ${autoPlay}, muted: ${muted}, className: ${className}`);
+    
+    // Validation check for src being a valid URL
+    if (!src) {
+      console.error(`HLSVideoPlayer received empty src for video ${videoId}`);
+    } else if (!src.startsWith('http')) {
+      console.warn(`HLSVideoPlayer received potentially invalid URL for video ${videoId}: ${src}`);
+    }
+    
+    return () => {
+      console.log(`HLSVideoPlayer unmounting - videoId: ${videoId}`);
+    };
+  }, [videoId, src, autoPlay, muted, className]);
   
   // Configuration de HLS.js pour la lecture vidéo
   useEffect(() => {
@@ -48,6 +60,7 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
     // Fonction de nettoyage
     const cleanup = () => {
       if (hls) {
+        console.log(`Destroying HLS instance for video ${videoId}`);
         hls.destroy();
         hls = null;
       }
@@ -56,26 +69,39 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
     
     const video = videoRef.current;
     
-    if (video && src) {
-      // Définir l'état initial de muted
-      video.muted = isMuted;
+    if (!video) {
+      console.warn(`Video element not available for video ${videoId}`);
+      return cleanup;
+    }
+    
+    if (!src) {
+      console.error(`No src provided for video ${videoId}`);
+      setHlsError("No source URL provided");
+      return cleanup;
+    }
+    
+    // Définir l'état initial de muted
+    video.muted = isMuted;
+    
+    // Utiliser HLS.js si supporté et si la source est un flux HLS (.m3u8)
+    if (Hls.isSupported() && src && src.includes('.m3u8')) {
+      hls = new Hls({
+        enableWorker: true,
+        lowLatencyMode: true,
+        backBufferLength: 90,
+        debug: false
+      });
       
-      // Utiliser HLS.js si supporté et si la source est un flux HLS (.m3u8)
-      if (Hls.isSupported() && src && src.includes('.m3u8')) {
-        hls = new Hls({
-          enableWorker: true,
-          lowLatencyMode: true,
-          backBufferLength: 90
-        });
-        
-        console.log(`Loading HLS source for video ${videoId}: ${src}`);
-        
+      console.log(`Loading HLS source for video ${videoId}: ${src}`);
+      
+      try {
         hls.loadSource(src);
         hls.attachMedia(video);
         
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
           console.log(`HLS manifest parsed for video ${videoId}, autoPlay: ${autoPlay}`);
           setHlsLoaded(true);
+          setHlsError(null);
           
           if (autoPlay) {
             try {
@@ -100,16 +126,20 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
                     })
                     .catch(fallbackError => {
                       console.error(`Even fallback autoplay failed for video ${videoId}:`, fallbackError);
+                      setHlsError("Autoplay prevented by browser");
                     });
                 });
             } catch (error) {
               console.error(`Error during autoplay for video ${videoId}:`, error);
+              setHlsError("Error during autoplay");
             }
           }
         });
         
         hls.on(Hls.Events.ERROR, (_, data) => {
           console.error(`HLS error for video ${videoId}:`, data);
+          setHlsError(`HLS error: ${data.type}`);
+          
           if (data.fatal) {
             switch (data.type) {
               case Hls.ErrorTypes.NETWORK_ERROR:
@@ -126,13 +156,21 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
             }
           }
         });
-      } 
-      // Utiliser le lecteur vidéo natif si HLS n'est pas supporté ou si c'est une source directe
-      else if (video.canPlayType('application/vnd.apple.mpegurl') || (src && !src.includes('.m3u8'))) {
+      } catch (error) {
+        console.error(`Error setting up HLS for video ${videoId}:`, error);
+        setHlsError(`Failed to initialize player: ${error.message}`);
+      }
+    } 
+    // Utiliser le lecteur vidéo natif si HLS n'est pas supporté ou si c'est une source directe
+    else if (video.canPlayType('application/vnd.apple.mpegurl') || (src && !src.includes('.m3u8'))) {
+      try {
         video.src = src;
         
         video.addEventListener('loadedmetadata', () => {
+          console.log(`Native video loaded metadata for ${videoId}`);
           setHlsLoaded(true);
+          setHlsError(null);
+          
           if (autoPlay) {
             try {
               video.muted = true; // Ensure muted for autoplay policy
@@ -144,15 +182,26 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
                 })
                 .catch(error => {
                   console.error(`Native autoplay prevented for video ${videoId}:`, error);
+                  setHlsError("Autoplay prevented by browser");
                 });
             } catch (error) {
               console.error(`Error during native autoplay for video ${videoId}:`, error);
+              setHlsError("Error during autoplay");
             }
           }
         });
-      } else {
-        console.error(`Unsupported video source for video ${videoId}: ${src}`);
+        
+        video.addEventListener('error', (e) => {
+          console.error(`Native video error for ${videoId}:`, e);
+          setHlsError(`Video error: ${video.error?.message || 'Unknown error'}`);
+        });
+      } catch (error) {
+        console.error(`Error setting up native video for ${videoId}:`, error);
+        setHlsError(`Failed to initialize player: ${error.message}`);
       }
+    } else {
+      console.error(`Unsupported video source for video ${videoId}: ${src}`);
+      setHlsError("Unsupported video format");
     }
     
     // Nettoyer lors du démontage du composant
@@ -221,7 +270,7 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
   useEffect(() => {
     const video = videoRef.current;
     
-    if (video && hlsLoaded && autoPlay && !isPlaying) {
+    if (video && hlsLoaded && autoPlay && !isPlaying && !hlsError) {
       try {
         console.log(`HLS loaded, attempting to play video ${videoId}`);
         video.play()
@@ -231,12 +280,14 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
           })
           .catch(error => {
             console.error(`Play after HLS load failed for video ${videoId}:`, error);
+            setHlsError(`Playback failed: ${error.message}`);
           });
       } catch (error) {
         console.error(`Error playing after HLS load for video ${videoId}:`, error);
+        setHlsError(`Playback error: ${error.message}`);
       }
     }
-  }, [hlsLoaded, autoPlay, isPlaying, videoId]);
+  }, [hlsLoaded, autoPlay, isPlaying, videoId, hlsError]);
   
   // Mettre à jour l'état muted quand la prop muted change
   useEffect(() => {
@@ -274,10 +325,13 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
     
     if (video) {
       if (isPlaying) {
+        console.log(`User clicked to pause video ${videoId}`);
         video.pause();
       } else {
+        console.log(`User clicked to play video ${videoId}`);
         video.play().catch(error => {
           console.error(`Play prevented on click for video ${videoId}:`, error);
+          setHlsError(`Playback failed: ${error.message}`);
         });
       }
     }
@@ -287,6 +341,7 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
   const handleMuteToggle = () => {
     const video = videoRef.current;
     if (video) {
+      console.log(`Toggling mute for video ${videoId} from ${isMuted} to ${!isMuted}`);
       setIsMuted(!isMuted);
       video.muted = !isMuted;
     }
@@ -299,6 +354,21 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
       onMouseEnter={() => setShowControls(true)}
       onTouchStart={showControlsTemporarily}
     >
+      {hlsError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/60 z-10">
+          <div className="p-4 bg-black/80 text-white rounded-lg max-w-[80%] text-center">
+            <p className="mb-2 font-semibold">Erreur de lecture</p>
+            <p className="text-sm">{hlsError}</p>
+            <button 
+              className="mt-3 px-4 py-2 bg-primary rounded-md text-sm"
+              onClick={() => window.location.reload()}
+            >
+              Réessayer
+            </button>
+          </div>
+        </div>
+      )}
+      
       <video
         ref={videoRef}
         className="w-full h-full object-contain"
@@ -306,6 +376,7 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
         playsInline
         onClick={handleVideoClick}
         muted={isMuted}
+        data-video-id={videoId}
       />
       
       {/* Titre de la vidéo */}
@@ -365,7 +436,7 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
       )}
       
       {/* Overlay de lecture - affiché au centre quand la vidéo est en pause */}
-      {!isPlaying && !isPreview && (
+      {!isPlaying && !isPreview && !hlsError && (
         <div 
           className="absolute inset-0 flex items-center justify-center cursor-pointer"
           onClick={handleVideoClick}

@@ -97,6 +97,11 @@ export const supabaseVideoToFeedPost = (video: SupabaseVideo): any => {
   console.log(`Converting video ${video.id} to feed post format`);
   console.log(`Stream URL for feed: ${streamUrl}`);
   
+  // Vérification supplémentaire pour s'assurer que l'URL est valide
+  if (!streamUrl) {
+    console.warn(`Video ${video.id} has no valid stream URL`);
+  }
+  
   return {
     id: `video-${video.id}`,
     image: video.thumbnail_url || 'https://picsum.photos/600/1067',
@@ -109,6 +114,6 @@ export const supabaseVideoToFeedPost = (video: SupabaseVideo): any => {
     isPremium: video.is_premium === true,
     videoUrl: streamUrl, // Utiliser la variable streamUrl créée ci-dessus
     format: video.format || 'standard',
-    isVideo: Boolean(streamUrl) // Seulement true si streamUrl n'est pas vide
+    isVideo: Boolean(streamUrl && streamUrl.length > 0) // S'assurer que isVideo n'est true que si streamUrl est valide
   };
 };

@@ -56,6 +56,21 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
 }) => {
   const [displayedVideos, setDisplayedVideos] = useState<VideoData[]>([]);
 
+  // Debug logging for incoming videos
+  useEffect(() => {
+    console.log(`XTeaseVideoList received ${videos?.length || 0} videos`);
+    if (videos && videos.length > 0) {
+      const validCount = videos.filter(v => v && v.streamUrl).length;
+      console.log(`Valid videos with streamUrl: ${validCount}/${videos.length}`);
+      
+      if (validCount < videos.length) {
+        console.warn("Some videos are missing streamUrl:", 
+          videos.filter(v => !v || !v.streamUrl).map(v => v?.id || 'unknown')
+        );
+      }
+    }
+  }, [videos]);
+
   // Filter undefined videos and those without streamUrl before displaying
   useEffect(() => {
     if (!videos || videos.length === 0) {
@@ -149,6 +164,7 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
                 showSecurityIncident={showSecurityIncident}
                 dataSavingMode={settings.dataSavingMode}
                 onPlay={() => {
+                  console.log(`Play requested for XTease video ${video.id}`);
                   setIsPlayerActive(true);
                   if (Math.random() < 0.3 && !showSecurityIncident) {
                     setTimeout(() => {

@@ -24,43 +24,73 @@ export interface CreatorFeedPost {
 const CreatorFeedItem: React.FC<{ post: CreatorFeedPost }> = ({ post }) => {
   const [liked, setLiked] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const { isFavorite } = useXTeaseInteractivity({ 
-    videoId: parseInt(post.id.replace('video-', '')) || 0
-  });
+  const videoId = post && post.id ? parseInt(post.id.replace('video-', '')) || 0 : 0;
+  const { isFavorite } = useXTeaseInteractivity({ videoId });
   
   // Use optimized lazy loading to detect when the component is in view
   const { ref, isVisible, hasBeenVisible } = useOptimizedLazyLoading({
     threshold: 0.7, // Element must be 70% visible to trigger
-    rootMargin: '50px' // Start loading a bit before it enters the viewport
+    rootMargin: '100px' // Start loading a bit before it enters the viewport
   });
 
+  // Debug logs to track post data
+  useEffect(() => {
+    if (post) {
+      console.log(`CreatorFeedItem rendering post ${post.id}:`, {
+        hasVideoUrl: !!post.videoUrl,
+        isVideo: post.isVideo,
+        format: post.format
+      });
+    } else {
+      console.error("CreatorFeedItem received undefined post");
+    }
+  }, [post]);
+
   // Safety check for post properties
-  const isVideoPost = post && post.isVideo === true && typeof post.videoUrl === 'string' && post.videoUrl !== '';
+  const isVideoPost = !!(
+    post && 
+    post.isVideo === true && 
+    typeof post.videoUrl === 'string' && 
+    post.videoUrl.trim() !== ''
+  );
 
   // Auto-play when the component becomes visible for video posts
   useEffect(() => {
     if (isVideoPost && isVisible && !isPlaying) {
-      console.log(`Video ${post.id} is now visible, auto-playing`);
+      console.log(`Video ${post.id} is now visible in feed, auto-playing`);
       setIsPlaying(true);
     } else if (!isVisible && isPlaying) {
-      console.log(`Video ${post.id} is no longer visible, pausing`);
+      console.log(`Video ${post.id} is no longer visible in feed, pausing`);
       setIsPlaying(false);
     }
-  }, [isVisible, isVideoPost, isPlaying, post.id]);
+  }, [isVisible, isVideoPost, isPlaying, post?.id]);
 
   const handleLikeToggle = () => {
     setLiked(!liked);
   };
 
   const handlePlayVideo = () => {
+    console.log(`Manual play requested for video ${post?.id}`);
     setIsPlaying(true);
   };
 
   const handleVideoComplete = () => {
+    console.log(`Video ${post?.id} playback completed`);
     setIsPlaying(false);
   };
 
   const shouldShowVideo = isVideoPost && isPlaying;
+  
+  // Add additional debug for shouldShowVideo
+  useEffect(() => {
+    console.log(`Should show video for ${post?.id}: ${shouldShowVideo}, isPlaying: ${isPlaying}`);
+  }, [shouldShowVideo, isPlaying, post?.id]);
+
+  // Safety check for the entire post
+  if (!post) {
+    console.error("CreatorFeedItem received undefined post");
+    return null;
+  }
 
   return (
     <div ref={ref} className="mb-6 bg-card border border-border rounded-lg overflow-hidden">
@@ -86,11 +116,12 @@ const CreatorFeedItem: React.FC<{ post: CreatorFeedPost }> = ({ post }) => {
             <HLSVideoPlayer
               src={post.videoUrl || ''}
               poster={post.image}
-              videoId={parseInt(post.id.replace('video-', '')) || 0}
+              videoId={videoId}
               title={post.caption}
               onVideoComplete={handleVideoComplete}
               autoPlay={true}
               muted={true}
+              className="feed-video-player" // Ajouté pour aider au debug CSS
             />
           </div>
         ) : (

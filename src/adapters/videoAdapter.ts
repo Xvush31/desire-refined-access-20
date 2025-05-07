@@ -29,6 +29,11 @@ export const adaptSupabaseVideoToXTeaseFormat = (video: SupabaseVideo) => {
   console.log("Adapting video with ID:", video.id);
   console.log("Stream URL:", streamUrl);
 
+  // Vérification supplémentaire pour s'assurer que l'URL est valide
+  if (!streamUrl) {
+    console.warn(`XTease video ${video.id} has no valid stream URL`);
+  }
+
   return {
     id: video.id,
     title: video.title || "Vidéo sans titre",
