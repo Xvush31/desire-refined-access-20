@@ -17,6 +17,7 @@ interface VideoData {
   isPremium?: boolean;
   isPreview?: boolean;
   creatorProfileUrl?: string;
+  isHLS?: boolean;
 }
 
 interface XTeaseVideoListProps {
@@ -150,7 +151,7 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
         >
           {displayedVideos.map((video, index) => (
             <div
-              key={`video-item-${video.id}-${index}`}
+              key={`video-${video.id}-${index}`} // Ensure unique keys
               ref={(ref) => registerVideoRef(index, ref)}
               data-index={index}
               className="min-h-full w-full flex items-center justify-center p-2 sm:p-4"

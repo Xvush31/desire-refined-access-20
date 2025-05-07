@@ -19,17 +19,24 @@ export interface CreatorFeedPost {
   videoUrl?: string; // URL de la vidéo
   format?: string; // Format de la vidéo (16:9, 9:16, etc.)
   isVideo?: boolean; // Indique si c'est une vidéo
+  isHLS?: boolean; // Indique si c'est un stream HLS
+  uniqueId?: string; // ID unique pour éviter les conflits de clés
 }
 
 const CreatorFeedItem: React.FC<{ post: CreatorFeedPost }> = ({ post }) => {
   const [liked, setLiked] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const videoId = post && post.id ? parseInt(post.id.replace('video-', '')) || 0 : 0;
+  const [playAttempted, setPlayAttempted] = useState(false);
+  
+  // Extract video ID from post ID
+  const videoId = post && post.id ? 
+    parseInt(post.id.replace('video-', '')) || 0 : 0;
+  
   const { isFavorite } = useXTeaseInteractivity({ videoId });
   
-  // Use optimized lazy loading to detect when the component is in view
+  // Use optimized lazy loading with higher threshold to detect when component is in view
   const { ref, isVisible, hasBeenVisible } = useOptimizedLazyLoading({
-    threshold: 0.7, // Element must be 70% visible to trigger
+    threshold: 0.8, // Element must be 80% visible to trigger
     rootMargin: '100px' // Start loading a bit before it enters the viewport
   });
 
@@ -39,14 +46,24 @@ const CreatorFeedItem: React.FC<{ post: CreatorFeedPost }> = ({ post }) => {
       console.log(`CreatorFeedItem rendering post ${post.id}:`, {
         hasVideoUrl: !!post.videoUrl,
         isVideo: post.isVideo,
-        format: post.format
+        format: post.format,
+        isHLS: post.isHLS,
+        uniqueId: post.uniqueId || 'none'
       });
+      
+      // Log more details if it's a video
+      if (post.isVideo && post.videoUrl) {
+        console.log(`Video URL details for ${post.id}:`, {
+          url: post.videoUrl,
+          isHLS: post.isHLS || post.videoUrl.includes('.m3u8') || post.videoUrl.includes('playlist')
+        });
+      }
     } else {
       console.error("CreatorFeedItem received undefined post");
     }
   }, [post]);
 
-  // Safety check for post properties
+  // Safety check for post properties with more extensive validation
   const isVideoPost = !!(
     post && 
     post.isVideo === true && 
@@ -56,14 +73,15 @@ const CreatorFeedItem: React.FC<{ post: CreatorFeedPost }> = ({ post }) => {
 
   // Auto-play when the component becomes visible for video posts
   useEffect(() => {
-    if (isVideoPost && isVisible && !isPlaying) {
+    if (isVideoPost && isVisible && !isPlaying && !playAttempted) {
       console.log(`Video ${post.id} is now visible in feed, auto-playing`);
       setIsPlaying(true);
+      setPlayAttempted(true);
     } else if (!isVisible && isPlaying) {
       console.log(`Video ${post.id} is no longer visible in feed, pausing`);
       setIsPlaying(false);
     }
-  }, [isVisible, isVideoPost, isPlaying, post?.id]);
+  }, [isVisible, isVideoPost, isPlaying, playAttempted, post?.id]);
 
   const handleLikeToggle = () => {
     setLiked(!liked);
@@ -72,10 +90,17 @@ const CreatorFeedItem: React.FC<{ post: CreatorFeedPost }> = ({ post }) => {
   const handlePlayVideo = () => {
     console.log(`Manual play requested for video ${post?.id}`);
     setIsPlaying(true);
+    setPlayAttempted(true);
   };
 
   const handleVideoComplete = () => {
     console.log(`Video ${post?.id} playback completed`);
+    setIsPlaying(false);
+    setPlayAttempted(false);
+  };
+
+  const handleVideoError = (error: string) => {
+    console.error(`Video error for ${post?.id}: ${error}`);
     setIsPlaying(false);
   };
 

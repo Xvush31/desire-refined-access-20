@@ -37,9 +37,13 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
   const [hlsLoaded, setHlsLoaded] = useState(false);
   const [hlsError, setHlsError] = useState<string | null>(null);
   
+  // Determine if the source is an HLS stream or a direct video file
+  const isHlsStream = src && (src.includes('.m3u8') || src.includes('playlist'));
+  const isMP4Source = src && (src.toLowerCase().includes('.mp4') || src.toLowerCase().includes('video/mp4'));
+  
   // Log for debugging purposes
   useEffect(() => {
-    console.log(`HLSVideoPlayer initialized - videoId: ${videoId}, src: ${src}, autoPlay: ${autoPlay}, muted: ${muted}, className: ${className}`);
+    console.log(`HLSVideoPlayer initialized - videoId: ${videoId}, src: ${src}, isHLS: ${isHlsStream}, isMP4: ${isMP4Source}, autoPlay: ${autoPlay}, muted: ${muted}`);
     
     // Validation check for src being a valid URL
     if (!src) {
@@ -51,7 +55,7 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
     return () => {
       console.log(`HLSVideoPlayer unmounting - videoId: ${videoId}`);
     };
-  }, [videoId, src, autoPlay, muted, className]);
+  }, [videoId, src, autoPlay, muted, className, isHlsStream, isMP4Source]);
   
   // Configuration de HLS.js pour la lecture vidéo
   useEffect(() => {
@@ -83,16 +87,15 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
     // Définir l'état initial de muted
     video.muted = isMuted;
     
-    // Utiliser HLS.js si supporté et si la source est un flux HLS (.m3u8)
-    if (Hls.isSupported() && src && src.includes('.m3u8')) {
+    // Use HLS.js if supported and if the source seems to be an HLS stream
+    if (Hls.isSupported() && isHlsStream) {
+      console.log(`Setting up HLS.js for stream: ${src}`);
       hls = new Hls({
         enableWorker: true,
         lowLatencyMode: true,
         backBufferLength: 90,
         debug: false
       });
-      
-      console.log(`Loading HLS source for video ${videoId}: ${src}`);
       
       try {
         hls.loadSource(src);
@@ -138,9 +141,10 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
         
         hls.on(Hls.Events.ERROR, (_, data) => {
           console.error(`HLS error for video ${videoId}:`, data);
-          setHlsError(`HLS error: ${data.type}`);
           
           if (data.fatal) {
+            setHlsError(`HLS error: ${data.type}`);
+            
             switch (data.type) {
               case Hls.ErrorTypes.NETWORK_ERROR:
                 console.log(`Network error for video ${videoId}, trying to recover...`);
@@ -151,7 +155,19 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
                 hls?.recoverMediaError();
                 break;
               default:
-                cleanup();
+                if (isMP4Source) {
+                  // Fallback to direct video playback if HLS fails and source appears to be MP4
+                  console.log(`HLS failed for ${videoId}, falling back to direct video playback`);
+                  cleanup();
+                  video.src = src;
+                  video.load();
+                  if (autoPlay) {
+                    video.play().catch(e => console.error("Fallback playback failed:", e));
+                  }
+                } else {
+                  console.error(`Unrecoverable error for video ${videoId}`);
+                  cleanup();
+                }
                 break;
             }
           }
@@ -159,11 +175,19 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
       } catch (error) {
         console.error(`Error setting up HLS for video ${videoId}:`, error);
         setHlsError(`Failed to initialize player: ${error.message}`);
+        
+        // Try fallback to direct video
+        if (isMP4Source) {
+          console.log(`Falling back to direct video playback for ${videoId}`);
+          video.src = src;
+          video.load();
+        }
       }
     } 
-    // Utiliser le lecteur vidéo natif si HLS n'est pas supporté ou si c'est une source directe
-    else if (video.canPlayType('application/vnd.apple.mpegurl') || (src && !src.includes('.m3u8'))) {
+    // Use native video player for direct video files or if HLS is not supported
+    else {
       try {
+        console.log(`Using native video player for ${videoId}: ${src}`);
         video.src = src;
         
         video.addEventListener('loadedmetadata', () => {
@@ -192,21 +216,18 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({
         });
         
         video.addEventListener('error', (e) => {
-          console.error(`Native video error for ${videoId}:`, e);
+          console.error(`Native video error for ${videoId}:`, video.error);
           setHlsError(`Video error: ${video.error?.message || 'Unknown error'}`);
         });
       } catch (error) {
         console.error(`Error setting up native video for ${videoId}:`, error);
         setHlsError(`Failed to initialize player: ${error.message}`);
       }
-    } else {
-      console.error(`Unsupported video source for video ${videoId}: ${src}`);
-      setHlsError("Unsupported video format");
     }
     
     // Nettoyer lors du démontage du composant
     return cleanup;
-  }, [src, autoPlay, videoId]);
+  }, [src, autoPlay, videoId, isHlsStream, isMP4Source]);
   
   // Gérer les mises à jour de l'état de lecture
   useEffect(() => {

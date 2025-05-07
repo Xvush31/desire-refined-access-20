@@ -3,6 +3,30 @@ import { SupabaseVideo } from "@/services/supabaseVideoService";
 import { getCreatorProfileUrl } from "@/utils/creaverseLinks";
 
 /**
+ * Normalize a video URL to ensure it's valid
+ */
+const normalizeVideoUrl = (url: string | null | undefined): string => {
+  if (!url) return "";
+  
+  // Check if the URL is valid
+  try {
+    // This will throw if URL is invalid
+    new URL(url);
+    return url;
+  } catch (e) {
+    console.error("Invalid video URL:", url, e);
+    return "";
+  }
+};
+
+/**
+ * Determine if a video URL is likely an HLS stream
+ */
+const isHLSStream = (url: string): boolean => {
+  return url.includes('.m3u8') || url.includes('playlist');
+};
+
+/**
  * Adapte une vidéo Supabase pour être utilisée avec XTeaseVideoCard
  */
 export const adaptSupabaseVideoToXTeaseFormat = (video: SupabaseVideo) => {
@@ -22,12 +46,14 @@ export const adaptSupabaseVideoToXTeaseFormat = (video: SupabaseVideo) => {
     };
   }
 
-  // S'assurer que streamUrl est toujours défini en priorisant video_url, puis videoUrl
-  const streamUrl = video.video_url || video.videoUrl || "";
+  // S'assurer que streamUrl est toujours défini et valide
+  const rawStreamUrl = video.video_url || video.videoUrl || "";
+  const streamUrl = normalizeVideoUrl(rawStreamUrl);
   
   // Journaliser l'URL du stream pour débogage
   console.log("Adapting video with ID:", video.id);
   console.log("Stream URL:", streamUrl);
+  console.log("Is HLS stream:", isHLSStream(streamUrl));
 
   // Vérification supplémentaire pour s'assurer que l'URL est valide
   if (!streamUrl) {
@@ -40,10 +66,11 @@ export const adaptSupabaseVideoToXTeaseFormat = (video: SupabaseVideo) => {
     performer: `Creator ${video.creatorId || 1}`,
     views: `${Math.floor(Math.random() * 100) + 10}K vues`,
     thumbnail: video.thumbnail_url || "",
-    streamUrl: streamUrl, // Utilisation de la variable créée ci-dessus
+    streamUrl: streamUrl,
     isPremium: video.is_premium === true,
     isPreview: video.is_premium === true && video.type === 'teaser',
-    creatorProfileUrl: getCreatorProfileUrl(video.creatorId || 1)
+    creatorProfileUrl: getCreatorProfileUrl(video.creatorId || 1),
+    isHLS: isHLSStream(streamUrl)
   };
 };
 
