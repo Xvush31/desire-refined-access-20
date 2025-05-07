@@ -45,7 +45,7 @@ const XTeaseVideoCard: React.FC<XTeaseVideoCardProps> = ({
   onVideoComplete,
   aiSuggestions,
 }) => {
-  // S'assurer que video existe avant de l'utiliser
+  // Make sure video exists before using it
   if (!video) {
     console.error("Video data is undefined in XTeaseVideoCard");
     return (
@@ -55,7 +55,7 @@ const XTeaseVideoCard: React.FC<XTeaseVideoCardProps> = ({
     );
   }
 
-  // Vérifier que streamUrl est défini
+  // Check if streamUrl is defined
   if (!video.streamUrl) {
     console.error(`Video with ID ${video.id} has no streamUrl`);
   }
@@ -73,14 +73,6 @@ const XTeaseVideoCard: React.FC<XTeaseVideoCardProps> = ({
             index === currentVideoIndex + 1);
   }, [currentVideoIndex, index, dataSavingMode]);
   
-  // Handle video progress updates
-  const handleTimeUpdate = (currentTime: number, duration: number) => {
-    if (onVideoProgress && duration > 0) {
-      const progress = (currentTime / duration) * 100;
-      onVideoProgress(Math.min(progress, 100));
-    }
-  };
-  
   return (
     <div className="relative w-full h-full max-w-md mx-auto flex flex-col">
       {video.isPremium && !isPlayerActive && (
@@ -89,7 +81,7 @@ const XTeaseVideoCard: React.FC<XTeaseVideoCardProps> = ({
 
       <div className="relative flex-grow w-full flex flex-col items-center justify-center overflow-hidden">
         <div className="w-full bg-black rounded-xl overflow-hidden">
-          {isPlayerActive && currentVideoIndex === index ? (
+          {isPlayerActive && currentVideoIndex === index && video.streamUrl ? (
             <HLSVideoPlayer
               src={video.streamUrl}
               poster={video.thumbnail}

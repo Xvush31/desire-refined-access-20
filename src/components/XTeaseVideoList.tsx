@@ -56,7 +56,7 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
 }) => {
   const [displayedVideos, setDisplayedVideos] = useState<VideoData[]>([]);
 
-  // Filtrer les vidéos undefined et sans streamUrl avant de les afficher
+  // Filter undefined videos and those without streamUrl before displaying
   useEffect(() => {
     if (!videos || videos.length === 0) {
       console.log("No videos provided to XTeaseVideoList");
@@ -64,9 +64,15 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
       return;
     }
     
-    // Filtrer les vidéos valides (non undefined, avec toutes les propriétés requises et une URL de streaming)
+    // Filter valid videos (non-undefined, with all required properties and a streaming URL)
     const validVideos = videos.filter(video => 
-      video && video.id && video.title && video.thumbnail && video.streamUrl
+      video && 
+      typeof video === 'object' &&
+      video.id !== undefined &&
+      video.title !== undefined && 
+      video.thumbnail !== undefined && 
+      typeof video.streamUrl === 'string' &&
+      video.streamUrl !== ''
     );
     
     if (validVideos.length !== videos.length) {

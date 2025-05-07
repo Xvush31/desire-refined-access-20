@@ -109,6 +109,6 @@ export const supabaseVideoToFeedPost = (video: SupabaseVideo): any => {
     isPremium: video.is_premium === true,
     videoUrl: streamUrl, // Utiliser la variable streamUrl créée ci-dessus
     format: video.format || 'standard',
-    isVideo: true
+    isVideo: Boolean(streamUrl) // Seulement true si streamUrl n'est pas vide
   };
 };

@@ -34,7 +34,8 @@ const CreatorFeedItem: React.FC<{ post: CreatorFeedPost }> = ({ post }) => {
     rootMargin: '50px' // Start loading a bit before it enters the viewport
   });
 
-  const isVideoPost = post.isVideo && post.videoUrl;
+  // Safety check for post properties
+  const isVideoPost = post && post.isVideo === true && typeof post.videoUrl === 'string' && post.videoUrl !== '';
 
   // Auto-play when the component becomes visible for video posts
   useEffect(() => {
