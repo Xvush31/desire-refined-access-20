@@ -10,7 +10,7 @@ import { useTheme } from "@/hooks/use-theme";
 import { NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuLink, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
 import { Link } from "react-router-dom";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
-import { CREAVERSE_DOMAIN } from "@/utils/creaverseLinks";
+import { CREAVERSE_DOMAIN, XDOSE_DOMAIN } from "@/utils/creaverseLinks";
 
 const Header = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -84,6 +84,12 @@ const Header = () => {
     window.open(`${CREAVERSE_DOMAIN}/performer/1`, '_blank');
   };
 
+  // Handler for XDose Demo link
+  const handleXDoseClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    window.open(`${XDOSE_DOMAIN}`, '_blank');
+  };
+
   return (
     <motion.header 
       className={`sticky top-0 z-40 transition-all duration-300 ${
@@ -107,7 +113,7 @@ const Header = () => {
               <Logo />
             </motion.div>
 
-            {/* Navigation menu for CreaVerse */}
+            {/* Navigation menu for XDose */}
             {!isMobile && (
               <NavigationMenu className="mx-4 hidden md:flex">
                 <NavigationMenuList>
@@ -122,14 +128,19 @@ const Header = () => {
                     </Link>
                   </NavigationMenuItem>
                   <NavigationMenuItem>
+                    <Link to="/security-demo" className={navigationMenuTriggerStyle()}>
+                      Démo Sécurité
+                    </Link>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
                     <a 
-                      href={`${CREAVERSE_DOMAIN}/performer/1`} 
-                      target="_blank" 
+                      href={XDOSE_DOMAIN} 
+                      target="_blank"
                       rel="noopener noreferrer"
-                      onClick={handleCreaVerseClick}
+                      onClick={handleXDoseClick}
                       className={navigationMenuTriggerStyle()}
                     >
-                      CreaVerse Demo
+                      XDose Demo
                     </a>
                   </NavigationMenuItem>
                 </NavigationMenuList>

@@ -12,13 +12,14 @@ import {
   X,
   Video,
   LayoutGrid,
-  Star
+  Star,
+  Shield
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import GhostModeToggle from "./GhostModeToggle";
 import { useTheme } from "@/hooks/use-theme";
-import { CREAVERSE_DOMAIN } from "@/utils/creaverseLinks";
+import { XDOSE_DOMAIN } from "@/utils/creaverseLinks";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -42,9 +43,9 @@ interface MenuItem {
 const menuItems: MenuItem[] = [
   { label: "Accueil", icon: <Home size={18} />, href: "/" },
   { 
-    label: "CreaVerse", 
+    label: "XDose", 
     icon: <Star size={18} />, 
-    href: `${CREAVERSE_DOMAIN}/performer/1`, 
+    href: `${XDOSE_DOMAIN}`, 
     external: true,
     badge: "Nouveau" 
   },
@@ -75,9 +76,10 @@ const menuItems: MenuItem[] = [
   },
   { label: "Favoris", icon: <Heart size={18} />, href: "/favorites" },
   { label: "XTease", icon: <Video size={18} />, href: "/xtease" },
-  { label: "Tableau de Bord Créateurs", icon: <LayoutGrid size={18} />, href: `${CREAVERSE_DOMAIN}/dashboard`, external: true },
+  { label: "Tableau de Bord Créateurs", icon: <LayoutGrid size={18} />, href: `${XDOSE_DOMAIN}`, external: true },
   { label: "Historique", icon: <Clock size={18} />, href: "/history" },
   { label: "Téléverser", icon: <Upload size={18} />, href: "/upload" },
+  { label: "Démo Sécurité", icon: <Shield size={18} />, href: "/security-demo", badge: "Nouveau" },
   { label: "Se connecter", icon: <LogIn size={18} />, href: "/login" },
 ];
 

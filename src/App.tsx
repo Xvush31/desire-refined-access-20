@@ -29,6 +29,7 @@ import SubscriptionConfirmation from "./pages/SubscriptionConfirmation";
 import Subscription from "./pages/Subscription";
 import AuthCallback from "./pages/AuthCallback";
 import AccessDenied from "./pages/AccessDenied";
+import SecurityDemo from "./pages/SecurityDemo";
 import { useAuth } from "./contexts/AuthContext";
 import PerformerProfile from "./pages/PerformerProfile";
 import CreaVerseRedirect from "./components/CreaVerseRedirect";
@@ -71,7 +72,7 @@ function App() {
   return (
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
       <Routes>
-        {/* Main XVush routes - not affected by CreaVerse styles */}
+        {/* Main XVush routes - not affected by XDose styles */}
         <Route path="/" element={<Layout><Index /></Layout>} />
         <Route path="/about" element={<Layout><About /></Layout>} />
         <Route path="/trending" element={<Layout><Trending /></Layout>} />
@@ -98,17 +99,18 @@ function App() {
         <Route path="/subscription/confirmation" element={<Layout><SubscriptionConfirmation /></Layout>} />
         <Route path="/auth/callback" element={<Layout><AuthCallback /></Layout>} />
         <Route path="/access-denied" element={<Layout><AccessDenied /></Layout>} />
+        <Route path="/security-demo" element={<Layout><SecurityDemo /></Layout>} />
 
-        {/* Main CreaVerse redirect routes */}
+        {/* Main XDose redirect routes */}
         <Route path="/creaverse" element={<CreaVerseRedirect />} />
         <Route path="/creaverse/*" element={<CreaVerseRedirect />} />
         <Route path="/creaverse-app/*" element={<CreaVerseRedirect pathPrefix="creaverse-app" />} />
         
-        {/* Legacy performer routes - redirect to CreaVerse */}
+        {/* Legacy performer routes - redirect to XDose */}
         <Route path="/performer/:performerId" element={<PerformerProfile />} />
         <Route path="/performers/:performerId" element={<PerformerProfile />} />
 
-        {/* Legacy creator routes - redirect to CreaVerse */}
+        {/* Legacy creator routes - redirect to XDose */}
         <Route path="/creator/:performerId/dashboard" element={<CreaVerseRedirect pathPrefix="creator" />} />
         <Route path="/creator/:performerId/settings" element={<CreaVerseRedirect pathPrefix="creator" />} />
 
