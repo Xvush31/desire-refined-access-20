@@ -4,6 +4,7 @@
  */
 
 export const CREAVERSE_DOMAIN = "https://www.creaverse.xvush.com";
+export const XDOSE_DOMAIN = "https://www.xdose.xvush.com";
 
 /**
  * Converts an internal CreaVerse path to an external URL

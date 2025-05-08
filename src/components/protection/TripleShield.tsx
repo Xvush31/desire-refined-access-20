@@ -139,27 +139,29 @@ const TripleShield: React.FC<TripleShieldProps> = ({
         </div>
       )}
       
-      {/* Styles CSS spécifiques au composant */}
-      <style jsx>{`
-        .protection-demo {
-          position: relative;
-        }
-        .protection-demo::after {
-          content: 'XDose Protected | ${currentUser?.uid?.substring(0,6) || '------'} | ${new Date().toISOString().split('T')[0]}';
-          position: absolute;
-          inset: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 24px;
-          color: white;
-          opacity: 0.7;
-          transform: rotate(-30deg);
-          pointer-events: none;
-          text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-          z-index: 10;
-        }
-      `}</style>
+      {/* Styles CSS spécifiques au composant - Fixed removing the jsx property */}
+      <style>
+        {`
+          .protection-demo {
+            position: relative;
+          }
+          .protection-demo::after {
+            content: 'XDose Protected | ${currentUser?.uid?.substring(0,6) || '------'} | ${new Date().toISOString().split('T')[0]}';
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            opacity: 0.7;
+            transform: rotate(-30deg);
+            pointer-events: none;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            z-index: 10;
+          }
+        `}
+      </style>
     </div>
   );
 };
