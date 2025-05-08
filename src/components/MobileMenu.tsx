@@ -1,209 +1,258 @@
-
-import React, { useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React from "react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { X, Home, Video, Calendar, Users, Heart, BookOpen, ShieldCheck } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { 
+  Home, 
+  TrendingUp, 
+  Grid, 
+  User, 
+  Heart, 
+  Clock, 
+  Upload, 
+  LogIn,
+  X,
+  Video,
+  LayoutGrid,
+  Star
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import GhostModeToggle from "./GhostModeToggle";
+import { useTheme } from "@/hooks/use-theme";
+import { CREAVERSE_DOMAIN } from "@/utils/creaverseLinks";
 
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+interface MenuItem {
+  label: string;
+  icon: React.ReactNode;
+  href: string;
+  external?: boolean;
+  hasSubmenu?: boolean;
+  submenu?: {
+    label: string;
+    href: string;
+    external?: boolean;
+  }[];
+  badge?: string;
+}
+
+const menuItems: MenuItem[] = [
+  { label: "Accueil", icon: <Home size={18} />, href: "/" },
+  { 
+    label: "CreaVerse", 
+    icon: <Star size={18} />, 
+    href: `${CREAVERSE_DOMAIN}/performer/1`, 
+    external: true,
+    badge: "Nouveau" 
+  },
+  { label: "Tendances", icon: <TrendingUp size={18} />, href: "/trending" },
+  { 
+    label: "Catégories", 
+    icon: <Grid size={18} />, 
+    href: "/categories",
+    hasSubmenu: true,
+    submenu: [
+      { label: "Amateur", href: "/categories/amateur" },
+      { label: "MILF", href: "/categories/milf" },
+      { label: "Teen", href: "/categories/teen" },
+      { label: "Lesbian", href: "/categories/lesbian" },
+      { label: "Voir tout", href: "/categories" },
+    ] 
+  },
+  { 
+    label: "Créateurs", 
+    icon: <User size={18} />, 
+    href: "/creators",
+    hasSubmenu: true,
+    submenu: [
+      { label: "Les plus populaires", href: "/creators/popular" },
+      { label: "Récents", href: "/creators/recent" },
+      { label: "Voir tout", href: "/creators" },
+    ] 
+  },
+  { label: "Favoris", icon: <Heart size={18} />, href: "/favorites" },
+  { label: "XTease", icon: <Video size={18} />, href: "/xtease" },
+  { label: "Tableau de Bord Créateurs", icon: <LayoutGrid size={18} />, href: `${CREAVERSE_DOMAIN}/dashboard`, external: true },
+  { label: "Historique", icon: <Clock size={18} />, href: "/history" },
+  { label: "Téléverser", icon: <Upload size={18} />, href: "/upload" },
+  { label: "Se connecter", icon: <LogIn size={18} />, href: "/login" },
+];
+
 const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
-  const { currentUser } = useAuth();
-  
-  // Close the menu when pressing Escape
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        onClose();
-      }
-    };
-    
-    window.addEventListener("keydown", handleEscape);
-    return () => window.removeEventListener("keydown", handleEscape);
-  }, [isOpen, onClose]);
-  
-  // Prevent body scroll when menu is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
+  const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
+  const { theme } = useTheme();
+  const isLight = theme === "light";
+
+  const toggleSubmenu = (label: string) => {
+    if (expandedItems.includes(label)) {
+      setExpandedItems(expandedItems.filter(item => item !== label));
     } else {
-      document.body.style.overflow = "visible";
+      setExpandedItems([...expandedItems, label]);
     }
-    
-    return () => {
-      document.body.style.overflow = "visible";
-    };
-  }, [isOpen]);
+  };
+
+  // Handle external links
+  const handleItemClick = (item: MenuItem | {label: string; href: string; external?: boolean}) => {
+    if (item.external) {
+      window.open(item.href, '_blank');
+    } else {
+      onClose();
+    }
+  };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+    <div 
+      className={cn(
+        "fixed inset-0 bg-black/70 backdrop-blur-md z-50 transition-all duration-300",
+        isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+      )}
+      onClick={onClose}
+    >
+      <div 
+        className={cn(
+          "fixed right-0 top-0 bottom-0 w-3/4 max-w-xs shadow-xl transition-transform duration-300 ease-in-out overflow-y-auto",
+          isLight ? "bg-white" : "bg-black",
+          isOpen ? "translate-x-0" : "translate-x-full"
+        )}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className={cn(
+          "flex justify-between items-center p-6 sticky top-0 z-10",
+          isLight ? "border-b border-gray-200 bg-white" : "border-b border-muted bg-black"
+        )}>
+          <h2 className={cn("text-lg font-medium", isLight ? "text-gray-800" : "text-white")}>Menu</h2>
+          <button 
             onClick={onClose}
-          />
-          
-          {/* Menu panel */}
-          <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed top-0 right-0 h-full w-[80%] max-w-md bg-background z-50 overflow-y-auto"
+            className={cn(
+              "rounded-full p-2 transition-colors",
+              isLight ? "text-gray-700 hover:bg-gray-100" : "text-foreground hover:text-red-600"
+            )}
           >
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-8">
-                <h2 className="text-xl font-bold">Menu</h2>
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={onClose}
-                  className="rounded-full"
-                >
-                  <X size={24} />
-                </Button>
-              </div>
-              
-              <div className="space-y-6">
-                {/* Main navigation */}
-                <div>
-                  <h3 className="text-sm text-muted-foreground mb-3 uppercase font-semibold tracking-wider">Navigation</h3>
-                  <ul className="space-y-2">
-                    <li>
-                      <Link 
-                        to="/" 
-                        className="flex items-center p-2 hover:bg-accent rounded-md transition-colors"
-                        onClick={onClose}
-                      >
-                        <Home size={20} className="mr-3" />
-                        Accueil
-                      </Link>
-                    </li>
-                    <li>
-                      <Link 
-                        to="/trending" 
-                        className="flex items-center p-2 hover:bg-accent rounded-md transition-colors"
-                        onClick={onClose}
-                      >
-                        <Video size={20} className="mr-3" />
-                        Tendances
-                      </Link>
-                    </li>
-                    <li>
-                      <Link 
-                        to="/intimate" 
-                        className="flex items-center p-2 hover:bg-accent rounded-md transition-colors"
-                        onClick={onClose}
-                      >
-                        <ShieldCheck size={20} className="mr-3 text-purple-500" />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 font-semibold">INTIMATE</span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link 
-                        to="/recent" 
-                        className="flex items-center p-2 hover:bg-accent rounded-md transition-colors"
-                        onClick={onClose}
-                      >
-                        <Calendar size={20} className="mr-3" />
-                        Récents
-                      </Link>
-                    </li>
-                    <li>
-                      <Link 
-                        to="/creators" 
-                        className="flex items-center p-2 hover:bg-accent rounded-md transition-colors"
-                        onClick={onClose}
-                      >
-                        <Users size={20} className="mr-3" />
-                        Créateurs
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-                
-                {/* User-specific links */}
-                {currentUser && (
+            <X size={24} />
+          </button>
+        </div>
+
+        <nav className="p-4">
+          <div className={cn(
+            "border-b pb-4 mb-4",
+            isLight ? "border-gray-200" : "border-muted"
+          )}>
+            <GhostModeToggle />
+          </div>
+
+          <ul className="space-y-1 pb-24">
+            {menuItems.map((item) => (
+              <li key={item.label} className="w-full">
+                {item.hasSubmenu ? (
                   <div>
-                    <h3 className="text-sm text-muted-foreground mb-3 uppercase font-semibold tracking-wider">Votre compte</h3>
-                    <ul className="space-y-2">
-                      <li>
-                        <Link 
-                          to="/favorites" 
-                          className="flex items-center p-2 hover:bg-accent rounded-md transition-colors"
-                          onClick={onClose}
-                        >
-                          <Heart size={20} className="mr-3" />
-                          Favoris
-                        </Link>
-                      </li>
-                      <li>
-                        <Link 
-                          to="/history" 
-                          className="flex items-center p-2 hover:bg-accent rounded-md transition-colors"
-                          onClick={onClose}
-                        >
-                          <BookOpen size={20} className="mr-3" />
-                          Historique
-                        </Link>
-                      </li>
-                    </ul>
-                  </div>
-                )}
-                
-                {/* Authentication links */}
-                <div>
-                  <h3 className="text-sm text-muted-foreground mb-3 uppercase font-semibold tracking-wider">Compte</h3>
-                  <div className="space-y-3">
-                    {currentUser ? (
-                      <>
-                        <Button 
-                          variant="outline" 
-                          className="w-full justify-start"
-                          onClick={onClose}
-                        >
-                          Profil
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          className="w-full justify-start"
-                          onClick={onClose}
-                        >
-                          Se déconnecter
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <Link to="/login" onClick={onClose}>
-                          <Button variant="default" className="w-full">
-                            Se connecter
-                          </Button>
-                        </Link>
-                        <Link to="/signup" onClick={onClose}>
-                          <Button variant="outline" className="w-full">
-                            S'inscrire
-                          </Button>
-                        </Link>
-                      </>
+                    <button 
+                      onClick={() => toggleSubmenu(item.label)}
+                      className={cn(
+                        "flex items-center justify-between w-full px-3 py-2 rounded-md text-sm",
+                        isLight 
+                          ? "hover:bg-gray-100 text-gray-800" 
+                          : "hover:bg-secondary text-white"
+                      )}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={isLight ? "text-primary" : ""}>{item.icon}</span>
+                        <span>{item.label}</span>
+                        {item.badge && (
+                          <Badge className="ml-2 animated-gradient-bg text-white text-xs">{item.badge}</Badge>
+                        )}
+                      </div>
+                      <span>{expandedItems.includes(item.label) ? "-" : "+"}</span>
+                    </button>
+                    
+                    {expandedItems.includes(item.label) && item.submenu && (
+                      <ul className={cn(
+                        "pl-6 mt-1 space-y-1",
+                        isLight ? "border-l border-gray-200" : "border-l border-muted"
+                      )}>
+                        {item.submenu.map((subItem) => (
+                          <li key={subItem.label}>
+                            {subItem.external ? (
+                              <a 
+                                href={subItem.href} 
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={cn(
+                                  "flex items-center px-3 py-2 rounded-md text-sm",
+                                  isLight 
+                                    ? "hover:bg-gray-100 text-gray-700" 
+                                    : "hover:bg-secondary text-white"
+                                )}
+                                onClick={() => handleItemClick(subItem)}
+                              >
+                                {subItem.label}
+                              </a>
+                            ) : (
+                              <Link 
+                                to={subItem.href} 
+                                className={cn(
+                                  "flex items-center px-3 py-2 rounded-md text-sm",
+                                  isLight 
+                                    ? "hover:bg-gray-100 text-gray-700" 
+                                    : "hover:bg-secondary text-white"
+                                )}
+                                onClick={onClose}
+                              >
+                                {subItem.label}
+                              </Link>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
                     )}
                   </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+                ) : (
+                  item.external ? (
+                    <a 
+                      href={item.href} 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={cn(
+                        "flex items-center gap-2 px-3 py-2 rounded-md text-sm w-full",
+                        isLight 
+                          ? "hover:bg-gray-100 text-gray-800" 
+                          : "hover:bg-secondary text-white"
+                      )}
+                      onClick={() => handleItemClick(item)}
+                    >
+                      <span className={isLight ? "text-primary" : ""}>{item.icon}</span>
+                      <span>{item.label}</span>
+                      {item.badge && (
+                        <Badge className="ml-2 animated-gradient-bg text-white text-xs">{item.badge}</Badge>
+                      )}
+                    </a>
+                  ) : (
+                    <Link 
+                      to={item.href} 
+                      className={cn(
+                        "flex items-center gap-2 px-3 py-2 rounded-md text-sm w-full",
+                        isLight 
+                          ? "hover:bg-gray-100 text-gray-800" 
+                          : "hover:bg-secondary text-white"
+                      )}
+                      onClick={onClose}
+                    >
+                      <span className={isLight ? "text-primary" : ""}>{item.icon}</span>
+                      <span>{item.label}</span>
+                      {item.badge && (
+                        <Badge className="ml-2 animated-gradient-bg text-white text-xs">{item.badge}</Badge>
+                      )}
+                    </Link>
+                  )
+                )}
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </div>
   );
 };
 

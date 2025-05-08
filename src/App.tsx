@@ -25,7 +25,6 @@ import Invite from "./pages/Invite";
 import Favorites from "./pages/Favorites";
 import History from "./pages/History";
 import XTease from "./pages/XTease";
-import Intimate from "./pages/Intimate";
 import SubscriptionConfirmation from "./pages/SubscriptionConfirmation";
 import Subscription from "./pages/Subscription";
 import AuthCallback from "./pages/AuthCallback";
@@ -95,8 +94,6 @@ function App() {
         <Route path="/favorites" element={<Layout><Favorites /></Layout>} />
         <Route path="/history" element={<Layout><History /></Layout>} />
         <Route path="/xtease" element={<Layout><XTease /></Layout>} />
-        <Route path="/intimate" element={<Layout><Intimate /></Layout>} />
-        <Route path="/intimate/:section" element={<Layout><Intimate /></Layout>} />
         <Route path="/subscription" element={<Layout><Subscription /></Layout>} />
         <Route path="/subscription/confirmation" element={<Layout><SubscriptionConfirmation /></Layout>} />
         <Route path="/auth/callback" element={<Layout><AuthCallback /></Layout>} />

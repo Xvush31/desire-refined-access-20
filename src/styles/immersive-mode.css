@@ -312,63 +312,81 @@
   position: relative;
 }
 
-/* INTIMATE specific styles */
-.intimate-theme {
-  --intimate-primary: #9b87f5;
-  --intimate-secondary: #7E69AB;
-  --intimate-tertiary: #6E59A5;
-  --intimate-dark: #1A1F2C;
-  --intimate-light: #D6BCFA;
-  --intimate-vivid: #8B5CF6;
-  --intimate-soft: #E5DEFF;
+.xvush-identity::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  background-image: linear-gradient(135deg, #ff3366, #ff9933);
+  border-radius: 50%;
+  opacity: 0.8;
+  z-index: 10;
 }
 
-.intimate-dark {
-  background-color: var(--intimate-dark);
+/* Mobile-First Interactive Elements */
+.mobile-interactive {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.mobile-interactive:active {
+  transform: scale(0.98);
+  box-shadow: 0 0 0 3px rgba(255,105,180,0.2);
+}
+
+/* High Contrast Accessibility Mode */
+.high-contrast {
+  --contrast-background: #121212;
+  --contrast-foreground: #ffffff;
+  --contrast-accent: #ff3366;
+  background: var(--contrast-background);
+  color: var(--contrast-foreground);
+}
+
+.high-contrast img {
+  filter: contrast(1.2);
+}
+
+/* Haptic Feedback Visual Indicator */
+.haptic-indicator {
+  position: relative;
+}
+
+.haptic-indicator::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
   color: white;
+  background-color: rgba(0,0,0,0.5);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  z-index: 100;
+  pointer-events: none;
 }
 
-.intimate-light {
-  background-color: white;
-  color: var(--intimate-dark);
+.haptic-indicator.active::after {
+  animation: haptic-confirm 0.5s forwards;
 }
 
-/* Animation for subtle pulse on verification badges */
-.animate-pulse-subtle {
-  animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse-subtle {
-  0%, 100% {
-    opacity: 1;
+@keyframes haptic-confirm {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
   }
   50% {
-    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
   }
-}
-
-/* Immersive mode for INTIMATE */
-.immersive-intimate {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: var(--intimate-dark);
-  z-index: 50;
-  overflow: hidden;
-}
-
-/* Badge effect for GENUINE™ */
-.genuine-badge {
-  background: linear-gradient(90deg, #9b87f5, #8B5CF6);
-  color: white;
-  font-weight: 600;
-  padding: 0.2rem 0.5rem;
-  border-radius: 0.25rem;
-  font-size: 0.75rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  box-shadow: 0 0 10px rgba(155, 135, 245, 0.5);
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
 }
