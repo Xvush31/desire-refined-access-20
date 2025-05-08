@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Play } from 'lucide-react';
 import { useTheme } from '@/hooks/use-theme';
 import { useRevolutionaryNavigation } from '@/hooks/use-revolutionary-navigation';
+import { XDOSE_DOMAIN } from '@/utils/creaverseLinks';
 
 interface PerformerGridProps {
   type: 'photos' | 'videos';
@@ -43,14 +43,20 @@ const PerformerGrid: React.FC<PerformerGridProps> = ({ type, performerId }) => {
     };
   }, [setIsImmersiveMode]);
   
+  const handlePostClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    window.location.href = XDOSE_DOMAIN;
+  };
+  
   return (
     <div className={`${bgClass}`}>
       <div className="grid grid-cols-3 gap-1">
         {posts.map((post) => (
-          <Link 
+          <a 
             key={post.id} 
-            to={`/performer/${performerId}/${type}/${post.id}`}
+            href={XDOSE_DOMAIN}
             className="relative aspect-square overflow-hidden"
+            onClick={handlePostClick}
           >
             <img 
               src={post.image} 
@@ -78,7 +84,7 @@ const PerformerGrid: React.FC<PerformerGridProps> = ({ type, performerId }) => {
                 {post.duration}
               </div>
             )}
-          </Link>
+          </a>
         ))}
       </div>
     </div>

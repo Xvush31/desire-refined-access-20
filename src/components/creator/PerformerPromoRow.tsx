@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from 'sonner';
-import { getCreatorProfileUrl } from '@/utils/creaverseLinks';
+import { XDOSE_DOMAIN } from '@/utils/creaverseLinks';
 
 interface Performer {
   id: number;
@@ -24,9 +24,8 @@ const PerformerPromoRow: React.FC<PerformerPromoRowProps> = ({ performers }) => 
     e.preventDefault();
     toast.info(`Redirection vers le profil de ${performer.name}`);
     
-    // Redirection vers le profil créateur avec le nouveau format d'URL
-    const creatorUrl = getCreatorProfileUrl(performer.id);
-    window.location.href = creatorUrl;
+    // Redirection vers le site XDose
+    window.location.href = XDOSE_DOMAIN;
   };
 
   return (

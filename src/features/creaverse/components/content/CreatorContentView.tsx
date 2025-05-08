@@ -5,6 +5,7 @@ import EnhancedContentGrid from './EnhancedContentGrid';
 import ModernContentGrid from './ModernContentGrid';
 import { useRevolutionaryNavigation } from '@/features/creaverse/hooks/use-revolutionary-navigation';
 import ImmersiveView from '../navigation/ImmersiveView';
+import { XDOSE_DOMAIN } from '@/utils/creaverseLinks';
 
 interface CreatorContentViewProps {
   items: ContentItem[];
@@ -31,11 +32,8 @@ const CreatorContentView: React.FC<CreatorContentViewProps> = ({
 
   // Handle opening immersive view when an item is clicked
   const handleItemClicked = (item: ContentItem) => {
-    const index = items.findIndex(i => i.id === item.id);
-    if (index >= 0) {
-      setSelectedItemIndex(index);
-      setImmersiveViewOpen(true);
-    }
+    // Redirect to XDose
+    window.location.href = XDOSE_DOMAIN;
     onItemClick(item);
   };
   

@@ -23,7 +23,8 @@ export const getCreaVerseUrl = (path: string): string => {
  * @returns The URL for the creator profile using the exact format
  */
 export const getCreatorProfileUrl = (creatorId: number | string): string => {
-  return `${CREAVERSE_DOMAIN}/creator?id=creator${creatorId}`;
+  // Return the exact xdose.xvush.com URL without any parameters
+  return XDOSE_DOMAIN;
 };
 
 /**
@@ -42,3 +43,4 @@ export const isCreaVersePath = (path: string): boolean => {
 export const openCreaVerseInNewTab = (path: string): void => {
   window.open(getCreaVerseUrl(path), '_blank');
 };
+

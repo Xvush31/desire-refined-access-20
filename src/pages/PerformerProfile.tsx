@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { getCreatorProfileUrl } from "../utils/creaverseLinks";
+import { XDOSE_DOMAIN } from "../utils/creaverseLinks";
 
 /**
  * Ce composant gère la redirection des anciennes URLs vers CreaVerse
@@ -13,16 +13,13 @@ const PerformerProfile: React.FC = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
-    console.log("PerformerProfile: Redirecting legacy URL to CreaVerse", performerId);
-    
-    // Ensure performerId is valid, default to "1" if not
-    const targetId = performerId || "1";
+    console.log("PerformerProfile: Redirecting legacy URL to XDose");
     
     // Affichage d'un toast pour informer l'utilisateur
     toast.info("Redirection vers le profil du créateur...");
     
     // Construct the external URL with the exact required format
-    const externalUrl = getCreatorProfileUrl(targetId);
+    const externalUrl = XDOSE_DOMAIN;
     
     // Log the URL for debugging
     console.log("Redirecting to:", externalUrl);

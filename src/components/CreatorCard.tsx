@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { getCreatorProfileUrl } from "@/utils/creaverseLinks";
+import { XDOSE_DOMAIN } from "@/utils/creaverseLinks";
 
 export interface CreatorData {
   id: number;
@@ -37,11 +37,10 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => {
   const handleDesktopClick = () => {
     if (!isMobile) {
       toast.success(`Vous avez sélectionné ${creator.name}`);
+      // Redirection vers le site XDose
+      window.location.href = XDOSE_DOMAIN;
     }
   };
-  
-  // Génération du lien vers le profil créateur avec le nouveau format
-  const creatorProfileUrl = getCreatorProfileUrl(creator.id);
   
   return (
     <Card 
@@ -52,7 +51,7 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => {
       data-is-mobile={isMobile ? "true" : "false"}
     >
       <a 
-        href={creatorProfileUrl}
+        href={XDOSE_DOMAIN}
         className="block mb-2 text-center creator-card-content"
         data-testid="creator-profile-link"
         onClick={(e) => {
@@ -83,7 +82,7 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => {
       
       <div className="flex flex-col gap-2 w-full mt-auto">
         <a 
-          href={`/subscription?creator=${creator.id}`}
+          href={XDOSE_DOMAIN}
           className="w-full"
           data-testid="creator-subscribe-link"
           onClick={(e) => {

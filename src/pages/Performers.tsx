@@ -4,8 +4,8 @@ import Header from "@/components/Header";
 import ContentSection from "@/components/ContentSection";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { XDOSE_DOMAIN } from "@/utils/creaverseLinks";
 
 interface PerformerData {
   id: number;
@@ -35,6 +35,11 @@ const performers: PerformerData[] = [
 const Performers: React.FC = () => {
   const isMobile = useIsMobile();
   
+  const handleProfileClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    window.location.href = XDOSE_DOMAIN;
+  };
+  
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -48,10 +53,11 @@ const Performers: React.FC = () => {
           <div className={`grid grid-cols-1 ${isMobile ? 'sm:grid-cols-2' : 'sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'} gap-x-4 gap-y-8`}>
             {performers.map((performer) => (
               <div key={performer.id} className="flex flex-col items-center text-center group">
-                <Link 
-                  to={`/performers/${performer.id}`} 
+                <a 
+                  href={XDOSE_DOMAIN} 
                   className="block w-full"
                   aria-label={`Voir le profil de ${performer.name}`}
+                  onClick={handleProfileClick}
                 >
                   <div className="mb-3 relative flex justify-center">
                     <Avatar className={`${isMobile ? 'h-24 w-24' : 'h-28 w-28'} transition-all duration-300 group-hover:scale-105`}>
@@ -78,11 +84,12 @@ const Performers: React.FC = () => {
                       ))}
                     </div>
                   )}
-                </Link>
+                </a>
                 
-                <Link 
-                  to={`/performers/${performer.id}`}
+                <a 
+                  href={XDOSE_DOMAIN}
                   className={`w-full flex justify-center mt-2 ${isMobile ? 'px-4' : ''}`}
+                  onClick={handleProfileClick}
                 >
                   <Button 
                     variant="outline" 
@@ -91,7 +98,7 @@ const Performers: React.FC = () => {
                   >
                     Voir le profil
                   </Button>
-                </Link>
+                </a>
               </div>
             ))}
           </div>
