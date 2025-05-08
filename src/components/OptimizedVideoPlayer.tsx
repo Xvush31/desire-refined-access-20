@@ -41,12 +41,10 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = ({
   
   const {
     videoRef,
-    hlsRef,
     isPlaying,
     currentTime,
     duration,
     buffering,
-    loaded,
     qualityLevels,
     currentQuality,
   } = useHLSPlayer({
@@ -64,7 +62,11 @@ const OptimizedVideoPlayer: React.FC<OptimizedVideoPlayerProps> = ({
     handleVolumeChange,
     toggleMute,
     handleSeek
-  } = useVideoControls({ videoRef, hlsRef, duration });
+  } = useVideoControls({ 
+    videoRef, 
+    // Remove the reference to hlsRef since it's not available
+    duration 
+  });
 
   // Sync with external play state if provided
   useEffect(() => {
