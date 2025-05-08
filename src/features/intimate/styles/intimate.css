@@ -1,0 +1,230 @@
+
+/* INTIMATE specific styles */
+
+/* Base theme variables */
+:root {
+  --intimate-primary: #9b87f5;
+  --intimate-secondary: #7E69AB;
+  --intimate-tertiary: #6E59A5;
+  --intimate-dark: #1A1F2C;
+  --intimate-darker: #151824;
+  --intimate-light: #D6BCFA;
+  --intimate-vivid: #8B5CF6;
+  --intimate-soft: #E5DEFF;
+  --intimate-pink: #E879F9;
+  --intimate-accent: #F472B6;
+}
+
+/* Intimate theme overrides */
+.intimate-theme {
+  /* Text colors */
+  --text-primary: #FFFFFF;
+  --text-secondary: #D6BCFA;
+  --text-muted: #9F7AEA;
+  
+  /* Background colors */
+  --bg-primary: #1A1F2C;
+  --bg-secondary: #252A38;
+  --bg-accent: rgba(155, 135, 245, 0.15);
+  
+  /* Border colors */
+  --border-subtle: rgba(155, 135, 245, 0.3);
+  --border-accent: rgba(155, 135, 245, 0.5);
+  
+  /* Gradient backgrounds */
+  --gradient-primary: linear-gradient(90deg, #9b87f5, #E879F9);
+  --gradient-button: linear-gradient(90deg, #8B5CF6, #F472B6);
+  --gradient-card: linear-gradient(135deg, rgba(155, 135, 245, 0.2) 0%, rgba(232, 121, 249, 0.1) 100%);
+}
+
+/* Background elements */
+.intimate-bg-pattern {
+  background-image: radial-gradient(rgba(155, 135, 245, 0.15) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: 0 0;
+}
+
+.intimate-blob {
+  position: absolute;
+  filter: blur(70px);
+  opacity: 0.4;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Gradient text */
+.intimate-gradient-text {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+}
+
+/* Card styling */
+.intimate-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.intimate-card:hover {
+  border-color: var(--border-accent);
+  box-shadow: 0 5px 15px rgba(155, 135, 245, 0.1);
+}
+
+/* Button styling */
+.intimate-button {
+  background: var(--gradient-button);
+  color: white;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  transition: all 0.3s ease;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.intimate-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+}
+
+.intimate-button-outline {
+  background: transparent;
+  color: var(--intimate-primary);
+  border: 1px solid var(--border-accent);
+}
+
+.intimate-button-outline:hover {
+  background: rgba(155, 135, 245, 0.1);
+}
+
+/* Badge styling */
+.intimate-badge {
+  background: var(--intimate-primary);
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
+.intimate-badge-outline {
+  background: transparent;
+  border: 1px solid var(--intimate-primary);
+  color: var(--intimate-primary);
+}
+
+/* Animation for the Triple Shield logo */
+.intimate-shield-pulse {
+  animation: shield-pulse 2s infinite;
+}
+
+@keyframes shield-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(155, 135, 245, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(155, 135, 245, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(155, 135, 245, 0);
+  }
+}
+
+/* Unique watermark effect */
+.intimate-watermark {
+  position: relative;
+  overflow: hidden;
+}
+
+.intimate-watermark::after {
+  content: attr(data-watermark);
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  font-size: 8px;
+  opacity: 0.5;
+  color: white;
+  text-shadow: 0 0 2px rgba(0,0,0,0.5);
+  transform: rotate(-15deg);
+  pointer-events: none;
+}
+
+/* Certificate badge */
+.intimate-certificate {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: linear-gradient(90deg, var(--intimate-primary), var(--intimate-accent));
+  color: white;
+  border-radius: 4px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Custom scrollbar for Intimate pages */
+.intimate-theme::-webkit-scrollbar {
+  width: 8px;
+}
+
+.intimate-theme::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+.intimate-theme::-webkit-scrollbar-thumb {
+  background: var(--intimate-secondary);
+  border-radius: 4px;
+}
+
+.intimate-theme::-webkit-scrollbar-thumb:hover {
+  background: var(--intimate-primary);
+}
+
+/* Input fields */
+.intimate-input {
+  background: rgba(155, 135, 245, 0.1);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+  outline: none;
+  width: 100%;
+}
+
+.intimate-input:focus {
+  border-color: var(--intimate-primary);
+  box-shadow: 0 0 0 2px rgba(155, 135, 245, 0.25);
+}
+
+/* Special effects for premium content */
+.intimate-premium-effect {
+  position: relative;
+}
+
+.intimate-premium-effect::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(90deg, var(--intimate-primary), var(--intimate-accent), var(--intimate-primary));
+  border-radius: inherit;
+  padding: 1px;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  background-size: 200% auto;
+  animation: shine 3s linear infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}

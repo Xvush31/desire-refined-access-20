@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, User } from "lucide-react";
@@ -122,6 +123,11 @@ const Header = () => {
                     </Link>
                   </NavigationMenuItem>
                   <NavigationMenuItem>
+                    <Link to="/intimate" className={navigationMenuTriggerStyle()}>
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 font-semibold">INTIMATE</span>
+                    </Link>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
                     <a 
                       href={`${CREAVERSE_DOMAIN}/performer/1`} 
                       target="_blank" 
@@ -163,8 +169,6 @@ const Header = () => {
             </div>
           </div>
         </div>
-        
-        {/* Suppression de l'espace publicitaire */}
       </div>
 
       <MobileMenu isOpen={showMobileMenu} onClose={() => setShowMobileMenu(false)} />

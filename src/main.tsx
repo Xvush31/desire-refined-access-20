@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.tsx";
 import "./index.css";
+import "./features/intimate/styles/intimate.css"; // Import Intimate styles
 import { Toaster } from "sonner";
 import { AuthProvider } from "./contexts/AuthContext";
 
