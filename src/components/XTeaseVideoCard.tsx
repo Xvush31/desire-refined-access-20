@@ -55,9 +55,20 @@ const XTeaseVideoCard: React.FC<XTeaseVideoCardProps> = ({
     );
   }
 
-  // Check if streamUrl is defined
+  // Check if streamUrl is defined - IMPROVED CHECK
   if (!video.streamUrl) {
     console.error(`Video with ID ${video.id} has no streamUrl`);
+    return (
+      <div className="relative w-full h-full max-w-md mx-auto flex flex-col items-center justify-center">
+        <p className="text-white bg-black/40 p-4 rounded-lg">Lien de streaming non disponible</p>
+        <Button 
+          onClick={onVideoComplete} 
+          className="mt-4 bg-red-500 hover:bg-red-600"
+        >
+          Passer à la suivante
+        </Button>
+      </div>
+    );
   }
 
   console.log("XTeaseVideoCard rendering video:", video.id);

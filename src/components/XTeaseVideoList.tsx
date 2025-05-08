@@ -101,8 +101,14 @@ const XTeaseVideoList: React.FC<XTeaseVideoListProps> = ({
       });
     }
     
+    // Set safe currentVideoIndex when filtering
+    if (validVideos.length > 0 && (currentVideoIndex < 0 || currentVideoIndex >= validVideos.length)) {
+      console.warn(`Adjusting currentVideoIndex from ${currentVideoIndex} to 0 due to filtering`);
+      setCurrentVideoIndex(0);
+    }
+    
     setDisplayedVideos(validVideos);
-  }, [videos]);
+  }, [videos, currentVideoIndex, setCurrentVideoIndex]);
 
   const {
     containerRef,

@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from 'react';
 import { useImmersiveMode } from '@/hooks/useImmersiveMode';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -29,10 +28,10 @@ export interface XTeaseVideo {
 // Define a union type for our mixed content
 export type MixedContentItem = CreatorFeedPost | XTeaseVideo;
 
-// Helper function to determine if an item is an XTeaseVideo
+// Helper function to determine if an item is an XTeaseVideo - FIXED to safely handle undefined
 export const isXTeaseVideo = (item: MixedContentItem | undefined): item is XTeaseVideo => {
   // First check if item exists before checking for property
-  return !!item && 'streamUrl' in item;
+  return !!item && typeof item === 'object' && 'streamUrl' in item && typeof item.streamUrl === 'string';
 };
 
 // Données statiques pour les vidéos XTease à utiliser dans l'interface immersive
@@ -107,6 +106,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
   useEffect(() => {
     if (!posts || posts.length === 0) {
       console.log("No posts provided to ImmersivePublications");
+      setMixedContent([]); // Initialize with empty array to avoid undefined
       return;
     }
     
@@ -143,7 +143,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
 
   // Vérifier si l'élément actuel est une vidéo ou une publication
   useEffect(() => {
-    if (mixedContent.length > 0 && currentIndex < mixedContent.length) {
+    if (mixedContent.length > 0 && currentIndex >= 0 && currentIndex < mixedContent.length) {
       const currentItem = mixedContent[currentIndex];
       setIsVideoContent(isXTeaseVideo(currentItem));
     }
@@ -332,14 +332,25 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
     }
   };
 
-  // Ensure currentIndex is within bounds
-  const safeCurrentIndex = Math.min(currentIndex, mixedContent.length - 1);
-  if (safeCurrentIndex < 0) {
-    console.warn("Invalid current index in ImmersivePublications");
-    return null;
+  // Ensure currentIndex is within bounds - FIXED
+  const safeCurrentIndex = mixedContent.length > 0 ? 
+    Math.min(currentIndex, mixedContent.length - 1) : 
+    -1;
+  
+  // Added safety check
+  if (safeCurrentIndex < 0 || mixedContent.length === 0) {
+    console.warn("No valid content in ImmersivePublications");
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background">
+        <p className="text-foreground">No content available</p>
+        <Button onClick={onExitImmersive} className="mt-4">
+          Exit
+        </Button>
+      </div>
+    );
   }
 
-  // Vérifier si l'élément actuel est une publication standard ou une vidéo XTease
+  // Vérifier si l'élément actuel est une publication standard ou une vidéo XTease - FIXED
   const currentContent = mixedContent[safeCurrentIndex];
   const isXTeaseContent = isXTeaseVideo(currentContent);
   
