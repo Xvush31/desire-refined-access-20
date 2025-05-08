@@ -29,7 +29,7 @@ const ImmersiveMode: React.FC<ImmersiveModeProps> = ({
       if (controlsTimer) clearTimeout(controlsTimer);
       if (longPressTimer) clearTimeout(longPressTimer);
     };
-  }, [isImmersive]);
+  }, [isImmersive, controlsTimer, longPressTimer]);
   
   useEffect(() => {
     // Only add mouse move listener in immersive mode

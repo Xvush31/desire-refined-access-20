@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useCallback } from "react";
 import Header from "@/components/Header";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -427,115 +426,129 @@ const Index = () => {
     for (let i = 0; i < combinedPosts.length; i++) {
       // Add the post with a more unique key
       const post = combinedPosts[i];
-      result.push(
-        <CreatorFeedItem 
-          key={`feed-post-${post.id}-${i}`} 
-          post={post} 
-        />
-      );
-      
-      // After each group of 3 posts, insert a different promo block
-      if ((i + 1) % 3 === 0 && i < combinedPosts.length - 1) {
-        const promoType = Math.floor((i / 3) % 3); // Alternating between 0, 1, 2
+      if (post) { // Check if post exists
+        result.push(
+          <CreatorFeedItem 
+            key={`feed-post-${post.id}-${i}`} 
+            post={post} 
+          />
+        );
         
-        if (promoType === 0) {
-          result.push(
-            <div key={`xtease-promo-${i}`} className="mb-6 w-full">
-              <h3 className="text-lg font-semibold mb-2 text-center animated-gradient">Découvrez XTease</h3>
-              <div className="grid grid-cols-3 gap-2">
-                {xteaseVideos.map((video) => (
-                  <div 
-                    key={video.id}
-                    onClick={() => handlePromoClick('xtease', video)}
-                    className="relative overflow-hidden rounded-lg group cursor-pointer"
-                  >
-                    <div className="relative aspect-[9/16]">
-                      <img 
-                        src={video.thumbnail} 
-                        alt={video.title}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white opacity-80"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                      </div>
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                        <p className="text-white text-xs truncate">{video.title}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          );
-        } else if (promoType === 1) {
-          result.push(
-            <div key={`performer-promo-${i}`} className="mb-6 w-full">
-              <h3 className="text-lg font-semibold mb-2 text-center animated-gradient">Créateurs populaires</h3>
-              <div className="grid grid-cols-3 gap-2">
-                {popularCreators.map((performer) => (
-                  <div 
-                    key={performer.id}
-                    onClick={() => handlePromoClick('creator', performer)}
-                    className="relative rounded-lg group bg-card border border-border p-3 flex flex-col items-center cursor-pointer"
-                  >
-                    <div className="w-16 h-16 mb-2 border-2 border-pink-500 rounded-full overflow-hidden">
-                      <img 
-                        src={performer.avatar} 
-                        alt={performer.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="text-center">
-                      <p className="font-medium text-sm truncate w-full">{performer.name}</p>
-                      <p className="text-xs text-muted-foreground">{performer.followers.toLocaleString()} fans</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          );
-        } else {
-          result.push(
-            <div key={`trending-promo-${i}`} className="mb-6 w-full">
-              <h3 className="text-lg font-semibold mb-2 text-center animated-gradient">Vidéos tendances</h3>
-              <div className="grid grid-cols-3 gap-2">
-                {trendingVideos.map((video) => (
-                  <div 
-                    key={video.id}
-                    onClick={() => handlePromoClick('trending', video)}
-                    className="relative overflow-hidden rounded-lg group cursor-pointer"
-                  >
-                    <div className="relative aspect-video">
-                      <img 
-                        src={video.thumbnail} 
-                        alt={video.title}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white opacity-80"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                      </div>
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                        <p className="text-white text-xs truncate">{video.title}</p>
-                        <div className="flex justify-between items-center mt-1">
-                          <span className="text-xs text-gray-300">{video.performer}</span>
-                          <span className="text-xs text-gray-300">{video.views}</span>
+        // After each group of 3 posts, insert a different promo block
+        if ((i + 1) % 3 === 0 && i < combinedPosts.length - 1) {
+          const promoType = Math.floor((i / 3) % 3); // Alternating between 0, 1, 2
+        
+          if (promoType === 0) {
+            result.push(
+              <div key={`xtease-promo-${i}`} className="mb-6 w-full">
+                <h3 className="text-lg font-semibold mb-2 text-center animated-gradient">Découvrez XTease</h3>
+                <div className="grid grid-cols-3 gap-2">
+                  {xteaseVideos.map((video) => (
+                    <div 
+                      key={video.id}
+                      onClick={() => handlePromoClick('xtease', video)}
+                      className="relative overflow-hidden rounded-lg group cursor-pointer"
+                    >
+                      <div className="relative aspect-[9/16]">
+                        <img 
+                          src={video.thumbnail} 
+                          alt={video.title}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white opacity-80"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        </div>
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                          <p className="text-white text-xs truncate">{video.title}</p>
                         </div>
                       </div>
-                      <div className="absolute top-1 right-1 bg-black/70 text-white text-xs px-1 py-0.5 rounded">
-                        {video.duration}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          } else if (promoType === 1) {
+            result.push(
+              <div key={`performer-promo-${i}`} className="mb-6 w-full">
+                <h3 className="text-lg font-semibold mb-2 text-center animated-gradient">Créateurs populaires</h3>
+                <div className="grid grid-cols-3 gap-2">
+                  {popularCreators.map((performer) => (
+                    <div 
+                      key={performer.id}
+                      onClick={() => handlePromoClick('creator', performer)}
+                      className="relative rounded-lg group bg-card border border-border p-3 flex flex-col items-center cursor-pointer"
+                    >
+                      <div className="w-16 h-16 mb-2 border-2 border-pink-500 rounded-full overflow-hidden">
+                        <img 
+                          src={performer.avatar} 
+                          alt={performer.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="text-center">
+                        <p className="font-medium text-sm truncate w-full">{performer.name}</p>
+                        <p className="text-xs text-muted-foreground">{performer.followers.toLocaleString()} fans</p>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          );
+            );
+          } else {
+            result.push(
+              <div key={`trending-promo-${i}`} className="mb-6 w-full">
+                <h3 className="text-lg font-semibold mb-2 text-center animated-gradient">Vidéos tendances</h3>
+                <div className="grid grid-cols-3 gap-2">
+                  {trendingVideos.map((video) => (
+                    <div 
+                      key={video.id}
+                      onClick={() => handlePromoClick('trending', video)}
+                      className="relative overflow-hidden rounded-lg group cursor-pointer"
+                    >
+                      <div className="relative aspect-video">
+                        <img 
+                          src={video.thumbnail} 
+                          alt={video.title}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white opacity-80"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        </div>
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                          <p className="text-white text-xs truncate">{video.title}</p>
+                          <div className="flex justify-between items-center mt-1">
+                            <span className="text-xs text-gray-300">{video.performer}</span>
+                            <span className="text-xs text-gray-300">{video.views}</span>
+                          </div>
+                        </div>
+                        <div className="absolute top-1 right-1 bg-black/70 text-white text-xs px-1 py-0.5 rounded">
+                          {video.duration}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          }
         }
       }
     }
     
     return result;
+  };
+
+  const getImmersivePosts = () => {
+    const safePosts = allPosts ? allPosts.slice(0, 4) : [];
+    const safeSupabaseVideos = supabaseVideos && supabaseVideos.length > 0 ? 
+      supabaseVideos.slice(0, 3) : [];
+    const safeCreaverseVideos = creaverseVideos && creaverseVideos.length > 0 ? 
+      creaverseVideos.slice(0, 3) : [];
+      
+    console.log(`Preparing immersive posts: ${safePosts.length} standard posts, ${safeSupabaseVideos.length} Supabase videos, ${safeCreaverseVideos.length} CreaVerse videos`);
+    
+    return [...safePosts, ...safeSupabaseVideos, ...safeCreaverseVideos].filter(Boolean);
   };
 
   if (loading) {
@@ -551,11 +564,7 @@ const Index = () => {
       {/* Immersive mode - always shown by default */}
       {showImmersive && (
         <ImmersivePublications 
-          posts={[
-            ...allPosts.slice(0, 4),
-            ...supabaseVideos.slice(0, 3),
-            ...creaverseVideos.slice(0, 3)
-          ]}
+          posts={getImmersivePosts()}
           onExitImmersive={() => setShowImmersive(false)}
           activePromo={activePromo}
           onClosePromo={closePromo}

@@ -30,8 +30,9 @@ export interface XTeaseVideo {
 export type MixedContentItem = CreatorFeedPost | XTeaseVideo;
 
 // Helper function to determine if an item is an XTeaseVideo
-export const isXTeaseVideo = (item: MixedContentItem): item is XTeaseVideo => {
-  return 'streamUrl' in item;
+export const isXTeaseVideo = (item: MixedContentItem | undefined): item is XTeaseVideo => {
+  // First check if item exists before checking for property
+  return !!item && 'streamUrl' in item;
 };
 
 // Données statiques pour les vidéos XTease à utiliser dans l'interface immersive
@@ -104,6 +105,12 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
   
   // Préparer le contenu mélangé au chargement
   useEffect(() => {
+    if (!posts || posts.length === 0) {
+      console.log("No posts provided to ImmersivePublications");
+      return;
+    }
+    
+    console.log(`ImmersivePublications received ${posts.length} posts`);
     const mixed = [...posts] as MixedContentItem[];
     
     // Insérer une vidéo XTease toutes les 2-3 publications
@@ -136,7 +143,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
 
   // Vérifier si l'élément actuel est une vidéo ou une publication
   useEffect(() => {
-    if (currentIndex < mixedContent.length) {
+    if (mixedContent.length > 0 && currentIndex < mixedContent.length) {
       const currentItem = mixedContent[currentIndex];
       setIsVideoContent(isXTeaseVideo(currentItem));
     }
@@ -144,7 +151,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
   
   // Change post every 12 seconds in desktop mode only - si ce n'est pas une vidéo
   useEffect(() => {
-    if (!isMobile && !activePromo?.type && !isVideoContent) {
+    if (!isMobile && !activePromo?.type && !isVideoContent && mixedContent.length > 0) {
       const timer = setTimeout(() => {
         goToNextPost();
         
@@ -160,7 +167,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
       
       return () => clearTimeout(timer);
     }
-  }, [currentIndex, isMobile, activePromo, isVideoContent]);
+  }, [currentIndex, isMobile, activePromo, isVideoContent, mixedContent]);
   
   // Gérer l'affichage/masquage automatique des contrôles
   useEffect(() => {
@@ -229,10 +236,12 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
   }, [isMobile]);
   
   const goToNextPost = () => {
+    if (mixedContent.length === 0) return;
     setCurrentIndex((prev) => (prev + 1) % mixedContent.length);
   };
   
   const goToPrevPost = () => {
+    if (mixedContent.length === 0) return;
     setCurrentIndex((prev) => (prev - 1 + mixedContent.length) % mixedContent.length);
   };
   
@@ -286,7 +295,10 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
     }
   };
 
-  if (!mixedContent.length) return null;
+  if (!mixedContent.length) {
+    console.log("No mixed content available in ImmersivePublications");
+    return null;
+  }
 
   // Get ambient style based on current mood
   const getAmbientStyle = () => {
@@ -320,8 +332,15 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
     }
   };
 
+  // Ensure currentIndex is within bounds
+  const safeCurrentIndex = Math.min(currentIndex, mixedContent.length - 1);
+  if (safeCurrentIndex < 0) {
+    console.warn("Invalid current index in ImmersivePublications");
+    return null;
+  }
+
   // Vérifier si l'élément actuel est une publication standard ou une vidéo XTease
-  const currentContent = mixedContent[currentIndex];
+  const currentContent = mixedContent[safeCurrentIndex];
   const isXTeaseContent = isXTeaseVideo(currentContent);
   
   const renderPostContent = (content: MixedContentItem) => {
