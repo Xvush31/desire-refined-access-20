@@ -198,7 +198,7 @@ class ContentProtectionService {
     document.addEventListener('selectstart', this.handleSelection);
     
     // Notification dans la console pour aider au débogage
-    console.log('[Triple Shield™] Détection de capture d'écran activée');
+    console.log("[Triple Shield™] Détection de capture d'écran activée");
   }
   
   /**
@@ -247,7 +247,7 @@ class ContentProtectionService {
    * Gère une détection de capture d'écran
    */
   private handleScreenCaptureDetected(): void {
-    console.log('[Triple Shield™] Capture d\'écran détectée');
+    console.log("[Triple Shield™] Capture d'écran détectée");
     
     // Rendre tous les filigranes visibles
     this.watermarkInstances.forEach(watermark => {
@@ -281,7 +281,7 @@ class ContentProtectionService {
   private showCaptureAlert(): void {
     // Cette fonction peut être remplacée par une intégration avec le système de toast
     const alertElement = document.createElement('div');
-    alertElement.innerText = 'Capture d\'écran détectée. Ce contenu est protégé.';
+    alertElement.innerText = "Capture d'écran détectée. Ce contenu est protégé.";
     alertElement.style.position = 'fixed';
     alertElement.style.top = '20px';
     alertElement.style.left = '50%';
@@ -314,7 +314,7 @@ class ContentProtectionService {
     };
     
     // Cette partie peut être intégrée avec une API pour enregistrer l'événement
-    console.log('[Triple Shield™] Tentative de capture enregistrée:', captureData);
+    console.log("[Triple Shield™] Tentative de capture enregistrée:", captureData);
     // TODO: Implémenter l'envoi à l'API
   }
   
