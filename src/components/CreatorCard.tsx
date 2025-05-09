@@ -8,8 +8,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { XDOSE_DOMAIN } from "@/utils/creaverseLinks";
-import { Link } from "react-router-dom";
-import { getCreatorProfileUrl } from "@/utils/creaverseLinks";
 
 export interface CreatorData {
   id: number;
@@ -42,8 +40,8 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => {
       onMouseLeave={() => !isMobile && setIsHovered(false)}
       data-is-mobile={isMobile ? "true" : "false"}
     >
-      <Link 
-        to={getCreatorProfileUrl(creator.id)}
+      <a 
+        href="https://www.xdose.xvush.com/trending"
         className="block mb-2 text-center creator-card-content"
         data-testid="creator-profile-link"
       >
@@ -64,11 +62,11 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => {
         </h3>
         <div className="text-xs text-muted-foreground mb-2">{creator.category}</div>
         <p className="text-sm text-foreground/90 text-center mb-4 line-clamp-3">{creator.description}</p>
-      </Link>
+      </a>
       
       <div className="flex flex-col gap-2 w-full mt-auto">
-        <Link 
-          to={`/performer/${creator.id}`}
+        <a 
+          href="https://www.xdose.xvush.com/trending"
           className="w-full"
           data-testid="creator-subscribe-link"
         >
@@ -80,7 +78,7 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => {
             <Plus className="mr-2" size={18} />
             S'abonner
           </Button>
-        </Link>
+        </a>
       </div>
     </Card>
   );
