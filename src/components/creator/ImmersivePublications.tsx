@@ -4,7 +4,7 @@ import { useImmersiveMode } from '@/hooks/useImmersiveMode';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Moon, Sun, Volume2, VolumeX, Vibrate, X } from 'lucide-react';
+import { Moon, Sun, Volume2, VolumeX, Vibrate, X, Heart, Gift, Lock, Star, ChevronRight, ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { CreatorFeedPost } from './CreatorFeedItem';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
@@ -14,6 +14,7 @@ import { Card } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Link } from 'react-router-dom';
 import HLSVideoPlayer from '@/components/HLSVideoPlayer';
+import NowPaymentsSubscriptionButton from '@/components/NowPaymentsSubscriptionButton';
 
 // Define the XTeaseVideo type to match the structure of immersiveXTeaseVideos items
 export interface XTeaseVideo {
@@ -91,6 +92,10 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
   const [controlsVisible, setControlsVisible] = useState(true);
   const [isVideoContent, setIsVideoContent] = useState(false);
   const [videoMuted, setVideoMuted] = useState(true);
+  const [showPremiumPromo, setShowPremiumPromo] = useState(false);
+  const [showTipOptions, setShowTipOptions] = useState(false);
+  const [tipAmount, setTipAmount] = useState<number | null>(null);
+  const [showSubscriptionOptions, setShowSubscriptionOptions] = useState(false);
   
   // Référence pour les éléments interactifs
   const imageRef = useRef<HTMLDivElement>(null);
@@ -146,6 +151,12 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
     if (mixedContent.length > 0 && currentIndex < mixedContent.length) {
       const currentItem = mixedContent[currentIndex];
       setIsVideoContent(isXTeaseVideo(currentItem));
+      
+      // Reset state when changing content
+      setShowTipOptions(false);
+      setTipAmount(null);
+      setShowPremiumPromo(false);
+      setShowSubscriptionOptions(false);
     }
   }, [currentIndex, mixedContent]);
   
@@ -295,6 +306,48 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
     }
   };
 
+  // Gérer le don/pourboire
+  const handleTip = (amount: number) => {
+    setTipAmount(amount);
+    toast.success(`Merci pour votre don de ${amount}€!`, {
+      description: "Votre soutien aide ce créateur à produire du contenu exclusif"
+    });
+    setTimeout(() => {
+      setShowTipOptions(false);
+      handleUserInteraction();
+    }, 1500);
+  };
+
+  // Afficher les options premium
+  const togglePremiumPromo = () => {
+    setShowPremiumPromo(prev => !prev);
+    if (!showPremiumPromo) {
+      handleUserInteraction();
+      setShowTipOptions(false);
+      setShowSubscriptionOptions(false);
+    }
+  };
+
+  // Afficher les options de don
+  const toggleTipOptions = () => {
+    setShowTipOptions(prev => !prev);
+    if (!showTipOptions) {
+      handleUserInteraction();
+      setShowPremiumPromo(false);
+      setShowSubscriptionOptions(false);
+    }
+  };
+
+  // Afficher les options d'abonnement
+  const toggleSubscriptionOptions = () => {
+    setShowSubscriptionOptions(prev => !prev);
+    if (!showSubscriptionOptions) {
+      handleUserInteraction();
+      setShowPremiumPromo(false);
+      setShowTipOptions(false);
+    }
+  };
+
   if (!mixedContent.length) {
     console.log("No mixed content available in ImmersivePublications");
     return null;
@@ -342,6 +395,11 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
   // Vérifier si l'élément actuel est une publication standard ou une vidéo XTease
   const currentContent = mixedContent[safeCurrentIndex];
   const isXTeaseContent = isXTeaseVideo(currentContent);
+
+  // Déterminer si le contenu est premium
+  const isPremiumContent = isXTeaseContent ? 
+    (currentContent as XTeaseVideo).isPremium : 
+    Math.random() > 0.7; // 30% des publications standards sont premium pour la démo
   
   const renderPostContent = (content: MixedContentItem) => {
     // Si c'est une vidéo XTease
@@ -360,17 +418,38 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
           >
             <AspectRatio ratio={9/16} className="bg-muted w-full">
-              <HLSVideoPlayer
-                src={content.streamUrl}
-                poster={content.thumbnail}
-                title={content.title}
-                videoId={content.id}
-                isPreview={false}
-                autoPlay
-                muted={videoMuted}
-                onVideoComplete={goToNextPost}
-                className="w-full h-full object-cover"
-              />
+              {content.isPremium && !showPremiumPromo ? (
+                <div className="relative w-full h-full">
+                  <img 
+                    src={content.thumbnail} 
+                    alt={content.title}
+                    className="w-full h-full object-cover brightness-50"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center p-5 text-center">
+                    <Lock size={40} className="text-primary mb-3" />
+                    <h3 className="text-lg font-bold text-white mb-2">Contenu Premium</h3>
+                    <p className="text-sm text-white/80 mb-4">Débloquez ce contenu exclusif avec un abonnement premium</p>
+                    <Button
+                      onClick={togglePremiumPromo} 
+                      className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white hover:opacity-90"
+                    >
+                      Voir les options premium
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <HLSVideoPlayer
+                  src={content.streamUrl}
+                  poster={content.thumbnail}
+                  title={content.title}
+                  videoId={content.id}
+                  isPreview={content.isPremium}
+                  autoPlay
+                  muted={videoMuted}
+                  onVideoComplete={goToNextPost}
+                  className="w-full h-full object-cover"
+                />
+              )}
             </AspectRatio>
           </motion.div>
           
@@ -392,6 +471,43 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
                 </div>
               )}
             </div>
+          </motion.div>
+          
+          {/* Boutons d'interaction vidéo */}
+          <motion.div 
+            className="absolute bottom-16 right-0 flex flex-col gap-1 p-2"
+            initial={{ opacity: controlsVisible ? 1 : 0, scale: controlsVisible ? 1 : 0.8 }}
+            animate={{ opacity: controlsVisible ? 1 : 0, scale: controlsVisible ? 1 : 0.8 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Button 
+              variant="secondary" 
+              size="icon"
+              className="rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/50" 
+              onClick={() => {
+                toast.success("Contenu ajouté à vos favoris!", { 
+                  description: "Vous pouvez le retrouver dans votre profil" 
+                })
+              }}
+            >
+              <Heart size={18} className="text-white" />
+            </Button>
+            <Button 
+              variant="secondary" 
+              size="icon" 
+              className="rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/50" 
+              onClick={toggleTipOptions}
+            >
+              <Gift size={18} className="text-white" />
+            </Button>
+            <Button 
+              variant="secondary" 
+              size="icon" 
+              className="rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/50"
+              onClick={toggleSubscriptionOptions}
+            >
+              <Star size={18} className="text-white" />
+            </Button>
           </motion.div>
         </div>
       );
@@ -416,11 +532,32 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
           style={{ willChange: 'transform, opacity', perspective: '1000px' }}
         >
           <AspectRatio ratio={9/16} className="bg-muted w-full">
-            <img 
-              src={content.image} 
-              alt={`Publication de ${content.creatorName}`}
-              className="object-cover w-full h-full depth-layer"
-            />
+            {isPremiumContent && !showPremiumPromo ? (
+              <div className="relative w-full h-full">
+                <img 
+                  src={content.image} 
+                  alt={`Publication de ${content.creatorName}`}
+                  className="object-cover w-full h-full blur-sm brightness-50"
+                />
+                <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center p-5 text-center">
+                  <Lock size={40} className="text-primary mb-3" />
+                  <h3 className="text-lg font-bold text-white mb-2">Contenu Premium</h3>
+                  <p className="text-sm text-white/80 mb-4">Débloquez ce contenu exclusif avec un abonnement premium</p>
+                  <Button
+                    onClick={togglePremiumPromo} 
+                    className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white hover:opacity-90"
+                  >
+                    Voir les options premium
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <img 
+                src={content.image} 
+                alt={`Publication de ${content.creatorName}`}
+                className="object-cover w-full h-full depth-layer"
+              />
+            )}
           </AspectRatio>
         </motion.div>
         
@@ -446,12 +583,54 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
                   <h3 className="font-bold text-white">{content.creatorName}</h3>
                   <p className="text-white/70 text-sm">{content.timestamp}</p>
                 </div>
+                {isPremiumContent && (
+                  <div className="ml-auto badge badge-premium px-2 py-1 text-xs font-medium">
+                    Premium
+                  </div>
+                )}
               </div>
               <p className="text-white mb-2">{content.caption}</p>
               <p className="text-white/90 text-sm">❤️ {content.likes.toLocaleString()} j'aime</p>
             </motion.div>
           )}
         </AnimatePresence>
+        
+        {/* Boutons d'interaction publication */}
+        <motion.div 
+          className="absolute bottom-16 right-0 flex flex-col gap-1 p-2"
+          initial={{ opacity: controlsVisible ? 1 : 0, scale: controlsVisible ? 1 : 0.8 }}
+          animate={{ opacity: controlsVisible ? 1 : 0, scale: controlsVisible ? 1 : 0.8 }}
+          transition={{ duration: 0.2 }}
+        >
+          <Button 
+            variant="secondary" 
+            size="icon"
+            className="rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/50" 
+            onClick={() => {
+              toast.success("Publication ajoutée à vos favoris!", { 
+                description: "Vous pouvez la retrouver dans votre profil" 
+              })
+            }}
+          >
+            <Heart size={18} className="text-white" />
+          </Button>
+          <Button 
+            variant="secondary" 
+            size="icon" 
+            className="rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/50" 
+            onClick={toggleTipOptions}
+          >
+            <Gift size={18} className="text-white" />
+          </Button>
+          <Button 
+            variant="secondary" 
+            size="icon" 
+            className="rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/50"
+            onClick={toggleSubscriptionOptions}
+          >
+            <Star size={18} className="text-white" />
+          </Button>
+        </motion.div>
       </div>
     );
   };
@@ -490,7 +669,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
               asChild
               className="w-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white hover:opacity-90"
             >
-              <Link to="/xtease">Voir sur XTease</Link>
+              <a href="https://www.xdose.xvush.com/trending">Voir sur XTease</a>
             </Button>
           </Card>
         );
@@ -521,7 +700,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
               asChild
               className="w-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white hover:opacity-90"
             >
-              <Link to="/creators">Voir le profil</Link>
+              <a href="https://www.xdose.xvush.com/trending">Voir le profil</a>
             </Button>
           </Card>
         );
@@ -544,7 +723,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
                 className="object-cover w-full h-full"
               />
               <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
               </div>
               <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-1 py-0.5 rounded">
                 {data.duration}
@@ -556,7 +735,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
               asChild
               className="w-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white hover:opacity-90"
             >
-              <Link to="/trending">Voir la vidéo</Link>
+              <a href="https://www.xdose.xvush.com/trending">Voir la vidéo</a>
             </Button>
           </Card>
         );
@@ -675,6 +854,276 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
           )}
         </AnimatePresence>
         
+        {/* Options de pourboire/don */}
+        <AnimatePresence>
+          {showTipOptions && (
+            <motion.div 
+              className="fixed inset-x-0 bottom-0 z-20 p-4 bg-black/80 backdrop-blur-md"
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 100, opacity: 0 }}
+              transition={{ type: "spring", damping: 25 }}
+            >
+              {tipAmount ? (
+                <div className="text-center py-4">
+                  <h3 className="text-xl text-white font-bold mb-2">Merci pour votre soutien!</h3>
+                  <p className="text-white/80 mb-4">Votre don de {tipAmount}€ a bien été reçu</p>
+                  <Button 
+                    variant="secondary" 
+                    onClick={() => setTipAmount(null)}
+                  >
+                    Fermer
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg text-white font-bold">Envoyer un pourboire</h3>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => setShowTipOptions(false)}
+                      className="rounded-full text-white"
+                    >
+                      <X size={18} />
+                    </Button>
+                  </div>
+                  <div className="flex gap-2 justify-center mb-4">
+                    {[1, 2, 5, 10, 20].map(amount => (
+                      <Button 
+                        key={amount} 
+                        onClick={() => handleTip(amount)}
+                        className={`bg-gradient-to-r from-pink-500 to-rose-500 hover:opacity-90`}
+                      >
+                        {amount}€
+                      </Button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-center text-white/60">Les pourboires aident les créateurs à produire du contenu de qualité</p>
+                </>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        {/* Options premium */}
+        <AnimatePresence>
+          {showPremiumPromo && (
+            <motion.div 
+              className="fixed inset-0 z-20 flex items-center justify-center bg-black/70 backdrop-blur-md"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowPremiumPromo(false)}
+            >
+              <motion.div 
+                className="max-w-md w-full bg-background/95 p-6 rounded-2xl shadow-xl"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: "spring", damping: 25 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="absolute right-2 top-2" 
+                  onClick={() => setShowPremiumPromo(false)}
+                >
+                  <X size={18} />
+                </Button>
+                
+                <h2 className="text-2xl font-bold text-center mb-6">Débloquez tout le contenu premium</h2>
+                
+                <div className="space-y-4">
+                  <div className="bg-gradient-to-r from-pink-500/20 to-rose-500/20 p-4 rounded-lg border border-pink-500/30 flex gap-3">
+                    <Star className="h-10 w-10 text-pink-500 flex-shrink-0" />
+                    <div>
+                      <h3 className="font-semibold text-lg">Abonnement Mensuel</h3>
+                      <p className="text-sm text-muted-foreground mb-3">Accès illimité à tout le contenu premium</p>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-2xl font-bold">9.99€</span>
+                        <span className="text-sm text-muted-foreground">/mois</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gradient-to-r from-indigo-500/20 to-purple-500/20 p-4 rounded-lg border border-indigo-500/30 flex gap-3">
+                    <Gift className="h-10 w-10 text-indigo-500 flex-shrink-0" />
+                    <div>
+                      <h3 className="font-semibold text-lg">Abonnement Annuel</h3>
+                      <p className="text-sm text-muted-foreground mb-3">Économisez 20% avec l'engagement annuel</p>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-2xl font-bold">96€</span>
+                        <span className="text-sm text-muted-foreground">/an</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mt-6 space-y-3">
+                  <a href="https://www.xdose.xvush.com/trending" className="w-full">
+                    <Button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:opacity-90">
+                      Débloquer maintenant
+                    </Button>
+                  </a>
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={() => setShowPremiumPromo(false)}
+                  >
+                    Plus tard
+                  </Button>
+                </div>
+                
+                <p className="text-xs text-center text-muted-foreground mt-4">
+                  Paiement sécurisé via NOWPayments • Annulez à tout moment
+                </p>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        {/* Options d'abonnement */}
+        <AnimatePresence>
+          {showSubscriptionOptions && (
+            <motion.div 
+              className="fixed inset-0 z-20 flex items-center justify-center bg-black/70 backdrop-blur-md"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowSubscriptionOptions(false)}
+            >
+              <motion.div 
+                className="max-w-md w-full bg-background/95 p-6 rounded-2xl shadow-xl"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: "spring", damping: 25 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="absolute right-2 top-2" 
+                  onClick={() => setShowSubscriptionOptions(false)}
+                >
+                  <X size={18} />
+                </Button>
+                
+                {isXTeaseContent ? (
+                  <>
+                    <div className="flex items-center gap-4 mb-6">
+                      <Avatar className="w-16 h-16 border-2 border-primary">
+                        <AvatarFallback>{(currentContent as XTeaseVideo).performer.substring(0, 2)}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h2 className="text-xl font-bold">S'abonner à {(currentContent as XTeaseVideo).performer}</h2>
+                        <p className="text-sm text-muted-foreground">Accès exclusif à tout le contenu premium</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4 mb-6">
+                      <div className="border border-border rounded-lg p-4">
+                        <div className="flex justify-between items-center mb-2">
+                          <h3 className="font-medium">Abonnement Standard</h3>
+                          <Badge variant="outline" className="bg-primary/10">Populaire</Badge>
+                        </div>
+                        <div className="flex items-baseline gap-1 mb-2">
+                          <span className="text-2xl font-bold">5.99€</span>
+                          <span className="text-muted-foreground">/mois</span>
+                        </div>
+                        <ul className="text-sm space-y-1 mb-4">
+                          <li className="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Contenu exclusif
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Messages privés
+                          </li>
+                        </ul>
+                        <a href="https://www.xdose.xvush.com/trending" className="w-full">
+                          <Button className="w-full">S'abonner</Button>
+                        </a>
+                      </div>
+                      
+                      <div className="border border-primary/30 rounded-lg p-4 bg-gradient-to-r from-primary/5 to-primary/10">
+                        <div className="flex justify-between items-center mb-2">
+                          <h3 className="font-medium">Abonnement VIP</h3>
+                          <Badge className="bg-gradient-to-r from-pink-500 to-rose-500 text-white">Premium</Badge>
+                        </div>
+                        <div className="flex items-baseline gap-1 mb-2">
+                          <span className="text-2xl font-bold">14.99€</span>
+                          <span className="text-muted-foreground">/mois</span>
+                        </div>
+                        <ul className="text-sm space-y-1 mb-4">
+                          <li className="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Tout le contenu standard
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Contenu ultra-premium exclusif
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Appels vidéo mensuels
+                          </li>
+                        </ul>
+                        <a href="https://www.xdose.xvush.com/trending" className="w-full">
+                          <Button variant="default" className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:opacity-90">Devenir VIP</Button>
+                        </a>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-4 mb-6">
+                      <Avatar className="w-16 h-16 border-2 border-primary">
+                        <AvatarImage src={(currentContent as CreatorFeedPost).creatorAvatar} alt={(currentContent as CreatorFeedPost).creatorName} />
+                        <AvatarFallback>{(currentContent as CreatorFeedPost).creatorName.substring(0, 2)}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h2 className="text-xl font-bold">S'abonner à {(currentContent as CreatorFeedPost).creatorName}</h2>
+                        <p className="text-sm text-muted-foreground">Accès exclusif à tout le contenu premium</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-3 mb-6">
+                      <NowPaymentsSubscriptionButton 
+                        amount={7.99}
+                        className="w-full bg-gradient-to-r from-purple-500 to-pink-500 font-semibold py-3 text-white rounded-lg"
+                      >
+                        Abonnement Mensuel • 7.99€
+                      </NowPaymentsSubscriptionButton>
+                      
+                      <NowPaymentsSubscriptionButton 
+                        amount={19.99}
+                        className="w-full bg-gradient-to-r from-pink-500 to-rose-500 font-semibold py-3 text-white rounded-lg"
+                      >
+                        Abonnement VIP • 19.99€
+                      </NowPaymentsSubscriptionButton>
+                      
+                      <Button 
+                        variant="outline" 
+                        className="w-full" 
+                        onClick={() => setShowSubscriptionOptions(false)}
+                      >
+                        Plus tard
+                      </Button>
+                    </div>
+                    
+                    <p className="text-xs text-center text-muted-foreground">
+                      Paiement sécurisé • Crypto acceptée • Annulation à tout moment
+                    </p>
+                  </>
+                )}
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
         <div className="h-full flex flex-col items-center justify-center p-0">
           {isMobile ? (
             <ScrollArea className="h-screen w-full overflow-hidden">
@@ -737,7 +1186,7 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
                         goToPrevPost();
                       }}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                      <ChevronLeft size={24} />
                     </motion.button>
                     
                     <motion.button
@@ -751,30 +1200,13 @@ const ImmersivePublications: React.FC<ImmersivePublicationsProps> = ({
                         goToNextPost();
                       }}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                      <ChevronRight size={24} />
                     </motion.button>
                   </>
                 )}
               </AnimatePresence>
             </>
           )}
-          
-          {/* Welcome message */}
-          <AnimatePresence>
-            {currentIndex === 0 && !activePromo?.type && (
-              <motion.div
-                className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-background/80 backdrop-blur-md px-6 py-3 rounded-full shadow-lg"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                transition={{ delay: 0.5, duration: 0.5 }}
-              >
-                <p className="text-foreground text-center">
-                  Bienvenue dans l'expérience immersive XVush!
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
       </motion.div>
     </AnimatePresence>
