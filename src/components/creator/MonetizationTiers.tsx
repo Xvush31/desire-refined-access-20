@@ -65,6 +65,18 @@ const MonetizationTiers: React.FC<MonetizationTiersProps> = ({ performerId, onSu
             else if (index === 1) icon = <Star className="text-amber-500" />;
             else icon = <CircleDollarSign className="text-purple-500" />;
             
+            // Ensure features is always an array of strings
+            const features = Array.isArray(tier.features) 
+              ? tier.features.map(feat => String(feat))
+              : tier.features 
+                ? (typeof tier.features === 'object' 
+                  ? Object.values(tier.features).map(feat => String(feat))
+                  : [String(tier.features)])
+                : [
+                  "Accès à tout le contenu standard",
+                  "Messages privés (réponse sous 48h)"
+                ];
+            
             return {
               id: tier.id,
               name: tier.name,
@@ -73,10 +85,7 @@ const MonetizationTiers: React.FC<MonetizationTiersProps> = ({ performerId, onSu
               description: tier.name === "Premium" ? "Notre offre la plus populaire." : 
                            tier.name === "VIP" ? "L'expérience ultime sans compromis." : 
                            "L'essentiel pour commencer.",
-              features: tier.features || [
-                "Accès à tout le contenu standard",
-                "Messages privés (réponse sous 48h)"
-              ],
+              features: features,
               callToAction: `Devenir ${tier.name}`,
               popular: tier.name === "Premium",
               color: tier.name === "Premium" ? "from-pink-500 to-purple-500" : undefined,
