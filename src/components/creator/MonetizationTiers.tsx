@@ -1,9 +1,13 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Check, CircleDollarSign, Clock, Star, MessageCircle, FileText, Lock, Download, Users } from "lucide-react";
+import { Check, CircleDollarSign, Clock, Star, MessageCircle, FileText, Lock, Download, Users, Loader2 } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import NowPaymentsSubscriptionButton from "../NowPaymentsSubscriptionButton";
+import { toast } from "sonner";
 
 interface MonetizationTiersProps {
   performerId: number;
@@ -11,6 +15,7 @@ interface MonetizationTiersProps {
 }
 
 interface SubscriptionTier {
+  id: string;
   name: string;
   price: number;
   period: string;
@@ -30,11 +35,74 @@ interface SubscriptionTier {
 
 const MonetizationTiers: React.FC<MonetizationTiersProps> = ({ performerId, onSubscribe }) => {
   const { theme } = useTheme();
+  const navigate = useNavigate();
+  const [tiers, setTiers] = useState<SubscriptionTier[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [subscribing, setSubscribing] = useState<string | null>(null);
   const bgClass = theme === 'light' ? 'bg-white' : 'bg-zinc-900';
   const cardClass = theme === 'light' ? 'bg-gray-50 border-gray-100' : 'bg-zinc-800/80 border-zinc-700';
   
-  const tiers: SubscriptionTier[] = [
+  useEffect(() => {
+    const fetchTiers = async () => {
+      try {
+        // Fetch tiers from database
+        const { data, error } = await supabase
+          .from("subscription_tiers")
+          .select("*")
+          .eq("is_active", true)
+          .order("price_usdt");
+          
+        if (error) {
+          console.error("Error fetching tiers:", error);
+          return;
+        }
+        
+        if (data && data.length > 0) {
+          // Transform to our component's expected format
+          const mappedTiers = data.map((tier, index) => {
+            let icon;
+            if (index === 0) icon = <Users className="text-sky-500" />;
+            else if (index === 1) icon = <Star className="text-amber-500" />;
+            else icon = <CircleDollarSign className="text-purple-500" />;
+            
+            return {
+              id: tier.id,
+              name: tier.name,
+              price: tier.price_usdt,
+              period: "mois",
+              description: tier.name === "Premium" ? "Notre offre la plus populaire." : 
+                           tier.name === "VIP" ? "L'expérience ultime sans compromis." : 
+                           "L'essentiel pour commencer.",
+              features: tier.features || [
+                "Accès à tout le contenu standard",
+                "Messages privés (réponse sous 48h)"
+              ],
+              callToAction: `Devenir ${tier.name}`,
+              popular: tier.name === "Premium",
+              color: tier.name === "Premium" ? "from-pink-500 to-purple-500" : undefined,
+              icon
+            };
+          });
+          
+          setTiers(mappedTiers);
+        } else {
+          // Use default tiers if no data in database
+          setTiers(getDefaultTiers());
+        }
+      } catch (err) {
+        console.error("Error in fetchTiers:", err);
+        setTiers(getDefaultTiers());
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchTiers();
+  }, []);
+  
+  const getDefaultTiers = (): SubscriptionTier[] => [
     {
+      id: "fan",
       name: "Fan",
       price: 7,
       period: "mois",
@@ -50,6 +118,7 @@ const MonetizationTiers: React.FC<MonetizationTiersProps> = ({ performerId, onSu
       trialPrice: 1
     },
     {
+      id: "superfan",
       name: "Super-Fan",
       price: 19,
       period: "mois",
@@ -70,6 +139,7 @@ const MonetizationTiers: React.FC<MonetizationTiersProps> = ({ performerId, onSu
       color: "from-pink-500 to-purple-500"
     },
     {
+      id: "vip",
       name: "VIP",
       price: 49,
       period: "mois",
@@ -105,6 +175,33 @@ const MonetizationTiers: React.FC<MonetizationTiersProps> = ({ performerId, onSu
     "Tout le contenu Fan +": <Check size={16} />,
     "Tout le contenu Super-Fan +": <Check size={16} />,
   };
+  
+  const handleSubscribe = async (tier: SubscriptionTier) => {
+    try {
+      // Check if user is authenticated
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.info("Connexion requise pour vous abonner");
+        navigate("/login");
+        return;
+      }
+      
+      // If authenticated, proceed with subscription
+      onSubscribe();
+    } catch (err) {
+      console.error("Error in handleSubscribe:", err);
+      toast.error("Une erreur est survenue");
+    }
+  };
+
+  if (loading) {
+    return (
+      <section className={`${bgClass} p-4 flex justify-center items-center h-64`}>
+        <Loader2 className="animate-spin text-brand-red h-8 w-8" />
+      </section>
+    );
+  }
 
   return (
     <section className={`${bgClass} p-4`}>
@@ -158,13 +255,14 @@ const MonetizationTiers: React.FC<MonetizationTiersProps> = ({ performerId, onSu
               ))}
             </ul>
             
-            <Button 
-              onClick={onSubscribe}
-              className={tier.popular ? 'w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white' : 'w-full'} 
-              variant={tier.popular ? "default" : "outline"}
+            <NowPaymentsSubscriptionButton
+              productName={`Abonnement ${tier.name}`}
+              amount={tier.price}
+              tierId={tier.id}
+              className={tier.popular ? 'w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white' : 'w-full bg-muted hover:bg-muted/80 text-foreground'}
             >
               {tier.callToAction}
-            </Button>
+            </NowPaymentsSubscriptionButton>
             
             {tier.trialDays && (
               <p className="text-xs text-center mt-3 text-muted-foreground">

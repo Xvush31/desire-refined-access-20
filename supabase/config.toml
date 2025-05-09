@@ -1,1 +1,11 @@
+
 project_id = "ryuczcsiiyghdnxanofq"
+
+[functions.create-invoice]
+verify_jwt = true
+
+[functions.nowpayments-webhook]
+verify_jwt = false
+
+[functions.verify-subscription]
+verify_jwt = true

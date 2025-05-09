@@ -2,49 +2,34 @@
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { createPaymentInvoice } from "@/utils/subscriptionUtils";
+import { Loader2 } from "lucide-react";
 
 type NowPaymentsModalProps = {
   open: boolean;
   onOpenChange: (v: boolean) => void;
+  productName?: string;
+  amount: number;
+  tierId?: string;
 };
-
-const NOWPAYMENTS_API_KEY = ""; // NE PAS METTRE VOTRE CLÉ ICI, utiliser une fonction serverless/Supabase en prod !
-
-const PRODUCT_NAME = "Abonnement Premium";
-const AMOUNT = 9.99; // Prix en EUR
 
 const NowPaymentsSubscriptionModal: React.FC<NowPaymentsModalProps> = ({
   open,
   onOpenChange,
+  productName = "Abonnement Premium",
+  amount,
+  tierId
 }) => {
   const [loading, setLoading] = useState(false);
 
   const handlePay = async () => {
     setLoading(true);
     try {
-      // Exemple : test en sandbox public
-      const res = await fetch("https://api.nowpayments.io/v1/invoice", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": NOWPAYMENTS_API_KEY || "demo-api-key", // DEVELOPPER EN SANDBOX
-        },
-        body: JSON.stringify({
-          price_amount: AMOUNT,
-          price_currency: "eur",
-          order_description: PRODUCT_NAME,
-          success_url: window.location.origin + "/subscription-confirmation",
-          cancel_url: window.location.origin + "/subscription",
-        }),
-      });
-      const data = await res.json();
-      if (data && data.invoice_url) {
-        window.location.href = data.invoice_url;
-      } else {
-        toast.error("Impossible de créer la facture NOWPayments.");
+      const invoice = await createPaymentInvoice(amount, productName, tierId);
+      if (invoice && invoice.invoice_url) {
+        // Redirect to the payment page
+        window.location.href = invoice.invoice_url;
       }
-    } catch (e) {
-      toast.error("Erreur lors de la connexion à NOWPayments.");
     } finally {
       setLoading(false);
     }
@@ -60,11 +45,18 @@ const NowPaymentsSubscriptionModal: React.FC<NowPaymentsModalProps> = ({
           Votre abonnement sera activé après validation du paiement par NOWPayments.
         </div>
         <button
-          className="bg-brand-accent text-white px-4 py-2 rounded w-full"
+          className="bg-brand-accent text-white px-4 py-2 rounded w-full flex items-center justify-center"
           onClick={handlePay}
           disabled={loading}
         >
-          {loading ? "Redirection..." : `Payer ${AMOUNT}€ avec NOWPayments`}
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Redirection...
+            </>
+          ) : (
+            `Payer ${amount}€ avec NOWPayments`
+          )}
         </button>
         <div className="text-xs mt-2 text-muted-foreground">
           Après paiement, vous serez redirigé vers une page de confirmation.

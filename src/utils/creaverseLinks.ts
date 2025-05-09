@@ -43,4 +43,3 @@ export const isCreaVersePath = (path: string): boolean => {
 export const openCreaVerseInNewTab = (path: string): void => {
   window.open(getCreaVerseUrl(path), '_blank');
 };
-
