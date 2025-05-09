@@ -34,14 +34,18 @@ const HomeCreatorsSection = () => (
   <ContentSection 
     title="Nos meilleurs créateurs" 
     viewAllLink="/creators"
-    className="bg-muted/20"
+    className="bg-muted/20 py-8"
   >
+    <div className="mb-4 text-center">
+      <p className="text-lg">Découvrez et abonnez-vous à nos créateurs de contenu exclusif</p>
+    </div>
+    
     <div className="flex flex-col items-center sm:grid sm:grid-cols-2 md:grid-cols-3 gap-6">
       {creators.map((creator) => (
         <div key={creator.id} className="w-full max-w-md">
-          <a href={getCreatorProfileUrl(creator.id)}>
+          <Link to={getCreatorProfileUrl(creator.id)}>
             <CreatorCard key={creator.id} creator={creator} />
-          </a>
+          </Link>
         </div>
       ))}
       <div className="flex items-center justify-center">

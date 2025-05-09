@@ -8,6 +8,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { XDOSE_DOMAIN } from "@/utils/creaverseLinks";
+import { Link } from "react-router-dom";
+import { getCreatorProfileUrl } from "@/utils/creaverseLinks";
 
 export interface CreatorData {
   id: number;
@@ -33,33 +35,17 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => {
     console.log("CreatorCard rendered, isMobile:", isMobile, "creator:", creator.name);
   }, [isMobile, creator.name]);
   
-  // Fonction pour afficher un message lors d'un clic sur le bureau
-  const handleDesktopClick = () => {
-    if (!isMobile) {
-      toast.success(`Vous avez sélectionné ${creator.name}`);
-      // Redirection vers le site XDose
-      window.location.href = XDOSE_DOMAIN;
-    }
-  };
-  
   return (
     <Card 
       className={`bg-card-gradient rounded-2xl p-5 shadow transition-all duration-300 relative min-w-[270px] flex flex-col justify-between creator-card ${!isMobile ? 'desktop-hover-effect' : ''}`}
       onMouseEnter={() => !isMobile && setIsHovered(true)}
       onMouseLeave={() => !isMobile && setIsHovered(false)}
-      onClick={handleDesktopClick}
       data-is-mobile={isMobile ? "true" : "false"}
     >
-      <a 
-        href={XDOSE_DOMAIN}
+      <Link 
+        to={getCreatorProfileUrl(creator.id)}
         className="block mb-2 text-center creator-card-content"
         data-testid="creator-profile-link"
-        onClick={(e) => {
-          // Empêche le déclenchement du handleDesktopClick
-          if (!isMobile) {
-            e.stopPropagation();
-          }
-        }}
       >
         <div className="relative mb-3">
           <Avatar className={`${isMobile ? 'h-20 w-20' : 'h-16 w-16'} mx-auto ${!isMobile && isHovered ? 'ring-2 ring-brand-red' : ''}`}>
@@ -78,19 +64,13 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => {
         </h3>
         <div className="text-xs text-muted-foreground mb-2">{creator.category}</div>
         <p className="text-sm text-foreground/90 text-center mb-4 line-clamp-3">{creator.description}</p>
-      </a>
+      </Link>
       
       <div className="flex flex-col gap-2 w-full mt-auto">
-        <a 
-          href={XDOSE_DOMAIN}
+        <Link 
+          to={`/performer/${creator.id}`}
           className="w-full"
           data-testid="creator-subscribe-link"
-          onClick={(e) => {
-            // Empêche le déclenchement du handleDesktopClick
-            if (!isMobile) {
-              e.stopPropagation();
-            }
-          }}
         >
           <Button
             variant="default"
@@ -98,9 +78,9 @@ const CreatorCard: React.FC<CreatorCardProps> = ({ creator }) => {
             type="button"
           >
             <Plus className="mr-2" size={18} />
-            Abonnez-vous
+            S'abonner
           </Button>
-        </a>
+        </Link>
       </div>
     </Card>
   );

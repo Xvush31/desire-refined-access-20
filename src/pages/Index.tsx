@@ -16,6 +16,7 @@ import { fetchCreaverseVideos, mockCreaverseVideos } from "@/services/creaverseS
 import { toast } from "sonner";
 import { getPromotionalVideos, getXteaseVideos, supabaseVideoToFeedPost, SupabaseVideo } from "@/services/supabaseVideoService";
 import { adaptSupabaseVideoToXTeaseFormat } from "@/adapters/videoAdapter";
+import HomeCreatorsSection from "@/components/HomeCreatorsSection";
 
 // Données mockées pour le feed des créateurs
 const generateMockFeed = (): CreatorFeedPost[] => {
@@ -221,7 +222,7 @@ const Index = () => {
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [showImmersive, setShowImmersive] = useState(true); // Already set to true by default
+  const [showImmersive, setShowImmersive] = useState(false); // Changed to false by default
   const [activePromo, setActivePromo] = useState<{
     type: 'xtease' | 'creator' | 'trending' | null,
     data: any
@@ -561,7 +562,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Immersive mode - always shown by default */}
+      {/* Immersive mode - only shown when activated */}
       {showImmersive && (
         <ImmersivePublications 
           posts={getImmersivePosts()}
@@ -591,10 +592,14 @@ const Index = () => {
             </Button>
           </motion.div>
 
-          {/* Section feed immersif en première position */}
+          {/* Section des créateurs populaires */}
+          <HomeCreatorsSection />
+
+          {/* Section feed des créateurs */}
           <div className="container max-w-md mx-auto px-4 pb-4">
+            <h2 className="text-xl font-bold mb-4 text-center">Feed des créateurs</h2>
             <ScrollArea 
-              className="h-[calc(100vh-180px)]" 
+              className="h-[calc(100vh-350px)]" 
               onScrollCapture={handleScroll}
             >
               <div className="pb-6">
