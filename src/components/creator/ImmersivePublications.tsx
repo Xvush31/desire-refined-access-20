@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from 'react';
 import { useImmersiveMode } from '@/hooks/useImmersiveMode';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,6 +14,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Link } from 'react-router-dom';
 import HLSVideoPlayer from '@/components/HLSVideoPlayer';
 import NowPaymentsSubscriptionButton from '@/components/NowPaymentsSubscriptionButton';
+import { Badge } from '@/components/ui/badge';
 
 // Define the XTeaseVideo type to match the structure of immersiveXTeaseVideos items
 export interface XTeaseVideo {
